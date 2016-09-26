@@ -1,5 +1,5 @@
 - name: "HIGH | V-1073 | AUDIT | Systems must be maintained at a supported service pack level."
-  win_command: reg query HKEY\Software\Microsoft\Windows /v NT\CurrentVersion
+  win_command: reg query HKEY_LOCAL_MACHINE\Software\Microsoft\Windows /v NT\CurrentVersion
   register: supported_pack_level
   always_run: yes
   changed_when: no
