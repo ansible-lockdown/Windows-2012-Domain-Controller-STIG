@@ -1,0 +1,72 @@
+- name: "MEDIUM | V-1104 | AUDIT | The maximum password age must meet requirements."
+  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v PasswordExpiryWarning
+  register: maximum_password_age_audit
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1104
+
+- name: "MEDIUM | V-1104 | PATCH | The maximum password age must meet requirements."
+  win_regedit:
+    key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+    value: PasswordExpiryWarning
+    data: 60
+    datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-1104
+
+- name: "MEDIUM | V-1105 | AUDIT | The minimum password age must meet requirements."
+  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v PasswordExpiryWarning
+  register: minimum_password_age_audit
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1105
+
+- name: "MEDIUM | V-1105 | PATCH | The minimum password age must meet requirements."
+  win_regedit:
+    key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+    value: PasswordExpiryWarning
+    data: 1
+    datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-1105
+
+- name: "MEDIUM | V-1145 | AUDIT | Automatic logons must be disabled."
+  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v AutoAdminLogon
+  register: disable_automatic_logons_audit
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1145
+
+- name: "MEDIUM | V-1145 | PATCH | Automatic logons must be disabled."
+  win_regedit: 
+    key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+    value: AutoAdminLogon
+    data: 0
+    datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-1145
+

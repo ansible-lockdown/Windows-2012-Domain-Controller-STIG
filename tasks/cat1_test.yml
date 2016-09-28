@@ -16,7 +16,7 @@
 #May have to split into two tasks to check for both approved softwares
 #Need to adjust syntax
 - name: "HIGH | V-1074 | AUDIT | An approved DoD antivirus program must be installed and used."
-  win_command: reg query HKLM\SOFTWARE\Symantec\Symantec Endpoint Protection\SMC /v ProductVersion
+  win_command: reg query \"HKLM\SOFTWARE\Symantec\Symantec Endpoint Protection\SMC\" /v ProductVersion
   #reg query HKEY_LOCAL_MACHINE\Software\McAfee\DesktopProtection <- reg key missing value
   register: symantec_approved_audit
   check_mode: no
