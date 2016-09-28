@@ -5,7 +5,7 @@
   win_command: reg query \"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\"
   register: supported_pack_level
   check_mode: no
-  #changed_when: no
+  changed_when: no
   ignore_errors: yes
   tags:
       - cat1
@@ -16,7 +16,7 @@
 #May have to split into two tasks to check for both approved softwares
 #Need to adjust syntax
 - name: "HIGH | V-1074 | AUDIT | An approved DoD antivirus program must be installed and used."
-  win_command: reg query HKLM\SOFTWARE\Symantec\Symantec Endpoint Protection\SMC
+  win_command: reg query HKLM\SOFTWARE\Symantec\Symantec Endpoint Protection\SMC /v ProductVersion
   #reg query HKEY_LOCAL_MACHINE\Software\McAfee\DesktopProtection <- reg key missing value
   register: symantec_approved_installation
   check_mode: no
