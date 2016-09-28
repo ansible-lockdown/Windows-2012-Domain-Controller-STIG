@@ -52,7 +52,6 @@
       - audit
       - V-1153
 
-#http://www.pctools.com/guides/registry/detail/255/
 - name: "HIGH | V-1153 | PATCH | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
   win_regedit:
     key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
