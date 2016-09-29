@@ -1,3 +1,4 @@
+#It was discovered that changing PasswordExpiryWarning does not satisfy this STIG
 - name: "MEDIUM | V-1104 | AUDIT | The maximum password age must meet requirements."
   win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v PasswordExpiryWarning
   register: maximum_password_age_audit
@@ -10,6 +11,7 @@
       - audit
       - V-1104
 
+#It was discovered that changing PasswordExpiryWarning does not satisfy this STIG
 - name: "MEDIUM | V-1104 | PATCH | The maximum password age must meet requirements."
   win_regedit:
     key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
@@ -22,6 +24,7 @@
       - patch
       - V-1104
 
+#It was discovered that changing PasswordExpiryWarning does not satisfy this STIG
 - name: "MEDIUM | V-1105 | AUDIT | The minimum password age must meet requirements."
   win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v PasswordExpiryWarning
   register: minimum_password_age_audit
@@ -34,6 +37,7 @@
       - audit
       - V-1105
 
+#It was discovered that changing PasswordExpiryWarning does not satisfy this STIG
 - name: "MEDIUM | V-1105 | PATCH | The minimum password age must meet requirements."
   win_regedit:
     key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
