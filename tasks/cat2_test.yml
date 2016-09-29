@@ -67,10 +67,31 @@
     key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
     value: AutoAdminLogon
     data: 0
-    datatype: dword
   tags:
       - cat2
       - medium
       - patch
       - V-1145
 
+- name: "MEDIUM | V-1145 | AUDIT | Automatic logons must be disabled."
+  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v DefaultPassword
+  register: disable_automatic_logons_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "'ERROR: The system was unable to find the specified registry key or value' not in disable_automatic_logons_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1145
+
+- name: "MEDIUM | V-1145 | PATCH | Automatic logons must be disabled."
+  win_regedit: 
+    key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+    value: DefaultPassword
+    state: absent
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-1145
