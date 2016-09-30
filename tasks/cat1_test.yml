@@ -186,3 +186,25 @@
       - high
       - patch
       - V-3339
+
+- name: "HIGH | V-3340 | AUDIT | Network shares that can be accessed anonymously must not be allowed."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters\ /v NullSessionShares
+  register: network_shares_anonymous_audit
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-3340
+
+- name: "HIGH | V-3340 | PATCH | Network shares that can be accessed anonymously must not be allowed."
+  action: win_ping
+  ignore_errors: yes
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-3340
+

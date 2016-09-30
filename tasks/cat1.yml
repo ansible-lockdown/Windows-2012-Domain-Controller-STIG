@@ -1,43 +1,3 @@
-- name: "HIGH | V-1073 | AUDIT | Systems must be maintained at a supported service pack level."
-  command: true
-  register: result
-  always_run: yes
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-1073
-
-- name: "HIGH | V-1073 | PATCH | Systems must be maintained at a supported service pack level."
-  command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-1073
-
-- name: "HIGH | V-1074 | AUDIT | An approved DoD antivirus program must be installed and used."
-  command: true
-  register: result
-  always_run: yes
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-1074
-
-- name: "HIGH | V-1074 | PATCH | An approved DoD antivirus program must be installed and used."
-  command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-1074
-
 - name: "HIGH | V-1081 | AUDIT | Local volumes must be formatted using NTFS."
   command: true
   register: result
@@ -57,26 +17,6 @@
       - high
       - patch
       - V-1081
-
-- name: "HIGH | V-1093 | AUDIT | Anonymous enumeration of shares must be restricted."
-  command: true
-  register: result
-  always_run: yes
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-1093
-
-- name: "HIGH | V-1093 | PATCH | Anonymous enumeration of shares must be restricted."
-  command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-1093
 
 - name: "HIGH | V-1102 | AUDIT | Unauthorized accounts must not have the Act as part of the operating system user right."
   command: true
@@ -137,66 +77,6 @@
       - high
       - patch
       - V-1127
-
-- name: "HIGH | V-1152 | AUDIT | Anonymous access to the registry must be restricted."
-  command: true
-  register: result
-  always_run: yes
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-1152
-
-- name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
-  command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-1152
-
-- name: "HIGH | V-1153 | AUDIT | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
-  command: true
-  register: result
-  always_run: yes
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-1153
-
-- name: "HIGH | V-1153 | PATCH | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
-  command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-1153
-
-- name: "HIGH | V-1159 | AUDIT | The Recovery Console option must be set to prevent automatic logon to the system."
-  command: true
-  register: result
-  always_run: yes
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-1159
-
-- name: "HIGH | V-1159 | PATCH | The Recovery Console option must be set to prevent automatic logon to the system."
-  command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-1159
 
 - name: "HIGH | V-2372 | AUDIT | Reversible password encryption must be disabled."
   command: true
@@ -277,26 +157,6 @@
       - high
       - patch
       - V-3338
-
-- name: "HIGH | V-3339 | AUDIT | Unauthorized remotely accessible registry paths must not be configured."
-  command: true
-  register: result
-  always_run: yes
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-3339
-
-- name: "HIGH | V-3339 | PATCH | Unauthorized remotely accessible registry paths must not be configured."
-  command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-3339
 
 - name: "HIGH | V-3340 | AUDIT | Network shares that can be accessed anonymously must not be allowed."
   command: true
@@ -658,7 +518,7 @@
       - patch
       - V-26683
 
-- name: "HIGH | V-32282 | AUDIT | Standard user accounts must only have Read permissions to the Active Setup\Installed Components registry key."
+- name: "HIGH | V-32282 | AUDIT | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
   command: true
   register: result
   always_run: yes
@@ -670,7 +530,7 @@
       - audit
       - V-32282
 
-- name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup\Installed Components registry key."
+- name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
   command: true
   tags:
       - cat1
