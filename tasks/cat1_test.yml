@@ -248,3 +248,24 @@
       - patch
       - V-3344
 
+- name: "HIGH | V-3379 | AUDIT | The system must be configured to prevent the storage of the LAN Manager hash of passwords."
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa\ /v NoLMHash /t REG_DWORD /f 1
+  register: prevent_lanman_storage_audit
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-3379
+
+- name: "HIGH | V-3379 | PATCH | The system must be configured to prevent the storage of the LAN Manager hash of passwords."
+  action: win_ping
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-3379
+
+
