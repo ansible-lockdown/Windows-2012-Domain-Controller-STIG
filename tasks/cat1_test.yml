@@ -347,3 +347,24 @@
       - high
       - patch
 
+- name: "HIGH | V-22692 | AUDIT | The default Autorun behavior must be configured to prevent Autorun commands."
+  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\ /v NoAutorun /t REG_DWORD /f 1
+  register: autorun_prevent_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "'The system was unable to find the specified registry key or value' in autorun_prevent_audit.stdout"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-22692
+
+- name: "HIGH | V-22692 | PATCH | The default Autorun behavior must be configured to prevent Autorun commands."
+  action: win_ping
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-22692
+
+#switching to tempcat1.yml for speed's sake
