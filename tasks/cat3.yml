@@ -1,7 +1,7 @@
 - name: "LOW | V-1075 | AUDIT | The shutdown option must not be available from the logon dialog box."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -11,7 +11,7 @@
       - V-1075
 
 - name: "LOW | V-1075 | PATCH | The shutdown option must not be available from the logon dialog box."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -19,9 +19,9 @@
       - V-1075
 
 - name: "LOW | V-1076 | AUDIT | System-level information must be backed up in accordance with local recovery time and recovery point objectives."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -31,17 +31,37 @@
       - V-1076
 
 - name: "LOW | V-1076 | PATCH | System-level information must be backed up in accordance with local recovery time and recovery point objectives."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
       - patch
       - V-1076
 
-- name: "LOW | V-1112 | AUDIT | Outdated or unused accounts must be removed from the system or disabled."
-  command: true
+- name: "LOW | V-1090 | AUDIT | Caching of logon credentials must be limited."
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-1090
+
+- name: "LOW | V-1090 | PATCH | Caching of logon credentials must be limited."
+  win_command: true
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-1090
+
+- name: "LOW | V-1112 | AUDIT | Outdated or unused accounts must be removed from the system or disabled."
+  win_command: true
+  register: result
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -51,7 +71,7 @@
       - V-1112
 
 - name: "LOW | V-1112 | PATCH | Outdated or unused accounts must be removed from the system or disabled."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -59,9 +79,9 @@
       - V-1112
 
 - name: "LOW | V-1128 | AUDIT | Security configuration tools or equivalent processes must be used to configure and maintain platforms for security compliance."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -71,7 +91,7 @@
       - V-1128
 
 - name: "LOW | V-1128 | PATCH | Security configuration tools or equivalent processes must be used to configure and maintain platforms for security compliance."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -79,9 +99,9 @@
       - V-1128
 
 - name: "LOW | V-1135 | AUDIT | Nonadministrative user accounts or groups must only have print permissions on printer shares."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -91,7 +111,7 @@
       - V-1135
 
 - name: "LOW | V-1135 | PATCH | Nonadministrative user accounts or groups must only have print permissions on printer shares."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -99,9 +119,9 @@
       - V-1135
 
 - name: "LOW | V-1136 | AUDIT | Users must be forcibly disconnected when their logon hours expire."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -111,7 +131,7 @@
       - V-1136
 
 - name: "LOW | V-1136 | PATCH | Users must be forcibly disconnected when their logon hours expire."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -119,9 +139,9 @@
       - V-1136
 
 - name: "LOW | V-1151 | AUDIT | The print driver installation privilege must be restricted to administrators."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -131,7 +151,7 @@
       - V-1151
 
 - name: "LOW | V-1151 | PATCH | The print driver installation privilege must be restricted to administrators."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -139,9 +159,9 @@
       - V-1151
 
 - name: "LOW | V-1158 | AUDIT | The Recovery Console SET command must be disabled."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -151,7 +171,7 @@
       - V-1158
 
 - name: "LOW | V-1158 | PATCH | The Recovery Console SET command must be disabled."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -159,9 +179,9 @@
       - V-1158
 
 - name: "LOW | V-1165 | AUDIT | The computer account password must not be prevented from being reset."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -171,7 +191,7 @@
       - V-1165
 
 - name: "LOW | V-1165 | PATCH | The computer account password must not be prevented from being reset."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -179,9 +199,9 @@
       - V-1165
 
 - name: "LOW | V-1172 | AUDIT | Users must be warned in advance of their passwords expiring."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -191,7 +211,7 @@
       - V-1172
 
 - name: "LOW | V-1172 | PATCH | Users must be warned in advance of their passwords expiring."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -199,9 +219,9 @@
       - V-1172
 
 - name: "LOW | V-1173 | AUDIT | The default permissions of global system objects must be increased."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -211,7 +231,7 @@
       - V-1173
 
 - name: "LOW | V-1173 | PATCH | The default permissions of global system objects must be increased."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -219,9 +239,9 @@
       - V-1173
 
 - name: "LOW | V-1174 | AUDIT | The amount of idle time required before suspending a session must be properly set."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -231,7 +251,7 @@
       - V-1174
 
 - name: "LOW | V-1174 | PATCH | The amount of idle time required before suspending a session must be properly set."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -239,9 +259,9 @@
       - V-1174
 
 - name: "LOW | V-3373 | AUDIT | The maximum age for machine account passwords must be set to requirements."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -251,7 +271,7 @@
       - V-3373
 
 - name: "LOW | V-3373 | PATCH | The maximum age for machine account passwords must be set to requirements."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -259,9 +279,9 @@
       - V-3373
 
 - name: "LOW | V-3472 | AUDIT | If the time service is configured, it must use an authorized time server."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -271,7 +291,7 @@
       - V-3472
 
 - name: "LOW | V-3472 | PATCH | If the time service is configured, it must use an authorized time server."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -279,9 +299,9 @@
       - V-3472
 
 - name: "LOW | V-4108 | AUDIT | The system must generate an audit event when the audit log reaches a percentage of full threshold."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -291,7 +311,7 @@
       - V-4108
 
 - name: "LOW | V-4108 | PATCH | The system must generate an audit event when the audit log reaches a percentage of full threshold."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -299,9 +319,9 @@
       - V-4108
 
 - name: "LOW | V-4110 | AUDIT | The system must be configured to prevent IP source routing."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -311,7 +331,7 @@
       - V-4110
 
 - name: "LOW | V-4110 | PATCH | The system must be configured to prevent IP source routing."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -319,9 +339,9 @@
       - V-4110
 
 - name: "LOW | V-4111 | AUDIT | The system must be configured to prevent Internet Control Message Protocol (ICMP) redirects from overriding Open Shortest Path First (OSPF) generated routes."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -331,7 +351,7 @@
       - V-4111
 
 - name: "LOW | V-4111 | PATCH | The system must be configured to prevent Internet Control Message Protocol (ICMP) redirects from overriding Open Shortest Path First (OSPF) generated routes."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -339,9 +359,9 @@
       - V-4111
 
 - name: "LOW | V-4112 | AUDIT | The system must be configured to disable the Internet Router Discovery Protocol (IRDP)."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -351,7 +371,7 @@
       - V-4112
 
 - name: "LOW | V-4112 | PATCH | The system must be configured to disable the Internet Router Discovery Protocol (IRDP)."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -359,9 +379,9 @@
       - V-4112
 
 - name: "LOW | V-4113 | AUDIT | The system must be configured to limit how often keep-alive packets are sent."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -371,7 +391,7 @@
       - V-4113
 
 - name: "LOW | V-4113 | PATCH | The system must be configured to limit how often keep-alive packets are sent."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -379,9 +399,9 @@
       - V-4113
 
 - name: "LOW | V-4116 | AUDIT | The system must be configured to ignore NetBIOS name release requests except from WINS servers."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -391,7 +411,7 @@
       - V-4116
 
 - name: "LOW | V-4116 | PATCH | The system must be configured to ignore NetBIOS name release requests except from WINS servers."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -399,9 +419,9 @@
       - V-4116
 
 - name: "LOW | V-4408 | AUDIT | Domain controllers must be configured to allow reset of machine account passwords."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -411,7 +431,7 @@
       - V-4408
 
 - name: "LOW | V-4408 | PATCH | Domain controllers must be configured to allow reset of machine account passwords."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -419,9 +439,9 @@
       - V-4408
 
 - name: "LOW | V-4438 | AUDIT | The system must limit how many times unacknowledged TCP data is retransmitted."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -431,7 +451,7 @@
       - V-4438
 
 - name: "LOW | V-4438 | PATCH | The system must limit how many times unacknowledged TCP data is retransmitted."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -439,9 +459,9 @@
       - V-4438
 
 - name: "LOW | V-4442 | AUDIT | The system must be configured to have password protection take effect within a limited time frame when the screen saver becomes active."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -451,7 +471,7 @@
       - V-4442
 
 - name: "LOW | V-4442 | PATCH | The system must be configured to have password protection take effect within a limited time frame when the screen saver becomes active."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -459,9 +479,9 @@
       - V-4442
 
 - name: "LOW | V-4445 | AUDIT | Optional Subsystems must not be permitted to operate on the system."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -471,7 +491,7 @@
       - V-4445
 
 - name: "LOW | V-4445 | PATCH | Optional Subsystems must not be permitted to operate on the system."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -479,9 +499,9 @@
       - V-4445
 
 - name: "LOW | V-8324 | AUDIT | The time synchronization tool must be configured to enable logging of time source switching."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -491,7 +511,7 @@
       - V-8324
 
 - name: "LOW | V-8324 | PATCH | The time synchronization tool must be configured to enable logging of time source switching."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -499,9 +519,9 @@
       - V-8324
 
 - name: "LOW | V-11806 | AUDIT | The system must be configured to prevent the display of the last username on the logon screen."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -511,7 +531,7 @@
       - V-11806
 
 - name: "LOW | V-11806 | PATCH | The system must be configured to prevent the display of the last username on the logon screen."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -519,9 +539,9 @@
       - V-11806
 
 - name: "LOW | V-14232 | AUDIT | IPSec Exemptions must be limited."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -531,7 +551,7 @@
       - V-14232
 
 - name: "LOW | V-14232 | PATCH | IPSec Exemptions must be limited."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -539,9 +559,9 @@
       - V-14232
 
 - name: "LOW | V-14797 | AUDIT | Anonymous access to the root DSE of a non-public directory must be disabled."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -551,7 +571,7 @@
       - V-14797
 
 - name: "LOW | V-14797 | PATCH | Anonymous access to the root DSE of a non-public directory must be disabled."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -559,9 +579,9 @@
       - V-14797
 
 - name: "LOW | V-14831 | AUDIT | The directory service must be configured to terminate LDAP-based network connections to the directory server after five (5) minutes of inactivity."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -571,7 +591,7 @@
       - V-14831
 
 - name: "LOW | V-14831 | PATCH | The directory service must be configured to terminate LDAP-based network connections to the directory server after five (5) minutes of inactivity."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -579,9 +599,9 @@
       - V-14831
 
 - name: "LOW | V-15672 | AUDIT | Event Viewer Events.asp links must be turned off."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -591,7 +611,7 @@
       - V-15672
 
 - name: "LOW | V-15672 | PATCH | Event Viewer Events.asp links must be turned off."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -599,9 +619,9 @@
       - V-15672
 
 - name: "LOW | V-15686 | AUDIT | Nonadministrators must be prevented from applying vendor-signed updates."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -611,7 +631,7 @@
       - V-15686
 
 - name: "LOW | V-15686 | PATCH | Nonadministrators must be prevented from applying vendor-signed updates."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -619,9 +639,9 @@
       - V-15686
 
 - name: "LOW | V-15687 | AUDIT | Users must not be presented with Privacy and Installation options on first use of Windows Media Player."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -631,7 +651,7 @@
       - V-15687
 
 - name: "LOW | V-15687 | PATCH | Users must not be presented with Privacy and Installation options on first use of Windows Media Player."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -639,9 +659,9 @@
       - V-15687
 
 - name: "LOW | V-15701 | AUDIT | A system restore point must be created when a new device driver is installed."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -651,7 +671,7 @@
       - V-15701
 
 - name: "LOW | V-15701 | PATCH | A system restore point must be created when a new device driver is installed."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -659,9 +679,9 @@
       - V-15701
 
 - name: "LOW | V-15702 | AUDIT | An Error Report must not be sent when a generic device driver is installed."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -671,7 +691,7 @@
       - V-15702
 
 - name: "LOW | V-15702 | PATCH | An Error Report must not be sent when a generic device driver is installed."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -679,9 +699,9 @@
       - V-15702
 
 - name: "LOW | V-15703 | AUDIT | Users must not be prompted to search Windows Update for device drivers."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -691,7 +711,7 @@
       - V-15703
 
 - name: "LOW | V-15703 | PATCH | Users must not be prompted to search Windows Update for device drivers."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -699,9 +719,9 @@
       - V-15703
 
 - name: "LOW | V-15704 | AUDIT | Errors in handwriting recognition on tablet PCs must not be reported to Microsoft."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -711,7 +731,7 @@
       - V-15704
 
 - name: "LOW | V-15704 | PATCH | Errors in handwriting recognition on tablet PCs must not be reported to Microsoft."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -719,9 +739,9 @@
       - V-15704
 
 - name: "LOW | V-15707 | AUDIT | Remote Assistance log files must be generated."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -731,7 +751,7 @@
       - V-15707
 
 - name: "LOW | V-15707 | PATCH | Remote Assistance log files must be generated."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -739,9 +759,9 @@
       - V-15707
 
 - name: "LOW | V-15718 | AUDIT | Turning off File Explorer heap termination on corruption must be disabled."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -751,7 +771,7 @@
       - V-15718
 
 - name: "LOW | V-15718 | PATCH | Turning off File Explorer heap termination on corruption must be disabled."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -759,9 +779,9 @@
       - V-15718
 
 - name: "LOW | V-15719 | AUDIT | Users must be notified if the logon server was inaccessible and cached credentials were used."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -771,7 +791,7 @@
       - V-15719
 
 - name: "LOW | V-15719 | PATCH | Users must be notified if the logon server was inaccessible and cached credentials were used."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -779,9 +799,9 @@
       - V-15719
 
 - name: "LOW | V-16005 | AUDIT | The system must be configured to remove the Disconnect option from the Shut Down dialog box on the Remote Desktop Client.  (Remote Desktop Services Role)."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -791,7 +811,7 @@
       - V-16005
 
 - name: "LOW | V-16005 | PATCH | The system must be configured to remove the Disconnect option from the Shut Down dialog box on the Remote Desktop Client.  (Remote Desktop Services Role)."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -799,9 +819,9 @@
       - V-16005
 
 - name: "LOW | V-21955 | AUDIT | IPv6 source routing must be configured to the highest protection level."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -811,7 +831,7 @@
       - V-21955
 
 - name: "LOW | V-21955 | PATCH | IPv6 source routing must be configured to the highest protection level."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -819,9 +839,9 @@
       - V-21955
 
 - name: "LOW | V-21956 | AUDIT | IPv6 TCP data retransmissions must be configured to prevent resources from becoming exhausted."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -831,7 +851,7 @@
       - V-21956
 
 - name: "LOW | V-21956 | PATCH | IPv6 TCP data retransmissions must be configured to prevent resources from becoming exhausted."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -839,9 +859,9 @@
       - V-21956
 
 - name: "LOW | V-21960 | AUDIT | Domain users must be required to elevate when setting a networks location."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -851,7 +871,7 @@
       - V-21960
 
 - name: "LOW | V-21960 | PATCH | Domain users must be required to elevate when setting a networks location."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -859,9 +879,9 @@
       - V-21960
 
 - name: "LOW | V-21961 | AUDIT | All Direct Access traffic must be routed through the internal network."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -871,7 +891,7 @@
       - V-21961
 
 - name: "LOW | V-21961 | PATCH | All Direct Access traffic must be routed through the internal network."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -879,9 +899,9 @@
       - V-21961
 
 - name: "LOW | V-21963 | AUDIT | Windows Update must be prevented from searching for point and print drivers."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -891,7 +911,7 @@
       - V-21963
 
 - name: "LOW | V-21963 | PATCH | Windows Update must be prevented from searching for point and print drivers."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -899,9 +919,9 @@
       - V-21963
 
 - name: "LOW | V-21964 | AUDIT | Device metadata retrieval from the Internet must be prevented."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -911,7 +931,7 @@
       - V-21964
 
 - name: "LOW | V-21964 | PATCH | Device metadata retrieval from the Internet must be prevented."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -919,9 +939,9 @@
       - V-21964
 
 - name: "LOW | V-21965 | AUDIT | Device driver searches using Windows Update must be prevented."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -931,7 +951,7 @@
       - V-21965
 
 - name: "LOW | V-21965 | PATCH | Device driver searches using Windows Update must be prevented."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -939,9 +959,9 @@
       - V-21965
 
 - name: "LOW | V-21967 | AUDIT | Microsoft Support Diagnostic Tool (MSDT) interactive communication with Microsoft must be prevented."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -951,7 +971,7 @@
       - V-21967
 
 - name: "LOW | V-21967 | PATCH | Microsoft Support Diagnostic Tool (MSDT) interactive communication with Microsoft must be prevented."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -959,9 +979,9 @@
       - V-21967
 
 - name: "LOW | V-21969 | AUDIT | Access to Windows Online Troubleshooting Service (WOTS) must be prevented."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -971,7 +991,7 @@
       - V-21969
 
 - name: "LOW | V-21969 | PATCH | Access to Windows Online Troubleshooting Service (WOTS) must be prevented."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -979,9 +999,9 @@
       - V-21969
 
 - name: "LOW | V-21970 | AUDIT | Responsiveness events must be prevented from being aggregated and sent to Microsoft."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -991,7 +1011,7 @@
       - V-21970
 
 - name: "LOW | V-21970 | PATCH | Responsiveness events must be prevented from being aggregated and sent to Microsoft."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -999,9 +1019,9 @@
       - V-21970
 
 - name: "LOW | V-21971 | AUDIT | The Application Compatibility Program Inventory must be prevented from collecting data and sending the information to Microsoft."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1011,7 +1031,7 @@
       - V-21971
 
 - name: "LOW | V-21971 | PATCH | The Application Compatibility Program Inventory must be prevented from collecting data and sending the information to Microsoft."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1019,9 +1039,9 @@
       - V-21971
 
 - name: "LOW | V-26359 | AUDIT | The Windows dialog box title for the legal banner must be configured."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1031,7 +1051,7 @@
       - V-26359
 
 - name: "LOW | V-26359 | PATCH | The Windows dialog box title for the legal banner must be configured."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1039,9 +1059,9 @@
       - V-26359
 
 - name: "LOW | V-26475 | AUDIT | Unauthorized accounts must not have the Bypass traverse checking user right."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1051,7 +1071,7 @@
       - V-26475
 
 - name: "LOW | V-26475 | PATCH | Unauthorized accounts must not have the Bypass traverse checking user right."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1059,9 +1079,9 @@
       - V-26475
 
 - name: "LOW | V-26477 | AUDIT | Unauthorized accounts must not have the Change the time zone user right."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1071,7 +1091,7 @@
       - V-26477
 
 - name: "LOW | V-26477 | PATCH | Unauthorized accounts must not have the Change the time zone user right."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1079,9 +1099,9 @@
       - V-26477
 
 - name: "LOW | V-28504 | AUDIT | Windows must be prevented from sending an error report when a device driver requests additional software during installation."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1091,7 +1111,7 @@
       - V-28504
 
 - name: "LOW | V-28504 | PATCH | Windows must be prevented from sending an error report when a device driver requests additional software during installation."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1099,9 +1119,9 @@
       - V-28504
 
 - name: "LOW | V-36673 | AUDIT | IP stateless autoconfiguration limits state must be enabled."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1111,7 +1131,7 @@
       - V-36673
 
 - name: "LOW | V-36673 | PATCH | IP stateless autoconfiguration limits state must be enabled."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1119,9 +1139,9 @@
       - V-36673
 
 - name: "LOW | V-36677 | AUDIT | Optional component installation and component repair must be prevented from using Windows Update."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1131,7 +1151,7 @@
       - V-36677
 
 - name: "LOW | V-36677 | PATCH | Optional component installation and component repair must be prevented from using Windows Update."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1139,9 +1159,9 @@
       - V-36677
 
 - name: "LOW | V-36678 | AUDIT | Device driver updates must only search managed servers, not Windows Update."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1151,7 +1171,7 @@
       - V-36678
 
 - name: "LOW | V-36678 | PATCH | Device driver updates must only search managed servers, not Windows Update."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1159,9 +1179,9 @@
       - V-36678
 
 - name: "LOW | V-36696 | AUDIT | The detection of compatibility issues for applications and drivers must be turned off."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1171,7 +1191,7 @@
       - V-36696
 
 - name: "LOW | V-36696 | PATCH | The detection of compatibility issues for applications and drivers must be turned off."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1179,9 +1199,9 @@
       - V-36696
 
 - name: "LOW | V-36697 | AUDIT | Trusted app installation must be enabled to allow for signed enterprise line of business apps."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1191,7 +1211,7 @@
       - V-36697
 
 - name: "LOW | V-36697 | PATCH | Trusted app installation must be enabled to allow for signed enterprise line of business apps."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1199,9 +1219,9 @@
       - V-36697
 
 - name: "LOW | V-36707 | AUDIT | The Windows SmartScreen must be turned off."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1211,7 +1231,7 @@
       - V-36707
 
 - name: "LOW | V-36707 | PATCH | The Windows SmartScreen must be turned off."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1219,9 +1239,9 @@
       - V-36707
 
 - name: "LOW | V-36710 | AUDIT | Automatic download of updates from the Windows Store must be turned off."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1231,7 +1251,7 @@
       - V-36710
 
 - name: "LOW | V-36710 | PATCH | Automatic download of updates from the Windows Store must be turned off."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1239,9 +1259,9 @@
       - V-36710
 
 - name: "LOW | V-36733 | AUDIT | User-level information must be backed up in accordance with local recovery time and recovery point objectives."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1251,7 +1271,7 @@
       - V-36733
 
 - name: "LOW | V-36733 | PATCH | User-level information must be backed up in accordance with local recovery time and recovery point objectives."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1259,9 +1279,9 @@
       - V-36733
 
 - name: "LOW | V-36774 | AUDIT | A screen saver must be defined."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1271,7 +1291,7 @@
       - V-36774
 
 - name: "LOW | V-36774 | PATCH | A screen saver must be defined."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1279,9 +1299,9 @@
       - V-36774
 
 - name: "LOW | V-36775 | AUDIT | Changing the screen saver must be prevented."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1291,7 +1311,7 @@
       - V-36775
 
 - name: "LOW | V-36775 | PATCH | Changing the screen saver must be prevented."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1299,9 +1319,9 @@
       - V-36775
 
 - name: "LOW | V-36776 | AUDIT | Notifications from Windows Push Network Service must be turned off."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1311,7 +1331,7 @@
       - V-36776
 
 - name: "LOW | V-36776 | PATCH | Notifications from Windows Push Network Service must be turned off."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1319,9 +1339,9 @@
       - V-36776
 
 - name: "LOW | V-36777 | AUDIT | Toast notifications to the lock screen must be turned off."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1331,7 +1351,7 @@
       - V-36777
 
 - name: "LOW | V-36777 | PATCH | Toast notifications to the lock screen must be turned off."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1339,9 +1359,9 @@
       - V-36777
 
 - name: "LOW | V-40172 | AUDIT | Backups of system-level information must be protected."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1351,7 +1371,7 @@
       - V-40172
 
 - name: "LOW | V-40172 | PATCH | Backups of system-level information must be protected."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1359,9 +1379,9 @@
       - V-40172
 
 - name: "LOW | V-40173 | AUDIT | System-related documentation must be backed up in accordance with local recovery time and recovery point objectives."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1371,7 +1391,7 @@
       - V-40173
 
 - name: "LOW | V-40173 | PATCH | System-related documentation must be backed up in accordance with local recovery time and recovery point objectives."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
@@ -1379,9 +1399,9 @@
       - V-40173
 
 - name: "LOW | V-43241 | AUDIT | The setting to allow Microsoft accounts to be optional for modern style apps must be enabled (Windows 2012 R2)."
-  command: true
+  win_command: true
   register: result
-  always_run: yes
+  check_mode: no
   changed_when: no
   ignore_errors: yes
   tags:
@@ -1391,7 +1411,7 @@
       - V-43241
 
 - name: "LOW | V-43241 | PATCH | The setting to allow Microsoft accounts to be optional for modern style apps must be enabled (Windows 2012 R2)."
-  command: true
+  win_command: true
   tags:
       - cat3
       - low
