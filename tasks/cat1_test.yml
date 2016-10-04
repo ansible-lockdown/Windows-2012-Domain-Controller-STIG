@@ -18,11 +18,10 @@
       - patch
       - V-1073
 
-#May have to split into two tasks to check for both approved softwares
+#McAfee is SCIF's antivirus program
 - name: "HIGH | V-1074 | AUDIT | An approved DoD antivirus program must be installed and used."
-  win_command: reg query \"HKLM\SOFTWARE\Symantec\Symantec Endpoint Protection\SMC\" /v ProductVersion
-  #reg query HKEY_LOCAL_MACHINE\Software\McAfee\DesktopProtection <- reg key missing value
-  register: symantec_approved_audit
+  action: win_ping
+  register: mcafee_approved_audit
   check_mode: no
   changed_when: no
   ignore_errors: yes
@@ -32,6 +31,7 @@
       - audit
       - V-1074
 
+#McAfee is SCIF's antivirus program
 - name: "HIGH | V-1074 | PATCH | An approved DoD antivirus program must be installed and used."
   action: win_ping
   tags:
@@ -141,13 +141,12 @@
       - patch
       - V-1159
 
-#Not sure if this query needs to asses both type and data field, but indicated in STIG description
 - name: "HIGH | V-2374 | AUDIT | Autoplay must be disabled for all drives."
   win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\policies\Explorer\ /v NoDriveTypeAutoRun /t REG_DWORD /f 25 
   register: autoplay_disabled_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "'The system was unable to find the specified registry key or value' in autoplay_disabled_audit.stdout"
   tags:
       - cat1
       - high
@@ -185,13 +184,9 @@
   win_regedit:
     key: 'HKLM:\System\CurrentControlSet\Control\SecurePipeServers\ winreg'
     value: Machine
-    data: "{{ item }}"
+    data: \0System\CurrentControlSet\Control\ProductOptions\0\"System\CurrentControlSet\Control\Server Applications\"\0\"Software\Microsoft\Windows NT\CurrentVersion\"\0\0
     datatype: multistring
-  with_items:
-      - System\CurrentControlSet\Control\ProductOptions
-      - \"System\CurrentControlSet\Control\Server Applications\"
-      - \"Software\Microsoft\Windows NT\CurrentVersion\"
-  ignore_errors: yes
+  changed_when: no
   tags:
       - cat1
       - high
@@ -203,7 +198,7 @@
   register: network_shares_anonymous_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "'The system was unable to find the specified registry key or value' in network_shares_anonymous_audit.stdout"
   tags:
       - cat1
       - high
@@ -224,7 +219,7 @@
   register: solicited_remote_assistance_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "'The system was unable to find the specified registry key or value' in solicited_remote_assistance_audit.stdout"
   tags:
       - cat1
       - high
@@ -333,23 +328,17 @@
       - patch
       - V-6834
 
-- block:
-        - name: "HIGH | V-21973 | AUDIT | Autoplay must be turned off for non-volume devices."
-          win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume /t REG_DWORD /f 1
-          register: autoplay_nonvolume_audit
-          check_mode: no
-          changed_when: no
-          tags:
-              - cat1
-              - high
-              - audit
-              - V-21973
-  rescue:
-        - name: Set failure condition
-          fail:
-            msg: "Error with 2193"
-          when: "'The system was unable to find the specified registry key or value' in autoplay_nonvolume_audit.stdout"
-
+- name: "HIGH | V-21973 | AUDIT | Autoplay must be turned off for non-volume devices."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume /t REG_DWORD /f 1
+  register: autoplay_nonvolume_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "'The system was unable to find the specified registry key or value' in autoplay_nonvolume_audit.stdout"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-21973
 
 - name: "HIGH | V-21973 | PATCH | Autoplay must be turned off for non-volume devices."
   action: win_ping
