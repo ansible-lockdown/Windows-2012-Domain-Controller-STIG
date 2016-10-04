@@ -208,3 +208,22 @@
       - patch
       - V-3340
 
+- name: "HIGH | V-3343 | AUDIT | Solicited Remote Assistance must not be allowed."
+  win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows NT\Terminal Services\" /v fAllowToGetHelp /t REG_DWORD /f 0
+  register: solicited_remote_assistance_audit
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-3343
+
+- name: "HIGH | V-3343 | PATCH | Solicited Remote Assistance must not be allowed."
+  win_command: true
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-3343
