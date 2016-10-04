@@ -38,26 +38,6 @@
       - patch
       - V-1076
 
-- name: "LOW | V-1090 | AUDIT | Caching of logon credentials must be limited."
-  command: true
-  register: result
-  always_run: yes
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat3
-      - low
-      - audit
-      - V-1090
-
-- name: "LOW | V-1090 | PATCH | Caching of logon credentials must be limited."
-  command: true
-  tags:
-      - cat3
-      - low
-      - patch
-      - V-1090
-
 - name: "LOW | V-1112 | AUDIT | Outdated or unused accounts must be removed from the system or disabled."
   command: true
   register: result
