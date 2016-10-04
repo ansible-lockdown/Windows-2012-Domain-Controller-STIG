@@ -268,4 +268,36 @@
       - patch
       - V-3379
 
+#This is currently TBD but should probably be implemented
+- name: "HIGH | V-4443 | AUDIT | Unauthorized remotely accessible registry paths and sub-paths must not be configured."
+  win_command: reg query HKLM\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedPaths\ /v Machine /t REG_MULTI_SZ /f {{ item }}
+  register: result
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  with_items:
+      - \"Software\Microsoft\OLAP Server\" 
+      - \"Software\Microsoft\Windows NT\CurrentVersion\Perflib\" 
+      - \"Software\Microsoft\Windows NT\CurrentVersion\Print\" 
+      - \"Software\Microsoft\Windows NT\CurrentVersion\Windows\" 
+      - System\CurrentControlSet\Control\ContentIndex 
+      - System\CurrentControlSet\Control\Print\Printers 
+      - \"System\CurrentControlSet\Control\Terminal Server\" 
+      - \"System\CurrentControlSet\Control\Terminal Server\UserConfig\" 
+      - \"System\CurrentControlSet\Control\Terminal Server\DefaultUserConfiguration\" 
+      - System\CurrentControlSet\Services\Eventlog 
+      - System\CurrentControlSet\Services\Sysmonlog 
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-4443
 
+#This is currently TBD but should probably be implemented
+- name: "HIGH | V-4443 | PATCH | Unauthorized remotely accessible registry paths and sub-paths must not be configured."
+  action: win_ping
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-4443
