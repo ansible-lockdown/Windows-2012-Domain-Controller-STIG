@@ -367,4 +367,35 @@
       - patch
       - V-22692
 
+#This rule will need to be revisted according to SCIFs user accounts
+- name: "HIGH | V-26070 | AUDIT | Standard user accounts must only have Read permissions to the Winlogon registry key."
+  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\"
+  register: standard_user_read_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-26070
+
+#This rule will need to be revisted according to SCIFs user accounts
+- name: "HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
+  win_regedit:
+      key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\'
+      value: "{{ item.value }}"
+      data: "{{ item.data }}"
+  changed_when: no
+  with_items:
+      - { value: 'TrustedInstaller', data: 'Full Control' }
+      - { value: 'SYSTEM', data: 'Full Control' }
+      - { value: 'Administrators', data: 'Full Control' }
+      - { value: 'Users', data: 'Read' }
+      - { value: 'ALL APPLICATION PACKAGES', data: 'Read' }
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-26070
+
 #switching to tempcat1.yml for speed's sake
