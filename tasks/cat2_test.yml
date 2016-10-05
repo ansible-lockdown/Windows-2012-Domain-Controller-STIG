@@ -27,7 +27,7 @@
   register: disable_automatic_logons_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in disable_automatic_logons_audit.stderr and disable_automatic_logons_audit.stderr"
   tags:
       - cat2
       - medium
