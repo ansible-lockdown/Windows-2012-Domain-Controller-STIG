@@ -40,7 +40,7 @@
       - V-1074
 
 - name: "HIGH | V-1093 | AUDIT | Anonymous enumeration of shares must be restricted."
-  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v RestrictAnonymous
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v RestrictAnonymous /t REG_DWORD /f 1
   register: anon_shares_audit
   check_mode: no
   changed_when: no
@@ -92,7 +92,7 @@
        - V-1152
 
 - name: "HIGH | V-1153 | AUDIT | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
-  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v LMCompatibilityLevel
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v LMCompatibilityLevel /t REG_DWORD /f 5
   register: lanMan_authentication_audit
   check_mode: no
   changed_when: no
@@ -116,7 +116,7 @@
       - V-1153
 
 - name: "HIGH | V-1159 | AUDIT | The Recovery Console option must be set to prevent automatic logon to the system."
-  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Setup\RecoveryConsole\" /v SecurityLevel 
+  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Setup\RecoveryConsole\" /v SecurityLevel /t REG_DWORD /f 0
   register: recovery_prevent_autologin_audit
   check_mode: no
   changed_when: no
@@ -191,7 +191,7 @@
       - V-3339
 
 - name: "HIGH | V-3340 | AUDIT | Network shares that can be accessed anonymously must not be allowed."
-  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters\ /v NullSessionShares
+  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters\ /v NullSessionShares /t REG_MULTI_SZ /f ''
   register: network_shares_anonymous_audit
   check_mode: no
   changed_when: no
