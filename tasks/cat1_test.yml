@@ -3,7 +3,7 @@
   register: supported_pack_level_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in supported_pack_level_audit.stderr and supported_pack_level_audit.stderr"
   tags:
       - cat1
       - high
@@ -24,7 +24,6 @@
   register: mcafee_approved_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
@@ -45,7 +44,7 @@
   register: anon_shares_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in anon_shares_audit.stderr and anon_shares_audit.stderr"
   tags:
       - cat1
       - high
@@ -69,7 +68,7 @@
   register: anon_registry_access_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in anon_registry_access_audit.stderr and anon_registry_access_audit.stderr"
   tags:
       - cat1
       - high
@@ -97,7 +96,7 @@
   register: lanMan_authentication_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in lanMan_authentication_audit.stderr and lanMan_authentication_audit.stderr"
   tags:
       - cat1
       - high
@@ -121,7 +120,7 @@
   register: recovery_prevent_autologin_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in recovery_prevent_autologin_audit.stderr and recovery_prevent_autologin_audit.stderr"
   tags:
       - cat1
       - high
@@ -134,7 +133,6 @@
     value: SecurityLevel
     data: 0
     datatype: dword
-  ignore_errors: yes
   tags:
       - cat1
       - high
@@ -146,7 +144,7 @@
   register: autoplay_disabled_audit
   check_mode: no
   changed_when: no
-  failed_when: "'The system was unable to find the specified registry key or value' in autoplay_disabled_audit.stdout"
+  failed_when: "reg_not_found not in autoplay_disabled_audit.stderr and autoplay_disabled_audit.stderr"
   tags:
       - cat1
       - high
@@ -155,7 +153,6 @@
 
 - name: "HIGH | V-2374 | PATCH | Autoplay must be disabled for all drives."
   action: win_ping
-  ignore_errors: yes
   tags:
       - cat1
       - high
@@ -168,7 +165,7 @@
   register: remotely_accessible_registry_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in remotely_accessible_registry_audit.stderr and remotely_accessible_registry_audit.stderr"
   with_items:
       - System\CurrentControlSet\Control\ProductOptions 
       - \"System\CurrentControlSet\Control\Server Applications\" 
@@ -198,7 +195,7 @@
   register: network_shares_anonymous_audit
   check_mode: no
   changed_when: no
-  failed_when: "'The system was unable to find the specified registry key or value' in network_shares_anonymous_audit.stdout"
+  failed_when: "reg_not_found not in network_shares_anonymous_audit.stderr and network_shares_anonymous_audit.stderr"
   tags:
       - cat1
       - high
@@ -207,7 +204,6 @@
 
 - name: "HIGH | V-3340 | PATCH | Network shares that can be accessed anonymously must not be allowed."
   action: win_ping
-  ignore_errors: yes
   tags:
       - cat1
       - high
@@ -219,7 +215,7 @@
   register: solicited_remote_assistance_audit
   check_mode: no
   changed_when: no
-  failed_when: "'The system was unable to find the specified registry key or value' in solicited_remote_assistance_audit.stdout"
+  failed_when: "reg_not_found not in solicited_remote_assistance_audit.stderr and solicited_remote_assistance_audit.stderr"
   tags:
       - cat1
       - high
@@ -239,7 +235,7 @@
   register: blankpass_network_restriction_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in blankpass_network_restriction_audit.stderr and blankpass_network_restriction_audit.stderr"
   tags:
       - cat1
       - high
@@ -259,7 +255,7 @@
   register: prevent_lanman_storage_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in prevent_lanman_storage_audit.stderr and prevent_lanman_storage_audit.stderr"
   tags:
       - cat1
       - high
@@ -277,10 +273,10 @@
 #This is currently TBD but should probably be implemented
 - name: "HIGH | V-4443 | AUDIT | Unauthorized remotely accessible registry paths and sub-paths must not be configured."
   win_command: reg query HKLM\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedPaths\ /v Machine /t REG_MULTI_SZ /f {{ item }}
-  register: result
+  register: unauthorized_remote_registry_paths_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in unauthorized_remote_registry_paths_audit.stderr and unauthorized_remote_registry_paths_audit.stderr"
   with_items:
       - \"Software\Microsoft\OLAP Server\" 
       - \"Software\Microsoft\Windows NT\CurrentVersion\Perflib\" 
@@ -313,7 +309,7 @@
   register: anon_access_pipes_shares_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in anon_access_pipes_shares_audit.stderr and anon_access_pipes_shares_audit.stderr"
   tags:
       - cat1
       - high
@@ -333,7 +329,7 @@
   register: autoplay_nonvolume_audit
   check_mode: no
   changed_when: no
-  failed_when: "'The system was unable to find the specified registry key or value' in autoplay_nonvolume_audit.stdout"
+  failed_when: "reg_not_found not in autoplay_nonvolume_audit.stderr and autoplay_nonvolume_audit.stderr"
   tags:
       - cat1
       - high
@@ -352,7 +348,7 @@
   register: autorun_prevent_audit
   check_mode: no
   changed_when: no
-  failed_when: "'The system was unable to find the specified registry key or value' in autorun_prevent_audit.stdout"
+  failed_when: "reg_not_found not in autorun_prevent_audit.stderr and autorun_prevent_audit.stderr"
   tags:
       - cat1
       - high
@@ -373,6 +369,7 @@
   register: standard_user_read_audit
   check_mode: no
   changed_when: no
+  failed_when: "reg_not_found not in standard_user_read_audit.stderr and standard_user_read_audit.stderr"
   tags:
       - cat1
       - high
@@ -403,6 +400,7 @@
   register: anonymous_enum_sam_audit
   check_mode: no
   changed_when: no
+  failed_when: "reg_not_found not in anonymous_enum_sam_audit.stderr and anonymous_enum_sam_audit.stderr"
   tags:
       - cat1
       - high
@@ -425,6 +423,7 @@
   register: standard_read_active1_audit
   check_mode: no
   changed_when: no
+  failed_when: "reg_not_found not in standard_read_active1_audit.stderr and standard_read_active1_audit.stderr"
   with_items:
       - \"HKLM\Software\Microsoft\Active Setup\Installed Components\"
       - \"HKLM\Software\Wow6432Node\Microsoft\Active Setup\Installed Components\"
@@ -447,7 +446,7 @@
   register: install_elevated_disabled_audit
   check_mode: no
   changed_when: no
-  failed_when: "'The system was unable to find the specified registry key or value' in install_elevated_disabled_audit.stdout"
+  failed_when: "reg_not_found not in install_elevated_disabled_audit.stderr and install_elevated_disabled_audit.stderr"
   tags:
       - cat1
       - high
@@ -467,7 +466,7 @@
   register: winrm_service_basic_auth_audit
   check_mode: no
   changed_when: no
-  failed_when: "'The system was unable to find the specified registry key or value' in winrm_service_basic_auth_audit.stdout"
+  failed_when: "reg_not_found not in winrm_service_basic_auth_audit.stderr and winrm_service_basic_auth_audit.stderr"
   tags:
       - cat1
       - high
