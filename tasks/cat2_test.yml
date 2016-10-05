@@ -323,3 +323,76 @@
       - medium
       - patch
       - V-3382
+
+- name: "MEDIUM | V-3385 | AUDIT | The system must be configured to require case insensitivity for non-Windows subsystems."
+  win_command: reg query \"HKLM\System\CurrentControlSet\Control\Session Manager\Kernel\" /v ObCaseInsensitive
+  register: case_insensitive_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in case_insensitive_audit.stderr and case_insensitive_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-3385
+
+- name: "MEDIUM | V-3385 | PATCH | The system must be configured to require case insensitivity for non-Windows subsystems."
+  win_regedit: 
+      key: 'HKLM:\System\CurrentControlSet\Control\Session Manager\Kernel'
+      value: ObCaseInsensitive
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-3385
+
+- name: "MEDIUM | V-3449 | AUDIT | Remote Desktop Services will limit users to one remote session."
+  win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows NT\Terminal Services\" /v fSingleSessionPerUser
+  register: single_rdp_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in single_rdp_audit.stderr and single_rdp_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-3449
+
+- name: "MEDIUM | V-3449 | PATCH | Remote Desktop Services will limit users to one remote session."
+  win_regedit: 
+      key: 'HKLM:\Software\Policies\Microsoft\Windows NT\Terminal Services'
+      value: fSingleSessionPerUser
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-3449
+
+- name: "MEDIUM | V-3453 | AUDIT | Remote Desktop Services will always prompt a client for passwords upon connection."
+  win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows NT\Terminal Services\" /v fPromptForPassword
+  register: rdp_password_prompt_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in rdp_password_prompt_audit.stderr and rdp_password_prompt_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-3453
+
+- name: "MEDIUM | V-3453 | PATCH | Remote Desktop Services will always prompt a client for passwords upon connection."
+  win_regedit: 
+      key: 'HKLM:\Software\Policies\Microsoft\Windows NT\Terminal Services'
+      value: fPromptForPassword
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-3453
+
