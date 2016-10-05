@@ -417,4 +417,29 @@
       - patch
       - V-26283
 
+#This requires knowledge of SCIF user accounts to complete
+#Will likely involve breaking into two separate tasks
+#Need a way to evaluate user permissions
+- name: "HIGH | V-32282 | AUDIT | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+  win_command: reg query {{ item }}
+  register: standard_read_active1_audit
+  check_mode: no
+  changed_when: no
+  with_items:
+      - \"HKLM\Software\Microsoft\Active Setup\Installed Components\"
+      - \"HKLM\Software\Wow6432Node\Microsoft\Active Setup\Installed Components\"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-32282
+
+- name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+  action: win_ping
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-32282
+
 #switching to tempcat1.yml for speed's sake
