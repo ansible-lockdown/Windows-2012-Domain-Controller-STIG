@@ -398,4 +398,23 @@
       - patch
       - V-26070
 
+- name: "HIGH | V-26283 | AUDIT | Anonymous enumeration of SAM accounts must not be allowed."
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa\ /v RestrictAnonymousSAM /t REG_DWORD /f 1
+  register: anonymous_enum_sam_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-26283
+
+- name: "HIGH | V-26283 | PATCH | Anonymous enumeration of SAM accounts must not be allowed."
+  action: win_ping
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-26283
+
 #switching to tempcat1.yml for speed's sake
