@@ -442,4 +442,24 @@
       - patch
       - V-32282
 
+- name: "HIGH | V-34974 | AUDIT | The Windows Installer Always install with elevated privileges option must be disabled."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Installer\ /v AlwaysInstallElevated /t REG_DWORD /f 0
+  register: install_elevated_disabled_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "'The system was unable to find the specified registry key or value' in install_elevated_disabled_audit.stdout"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-34974
+
+- name: "HIGH | V-34974 | PATCH | The Windows Installer Always install with elevated privileges option must be disabled."
+  action: win_ping
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-34974
+
 #switching to tempcat1.yml for speed's sake
