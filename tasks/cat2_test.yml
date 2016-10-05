@@ -1,57 +1,29 @@
-#It was discovered that changing PasswordExpiryWarning does not satisfy this STIG
-- name: "MEDIUM | V-1104 | AUDIT | The maximum password age must meet requirements."
-  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v PasswordExpiryWarning
-  register: maximum_password_age_audit
+- name: "MEDIUM | V-1141 | AUDIT | Unencrypted passwords must not be sent to third-party SMB Servers."
+  win_command: reg query HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters /v EnablePlainTextPassword
+  register: plain_text_password_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in plain_text_password_audit.stderr and plain_text_password_audit.stderr"
   tags:
       - cat2
       - medium
       - audit
-      - V-1104
+      - V-1141
 
-#It was discovered that changing PasswordExpiryWarning does not satisfy this STIG
-- name: "MEDIUM | V-1104 | PATCH | The maximum password age must meet requirements."
-  win_regedit:
-    key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
-    value: PasswordExpiryWarning
-    data: 60
-    datatype: dword
+- name: "MEDIUM | V-1141 | PATCH | Unencrypted passwords must not be sent to third-party SMB Servers."
+  win_regedit: 
+      key: 'HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters'
+      value: EnablePlainTextPassword
+      data: 0
+      datatype: dword
   tags:
       - cat2
       - medium
       - patch
-      - V-1104
-
-#It was discovered that changing PasswordExpiryWarning does not satisfy this STIG
-- name: "MEDIUM | V-1105 | AUDIT | The minimum password age must meet requirements."
-  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v PasswordExpiryWarning
-  register: minimum_password_age_audit
-  check_mode: no
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat2
-      - medium
-      - audit
-      - V-1105
-
-#It was discovered that changing PasswordExpiryWarning does not satisfy this STIG
-- name: "MEDIUM | V-1105 | PATCH | The minimum password age must meet requirements."
-  win_regedit:
-    key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
-    value: PasswordExpiryWarning
-    data: 1
-    datatype: dword
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-1105
+      - V-1141
 
 - name: "MEDIUM | V-1145 | AUDIT | Automatic logons must be disabled."
-  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v AutoAdminLogon
+  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v AutoAdminLogon /t REG_SZ /f 0
   register: disable_automatic_logons_audit
   check_mode: no
   changed_when: no
@@ -73,25 +45,165 @@
       - patch
       - V-1145
 
-- name: "MEDIUM | V-1145 | AUDIT | Automatic logons must be disabled."
-  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v DefaultPassword
-  register: disable_automatic_logons_audit
+- name: "MEDIUM | V-1154 | AUDIT | The Ctrl+Alt+Del security attention sequence for logons will be enabled."
+  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v DisableCAD
+  register: disable_CAD_audit
   check_mode: no
   changed_when: no
-  failed_when: "'ERROR: The system was unable to find the specified registry key or value' not in disable_automatic_logons_audit.stderr"
+  failed_when: "reg_not_found not in disable_CAD_audit.stderr and disable_CAD_audit.stderr"
   tags:
       - cat2
       - medium
       - audit
-      - V-1145
+      - V-1154
 
-- name: "MEDIUM | V-1145 | PATCH | Automatic logons must be disabled."
+- name: "MEDIUM | V-1154 | PATCH | The Ctrl+Alt+Del security attention sequence for logons will be enabled."
   win_regedit: 
-    key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
-    value: DefaultPassword
-    state: absent
+      key: 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System'
+      value: DisableCAD
+      data: 0
+      datatype: dword
   tags:
       - cat2
       - medium
       - patch
-      - V-1145
+      - V-1154
+
+- name: "MEDIUM | V-1162 | AUDIT | The Windows SMB server will perform SMB packet signing when possible."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters /v EnableSecuritySignature
+  register: SMB_server_packet_signing_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in SMB_server_packet_signing_audit.stderr and SMB_server_packet_signing_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1162
+
+- name: "MEDIUM | V-1162 | PATCH | The Windows SMB server will perform SMB packet signing when possible."
+  win_regedit: 
+      key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters'
+      value: EnableSecuritySignature
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-1162
+
+- name: "MEDIUM | V-1163 | AUDIT | Outgoing secure channel traffic will be encrypted when possible."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\Netlogon\Parameters /v SealSecureChannel
+  register: encrypt_outgoing_secure_channel_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in encrypt_outgoing_secure_channel_audit.stderr and encrypt_outgoing_secure_channel_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1163
+
+- name: "MEDIUM | V-1163 | PATCH | Outgoing secure channel traffic will be encrypted when possible."
+  win_regedit: 
+      key: 'HKLM:\System\CurrentControlSet\Services\Netlogon\Parameters'
+      value: SealSecureChannel
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-1163
+
+- name: "MEDIUM | V-1164 | AUDIT | Outgoing secure channel traffic will be signed when possible."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\Netlogon\Parameters /v SignSecureChannel
+  register: sign_outgoing_secure_channel_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in sign_outgoing_secure_channel_audit.stderr and sign_outgoing_secure_channel_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1164
+
+- name: "MEDIUM | V-1164 | PATCH | Outgoing secure channel traffic will be signed when possible."
+  win_regedit: 
+      key: 'HKLM:\System\CurrentControlSet\Services\Netlogon\Parameters'
+      value: SignSecureChannel
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-1164
+
+- name: "MEDIUM | V-1166 | AUDIT | The Windows SMB client will be enabled to perform SMB packet signing when possible."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\LanmanWorkstation\Parameters /v EnableSecuritySignature
+  register: SMB_client_packet_signing_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in SMB_client_packet_signing_audit.stderr and SMB_client_packet_signing_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1166
+
+- name: "MEDIUM | V-1166 | PATCH | The Windows SMB client will be enabled to perform SMB packet signing when possible."
+  win_regedit: 
+      key: 'HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters'
+      value: EnableSecuritySignature
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-1166
+
+- name: "MEDIUM | V-1171 | AUDIT | Ejection of removable NTFS media is not restricted to Administrators."
+  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v AllocateDASD
+  register: eject_removable_media_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in eject_removable_media_audit.stderr and eject_removable_media_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1171
+
+- name: "MEDIUM | V-1171 | PATCH | Ejection of removable NTFS media is not restricted to Administrators."
+  win_regedit: 
+      key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+      value: AllocateDASD
+      data: 0
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-1171
+
+- name: "MEDIUM | V-3374 | AUDIT | The system must be configured to require a strong session key."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\Netlogon\Parameters\ /v RequireStrongKey /t REG_DWORD /f 1
+  register: strong_sessionkey_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in strong_sessionkey_audit.stderr and strong_sessionkey_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-3374
+
+- name: "MEDIUM | V-3374 | PATCH | The system must be configured to require a strong session key."
+  action: win_ping
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-3374
