@@ -462,22 +462,22 @@
       - patch
       - V-34974
 
-- name: "HIGH | V-36712 | AUDIT | The Windows Remote Management (WinRM) client must not use Basic authentication."
-  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Client\ /v AllowBasic /t REG_DWORD /f 0
-  register: winrm_basic_auth_audit
+- name: "HIGH | V-36718 | AUDIT | The Windows Remote Management (WinRM) service must not use Basic authentication."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\ /v AllowBasic /t REG_DWORD /f 0
+  register: winrm_service_basic_auth_audit
   check_mode: no
   changed_when: no
-  failed_when: "'The system was unable to find the specified registry key or value' in winrm_basic_auth_audit.stdout"
+  failed_when: "'The system was unable to find the specified registry key or value' in winrm_service_basic_auth_audit.stdout"
   tags:
       - cat1
       - high
       - audit
-      - V-36712
+      - V-36718
 
-- name: "HIGH | V-36712 | PATCH | The Windows Remote Management (WinRM) client must not use Basic authentication."
+- name: "HIGH | V-36718 | PATCH | The Windows Remote Management (WinRM) service must not use Basic authentication."
   action: win_ping
   tags:
       - cat1
       - high
       - patch
-      - V-36712
+      - V-36718
