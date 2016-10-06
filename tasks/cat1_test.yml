@@ -140,7 +140,7 @@
       - V-1159
 
 - name: "HIGH | V-2374 | AUDIT | Autoplay must be disabled for all drives."
-  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\policies\Explorer\ /v NoDriveTypeAutoRun /t REG_DWORD /f 25 
+  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\policies\Explorer\ /v NoDriveTypeAutoRun /t REG_DWORD /f 255 
   register: autoplay_disabled_audit
   check_mode: no
   changed_when: no
@@ -152,13 +152,16 @@
       - V-2374
 
 - name: "HIGH | V-2374 | PATCH | Autoplay must be disabled for all drives."
-  action: win_ping
+  win_regedit:
+      key: 'HKLM:\Software\Microsoft\Windows\CurrentVersion\policies\Explorer\'
+      value: NoDriveTypeAutoRun
+      data: 255
+      datatype: dword
   tags:
       - cat1
       - high
       - patch
       - V-2374
-
 
 - name: "HIGH | V-3339 | AUDIT | Unauthorized remotely accessible registry paths must not be configured."
   win_command: reg query \"HKLM\System\CurrentControlSet\Control\SecurePipeServers\ winreg\" /v Machine /t REG_MULTI_SZ /f {{ item }}
@@ -176,7 +179,6 @@
       - audit
       - V-3339
 
-#This may need to be implemented using something other than a registry edit
 - name: "HIGH | V-3339 | PATCH | Unauthorized remotely accessible registry paths must not be configured."
   win_regedit:
     key: 'HKLM:\System\CurrentControlSet\Control\SecurePipeServers\ winreg'
@@ -227,7 +229,11 @@
       - V-3343
 
 - name: "HIGH | V-3343 | PATCH | Solicited Remote Assistance must not be allowed."
-  action: win_ping
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows NT\Terminal Services'
+      value: fAllowToGetHelp
+      data: 0
+      datatype: dword
   tags:
       - cat1
       - high
@@ -247,27 +253,35 @@
       - V-3344
 
 - name: "HIGH | V-3344 | PATCH | Local accounts with blank passwords must be restricted to prevent access from the network."
-  action: win_ping
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Control\Lsa\'
+      value: LimitBlankPasswordUse
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
       - patch
       - V-3344
 
-- name: "HIGH | V-3379 | AUDIT | The system must be configured to prevent the storage of the LAN Manager hash of passwords."
-  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa\ /v NoLMHash /t REG_DWORD /f 1
-  register: prevent_lanman_storage_audit
+- name: "HIGH | V-3379 | AUDIT | The system will be configured to prevent the storage of the LAN Manager hash of passwords."
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v NoLMHash
+  register: no_LM_has_audit
   check_mode: no
   changed_when: no
-  failed_when: "reg_not_found not in prevent_lanman_storage_audit.stderr and prevent_lanman_storage_audit.stderr"
+  failed_when: "reg_not_found not in no_LM_has_audit.stderr and no_LM_has_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-3379
 
-- name: "HIGH | V-3379 | PATCH | The system must be configured to prevent the storage of the LAN Manager hash of passwords."
-  action: win_ping
+- name: "HIGH | V-3379 | PATCH | The system will be configured to prevent the storage of the LAN Manager hash of passwords."
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
+      value: NoLMHash
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
@@ -321,7 +335,11 @@
       - V-6834
 
 - name: "HIGH | V-6834 | PATCH | Anonymous access to Named Pipes and Shares must be restricted."
-  action: win_ping
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters\'
+      value: RestrictNullSessAccess
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
@@ -341,7 +359,11 @@
       - V-21973
 
 - name: "HIGH | V-21973 | PATCH | Autoplay must be turned off for non-volume devices."
-  action: win_ping
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\Explorer\'
+      value: NoAutoplayfornonVolume
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
@@ -360,7 +382,11 @@
       - V-22692
 
 - name: "HIGH | V-22692 | PATCH | The default Autorun behavior must be configured to prevent Autorun commands."
-  action: win_ping
+  win_regedit:
+      key: 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\'
+      value: NoAutorun
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
@@ -412,7 +438,11 @@
       - V-26283
 
 - name: "HIGH | V-26283 | PATCH | Anonymous enumeration of SAM accounts must not be allowed."
-  action: win_ping
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Control\Lsa\'
+      value: RestrictAnonymousSAM
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
@@ -458,7 +488,11 @@
       - V-34974
 
 - name: "HIGH | V-34974 | PATCH | The Windows Installer Always install with elevated privileges option must be disabled."
-  action: win_ping
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\Installer\'
+      value: AlwaysInstallElevated
+      data: 0
+      datatype: dword
   tags:
       - cat1
       - high
@@ -478,7 +512,11 @@
       - V-36718
 
 - name: "HIGH | V-36718 | PATCH | The Windows Remote Management (WinRM) service must not use Basic authentication."
-  action: win_ping
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Service\'
+      value: AllowBasic
+      data: 0
+      datatype: dword
   tags:
       - cat1
       - high
