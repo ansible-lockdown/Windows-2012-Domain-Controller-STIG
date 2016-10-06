@@ -190,20 +190,24 @@
       - patch
       - V-3339
 
-- name: "HIGH | V-3340 | AUDIT | Network shares that can be accessed anonymously must not be allowed."
-  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters\ /v NullSessionShares /t REG_MULTI_SZ /f ''
-  register: network_shares_anonymous_audit
+- name: "HIGH | V-3340 | AUDIT | Network shares that can be accessed anonymously will not be allowed."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters /v NullSessionShares
+  register: null_session_shares_audit
   check_mode: no
   changed_when: no
-  failed_when: "reg_not_found not in network_shares_anonymous_audit.stderr and network_shares_anonymous_audit.stderr"
+  failed_when: "reg_not_found not in null_session_shares_audit.stderr and null_session_shares_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-3340
 
-- name: "HIGH | V-3340 | PATCH | Network shares that can be accessed anonymously must not be allowed."
-  action: win_ping
+- name: "HIGH | V-3340 | PATCH | Network shares that can be accessed anonymously will not be allowed."
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters'
+      value: NullSessionShares
+      data: ''
+      datatype: multistring
   tags:
       - cat1
       - high
