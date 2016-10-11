@@ -55,7 +55,7 @@
       - cat1
       - high
       - patch
-      - V-1093
+      - V-109
 
 - name: "HIGH | V-1152 | AUDIT | Anonymous access to the registry must be restricted."
   win_command: reg query HKLM\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg
@@ -69,21 +69,35 @@
       - audit
       - V-1152
 
-# NOTE: V-1152 is shared between all OS's, but Backup Operators data for 2k12 is 'Read' and for 2k8 is 'Special'.
 - name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
-  win_regedit: 
-    key: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg'
-    value: "{{ item.value }}"
-    data: "{{ item.data }}"
-  with_items: 
-     - { value: 'Administrators', data: 'Full' }
-     - { value: 'Backup Operators', data: 'Read' }
-     - { value: 'LOCAL SERVICE', data: 'Read' }
+  win_regedit:
+    key: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\'
   tags:
        - cat1
        - high
        - patch
        - V-1152
+
+- name: "HIGH | V-1152 | AUDIT | Anonymous access to the registry must be restricted."
+  win_shell: Get-Acl -PATH 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg' | Format-List
+  register: anon_registry_access_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-1152
+
+- name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
+  script: v1152.ps1
+  changed_when: no
+  tags:
+       - cat1
+       - high
+       - patch
+       - V-1152
+
 
 - name: "HIGH | V-1153 | AUDIT | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
   win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v LMCompatibilityLevel /t REG_DWORD /f 5
@@ -370,6 +384,26 @@
       - patch
       - V-6834
 
+- name: "HIGH | V-26070 | AUDIT | Standard user accounts must only have Read permissions to the Winlogon registry key."
+  win_shell: Get-Acl -PATH 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon' | Format-List
+  register: standard_user_read_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-26070
+
+- name: "HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
+  script: v26070.ps1
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-26070
+
 - name: "HIGH | V-21973 | AUDIT | Autoplay must be turned off for non-volume devices."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume /t REG_DWORD /f 1
   register: autoplay_nonvolume_audit
@@ -417,7 +451,6 @@
       - patch
       - V-22692
 
-#This rule will need to be revisted according to SCIFs user accounts
 - name: "HIGH | V-26070 | AUDIT | Standard user accounts must only have Read permissions to the Winlogon registry key."
   win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\"
   register: standard_user_read_audit
@@ -430,7 +463,6 @@
       - audit
       - V-26070
 
-#This rule will need to be revisted according to SCIFs user accounts
 - name: "HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
   win_regedit:
       key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\'
