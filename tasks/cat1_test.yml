@@ -103,17 +103,17 @@
       - audit
       - V-1153
 
-- name: "HIGH | V-1153 | PATCH | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
-  win_regedit:
-    key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
-    value: LMCompatibilityLevel
-    data: 5
-    datatype: dword
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-1153
+# - name: "HIGH | V-1153 | PATCH | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
+#   win_regedit:
+#     key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
+#     value: LMCompatibilityLevel
+#     data: 5
+#     datatype: dword
+#   tags:
+#       - cat1
+#       - high
+#       - patch
+#       - V-1153
 
 - name: "HIGH | V-1159 | AUDIT | The Recovery Console option must be set to prevent automatic logon to the system."
   win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Setup\RecoveryConsole\" /v SecurityLevel /t REG_DWORD /f 0
