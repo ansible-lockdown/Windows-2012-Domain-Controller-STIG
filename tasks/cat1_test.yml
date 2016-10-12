@@ -80,7 +80,7 @@
 
 - name: "HIGH | V-1152 | AUDIT | Anonymous access to the registry must be restricted."
   win_shell: Get-Acl -PATH 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg' | Format-List
-  register: anon_registry_access_audit
+  register: anon_registry_access_audit2
   check_mode: no
   changed_when: no
   tags:
@@ -188,7 +188,7 @@
       - V-3338
 
 - name: "HIGH | V-3338 | PATCH | Named pipes that can be accessed anonymously must be configured with limited values on domain controllers."
-   win_regedit:
+  win_regedit:
     key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters\'
     value: NullSessionPipes
     data: \0netlogon\0samr\0lsarpc\0\0
@@ -384,26 +384,6 @@
       - patch
       - V-6834
 
-- name: "HIGH | V-26070 | AUDIT | Standard user accounts must only have Read permissions to the Winlogon registry key."
-  win_shell: Get-Acl -PATH 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon' | Format-List
-  register: standard_user_read_audit
-  check_mode: no
-  changed_when: no
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-26070
-
-- name: "HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
-  script: v26070.ps1
-  changed_when: no
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-26070
-
 - name: "HIGH | V-21973 | AUDIT | Autoplay must be turned off for non-volume devices."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume /t REG_DWORD /f 1
   register: autoplay_nonvolume_audit
@@ -452,11 +432,10 @@
       - V-22692
 
 - name: "HIGH | V-26070 | AUDIT | Standard user accounts must only have Read permissions to the Winlogon registry key."
-  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\"
+  win_shell: Get-Acl -PATH 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon' | Format-List
   register: standard_user_read_audit
   check_mode: no
   changed_when: no
-  failed_when: "reg_not_found not in standard_user_read_audit.stderr and standard_user_read_audit.stderr"
   tags:
       - cat1
       - high
@@ -464,17 +443,8 @@
       - V-26070
 
 - name: "HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
-  win_regedit:
-      key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\'
-      value: "{{ item.value }}"
-      data: "{{ item.data }}"
+  script: v26070.ps1
   changed_when: no
-  with_items:
-      - { value: 'TrustedInstaller', data: 'Full Control' }
-      - { value: 'SYSTEM', data: 'Full Control' }
-      - { value: 'Administrators', data: 'Full Control' }
-      - { value: 'Users', data: 'Read' }
-      - { value: 'ALL APPLICATION PACKAGES', data: 'Read' }
   tags:
       - cat1
       - high
@@ -505,15 +475,12 @@
       - patch
       - V-26283
 
-#This requires knowledge of SCIF user accounts to complete
-#Will likely involve breaking into two separate tasks
-#Need a way to evaluate user permissions
 - name: "HIGH | V-32282 | AUDIT | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
   win_command: reg query {{ item }}
-  register: standard_read_active1_audit
+  register: standard_read_active_audit
   check_mode: no
   changed_when: no
-  failed_when: "reg_not_found not in standard_read_active1_audit.stderr and standard_read_active1_audit.stderr"
+  failed_when: "reg_not_found not in standard_read_active_audit.stderr and standard_read_active_audit.stderr"
   with_items:
       - \"HKLM\Software\Microsoft\Active Setup\Installed Components\"
       - \"HKLM\Software\Wow6432Node\Microsoft\Active Setup\Installed Components\"
@@ -524,7 +491,42 @@
       - V-32282
 
 - name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-  action: win_ping
+  win_regedit:
+    key: "{{ item }}"
+  with_items:
+      - 'HKLM:\Software\Microsoft\Active Setup\Installed Components\'
+      - 'HKLM:\Software\Wow6432Node\Microsoft\Active Setup\Installed Components\'
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-32282
+
+- name: "HIGH | V-32282 | AUDIT | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+  win_shell: Get-Acl -PATH 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components' | Format-List
+  register: standard_read_active_audit2
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-32282
+
+- name: "HIGH | V-32282 | AUDIT | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+  win_shell: Get-Acl -PATH 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components' | Format-List
+  register: standard_read_active_audit3
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-32282
+
+- name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+  script: v32282.ps1
+  changed_when: no
   tags:
       - cat1
       - high
