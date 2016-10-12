@@ -9,5 +9,5 @@ $acl.SetAccessRule($ruleSYSTEM)
 $acl.SetAccessRule($ruleAdministrators)
 $acl.SetAccessRule($ruleUsers)
 $acl.SetAccessRule($ruleALLAPPLICATIONPACKAGES)
-$acl | Set-Acl -PATH 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\'
+$acl | Set-Acl -PATH 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\'
 
