@@ -581,3 +581,23 @@
       - high
       - patch
       - V-36718
+
+- name: "HIGH | V-39331 | AUDIT | The Active Directory SYSVOL directory must have the proper access control permissions."
+  win_shell: Get-Acl -Path "\Windows\SYSVOL" | Format-List
+  register: sysvol_permissions_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-39331
+
+- name: "HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
+  script: v39331.ps1
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-39331
