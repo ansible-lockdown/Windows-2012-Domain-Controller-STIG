@@ -407,6 +407,7 @@
       - cat1
       - high
       - patch
+      - V-21973
 
 - name: "HIGH | V-22692 | AUDIT | The default Autorun behavior must be configured to prevent Autorun commands."
   win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\ /v NoAutorun /t REG_DWORD /f 1
