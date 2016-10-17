@@ -570,3 +570,27 @@
       - patch
       - V-26576
 
+- name: "MEDIUM | V-36679 | AUDIT | Early Launch Antimalware, Boot-Start Driver Initialization Policy must be enabled and configured to only Good and Unknown."
+  win_command: reg query HKLM\System\CurrentControlSet\Policies\EarlyLaunch\ /v DriverLoadPolicy /f REG_DWORD /t 1
+  register: early_initialization_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in early_initialization_audit.stderr and early_initialization_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36679
+
+- name: "MEDIUM | V-36679 | PATCH | Early Launch Antimalware, Boot-Start Driver Initialization Policy must be enabled and configured to only Good and Unknown."
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Policies\EarlyLaunch\'
+      value: DriverLoadPolicy
+      data: 1
+      datatype: dword
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36679
