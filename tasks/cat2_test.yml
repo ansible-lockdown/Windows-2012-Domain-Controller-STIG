@@ -546,29 +546,54 @@
       - patch
       - V-3469
 
-- name: "MEDIUM | V-26576 | AUDIT | The IP-HTTPS IPv6 transition technology must be disabled."
-  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\TCPIP\v6Transition\ /v 6to4_State /t REG_SZ /f Disabled
-  register: ipv6_transition_audit
+- name: "MEDIUM | V-26575 | AUDIT | The 6to4 IPv6 transition technology will be disabled."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\TCPIP\v6Transition /v 6to4_State
+  register: six_to_four_audit
   check_mode: no
   changed_when: no
-  failed_when: "reg_not_found not in ipv6_transition_audit.stderr and ipv6_transition_audit.stderr"
+  failed_when: "six_to_four_audit.stderr and reg_not_found not in six_to_four_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26575
+
+- name: "MEDIUM | V-26575 | PATCH | The 6to4 IPv6 transition technology will be disabled."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\TCPIP\v6Transition'
+      value: 6to4_State
+      data: Disabled
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-26575
+
+- name: "MEDIUM | V-26576 | AUDIT | The IP-HTTPS IPv6 transition technology will be disabled."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\TCPIP\v6Transition\IPHTTPS\IPHTTPSInterface /v IPHTTPS_ClientState
+  register: IPv6_transition_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "IPv6_transition_audit.stderr and reg_not_found not in IPv6_transition_audit.stderr"
   tags:
       - cat2
       - medium
       - audit
       - V-26576
 
-- name: "MEDIUM | V-26576 | PATCH | The IP-HTTPS IPv6 transition technology must be disabled."
+- name: "MEDIUM | V-26576 | PATCH | The IP-HTTPS IPv6 transition technology will be disabled."
   win_regedit:
-      key: 'HKLM:\Software\Policies\Microsoft\Windows\TCPIP\v6Transition\'
-      value: 6to4_State
-      data: Disabled
-      datatype: string
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\TCPIP\v6Transition\IPHTTPS\IPHTTPSInterface'
+      value: IPHTTPS_ClientState
+      data: 3
+      datatype: dword
   tags:
       - cat2
       - medium
       - patch
       - V-26576
+
+
 
 - name: "MEDIUM | V-36679 | AUDIT | Early Launch Antimalware, Boot-Start Driver Initialization Policy must be enabled and configured to only Good and Unknown."
   win_command: reg query HKLM\System\CurrentControlSet\Policies\EarlyLaunch\ /v DriverLoadPolicy /f REG_DWORD /t 1
