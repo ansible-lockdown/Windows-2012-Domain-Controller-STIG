@@ -594,3 +594,28 @@
       - medium
       - patch
       - V-36679
+
+- name: "MEDIUM | V-36680 | AUDIT | Access to the Windows Store must be turned off."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer\ /v NoUseStoreOpenWith /t REG_DWORD /f 1
+  register: windows_store_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in windows_store_audit.stderr and windows_store_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36680
+
+- name: "MEDIUM | V-36680 | PATCH | Access to the Windows Store must be turned off."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer\'
+      value: NoUseStoreOpenWith
+      data: 1
+      datatype: dword
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36680
