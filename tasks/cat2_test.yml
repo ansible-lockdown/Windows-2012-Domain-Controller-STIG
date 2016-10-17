@@ -593,7 +593,147 @@
       - patch
       - V-26576
 
+- name: "MEDIUM | V-26577 | AUDIT | The ISATAP IPv6 transition technology will be disabled."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\TCPIP\v6Transition /v ISATAP_State
+  register: ISATAP_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "ISATAP_audit.stderr and reg_not_found not in ISATAP_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26577
 
+- name: "MEDIUM | V-26577 | PATCH | The ISATAP IPv6 transition technology will be disabled."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\TCPIP\v6Transition'
+      value: ISATAP_State
+      data: Disabled
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-26577
+
+- name: "MEDIUM | V-26578 | AUDIT | The Teredo IPv6 transition technology will be disabled."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\TCPIP\v6Transition /v Teredo_State
+  register: Teredo_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "Teredo_audit.stderr and reg_not_found not in Teredo_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26578
+
+- name: "MEDIUM | V-26578 | PATCH | The Teredo IPv6 transition technology will be disabled."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\TCPIP\v6Transition'
+      value: Teredo_State
+      data: Disabled
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-26578
+
+- name: "MEDIUM | V-26579 | AUDIT | The Application event log must be configured to a minimum size requirement."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\EventLog\Application /v MaxSize
+  register: application_log_max_size_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "application_log_max_size_audit.stderr and reg_not_found not in application_log_max_size_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26579
+
+- name: "MEDIUM | V-26579 | PATCH | The Application event log must be configured to a minimum size requirement."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog\Application'
+      value: MaxSize
+      data: 0x00008000
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-26579
+
+- name: "MEDIUM | V-26580 | AUDIT | The Security event log must be configured to a minimum size requirement."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\EventLog\Security /v MaxSize
+  register: security_log_max_size_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "security_log_max_size_audit.stderr and reg_not_found not in security_log_max_size_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26580
+
+- name: "MEDIUM | V-26580 | PATCH | The Security event log must be configured to a minimum size requirement."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog\Security'
+      value: MaxSize
+      data: 0x00030000
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-26580
+
+- name: "MEDIUM | V-26581 | AUDIT | The Setup event log must be configured to a minimum size requirement."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\EventLog\Setup /v MaxSize
+  register: setup_log_max_size_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "setup_log_max_size_audit.stderr and reg_not_found not in setup_log_max_size_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26581
+
+- name: "MEDIUM | V-26581 | PATCH | The Setup event log must be configured to a minimum size requirement."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog\Setup'
+      value: MaxSize
+      data: 0x00008000
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-26581
+
+- name: "MEDIUM | V-26582 | AUDIT | The System event log must be configured to a minimum size requirement."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\EventLog\System /v MaxSize
+  register: system_log_max_size_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "system_log_max_size_audit.stderr and reg_not_found not in system_log_max_size_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26582
+
+- name: "MEDIUM | V-26582 | PATCH | The System event log must be configured to a minimum size requirement."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog\System'
+      value: MaxSize
+      data: 0x00008000
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-26582
 
 - name: "MEDIUM | V-36679 | AUDIT | Early Launch Antimalware, Boot-Start Driver Initialization Policy must be enabled and configured to only Good and Unknown."
   win_command: reg query HKLM\System\CurrentControlSet\Policies\EarlyLaunch\ /v DriverLoadPolicy /f REG_DWORD /t 1
