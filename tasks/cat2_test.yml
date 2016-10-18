@@ -884,3 +884,28 @@
       - medium
       - patch
       - V-36698
+
+- name: "MEDIUM | V-36700 | AUDIT | The password reveal button must not be displayed."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\CredUI\ /v DisablePasswordReveal
+  register: password_reveal_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in password_reveal_audit.stderr and password_reveal_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36700
+
+- name: "MEDIUM | V-36700 | PATCH | The password reveal button must not be displayed."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\CredUI\'
+      value: DisablePasswordReveal
+      data: 1
+      datatype: dword
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36700
