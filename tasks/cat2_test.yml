@@ -933,3 +933,27 @@
       - medium
       - patch
       - V-36708
+
+- name: "MEDIUM | V-36709 | AUDIT | Basic authentication for RSS feeds over HTTP must be turned off."
+  win_command: reg query \"HKLM\Software\Policies\Microsoft\Internet Explorer\Feeds\" /v AllowBasicAuthInClear
+  register: authentication_rss_http_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in authentication_rss_http_audit.stderr and authentication_rss_http_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36709
+
+- name: "MEDIUM | V-36709 | PATCH | Basic authentication for RSS feeds over HTTP must be turned off."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Internet Explorer\Feeds\'
+      value: AllowBasicAuthInClear
+      data: 0
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36709
