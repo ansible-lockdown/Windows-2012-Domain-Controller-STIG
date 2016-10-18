@@ -909,3 +909,27 @@
       - medium
       - patch
       - V-36700
+
+- name: "MEDIUM | V-36708 | AUDIT | The location feature must be turned off."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\LocationAndSensors\ /v DisableLocation
+  register: location_feature_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in location_feature_audit.stderr and location_feature_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36708
+
+- name: "MEDIUM | V-36708 | PATCH | The location feature must be turned off."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\LocationAndSensors\'
+      value: DisableLocation
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36708
