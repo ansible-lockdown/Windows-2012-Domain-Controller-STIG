@@ -1005,3 +1005,27 @@
       - medium
       - patch
       - V-36713
+
+- name: "MEDIUM | V-36714 | AUDIT | The Windows Remote Management (WinRM) client must not use Digest authentication."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Client\ /v AllowDigest
+  register: winrm_digest_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in winrm_digest_audit.stderr and winrm_digest_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36714
+
+- name: "MEDIUM | V-36714 | PATCH | The Windows Remote Management (WinRM) client must not use Digest authentication."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Client\'
+      value: AllowDigest
+      data: 0
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36714
