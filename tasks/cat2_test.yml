@@ -957,3 +957,27 @@
       - medium
       - patch
       - V-36709
+
+- name: "MEDIUM | V-36711 | AUDIT | The Windows Store application must be turned off."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\WindowsStore\ /v RemoveWindowsStore
+  register: windows_store_app_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in windows_store_app_audit.stderr and windows_store_app_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36711
+
+- name: "MEDIUM | V-36711 | PATCH | The Windows Store application must be turned off."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore\'
+      value: RemoveWindowsStore
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36711
