@@ -1029,3 +1029,51 @@
       - medium
       - patch
       - V-36714
+
+- name: "MEDIUM | V-36719 | AUDIT | The Windows Remote Management (WinRM) service must not allow unencrypted traffic."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\ /v AllowUnencryptedTraffic
+  register: winrm_unencrypted_traffic_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in winrm_unencrypted_traffic_audit.stderr and winrm_unencrypted_traffic_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36719
+
+- name: "MEDIUM | V-36719 | PATCH | The Windows Remote Management (WinRM) service must not allow unencrypted traffic."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Service\'
+      value: AllowUnencryptedTraffic
+      data: 0
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36719
+
+- name: "MEDIUM | V-36720 | AUDIT | The Windows Remote Management (WinRM) service must not store RunAs credentials."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\ /v DisableRunAs
+  register: winrm_store_runas_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in winrm_store_runas_audit.stderr and winrm_store_runas_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36720
+
+- name: "MEDIUM | V-36720 | PATCH | The Windows Remote Management (WinRM) service must not store RunAs credentials."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Service\'
+      value: DisableRunAs
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36720
