@@ -859,3 +859,28 @@
       - medium
       - patch
       - V-36687
+
+- name: "MEDIUM | V-36698 | AUDIT | The use of biometrics must be disabled."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Biometrics\ /v Enabled
+  register: biometrics_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in biometrics_audit.stderr and biometrics_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36698
+
+- name: "MEDIUM | V-36698 | PATCH | The use of biometrics must be disabled."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Biometrics\'
+      value: Enabled
+      data: 0
+      datatype: dword
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36698
