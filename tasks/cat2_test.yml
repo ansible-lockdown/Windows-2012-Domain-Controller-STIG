@@ -1125,3 +1125,27 @@
       - medium
       - patch
       - V-40204
+
+- name: "MEDIUM | V-43239 | AUDIT | Command line data must be prevented from inclusion in process creation events (Windows 2012 R2)."
+  win_command: reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit\ /v ProcessCreationIncludeCmdLine_Enabled
+  register: prevented_process_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in prevented_process_audit.stderr and prevented_process_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-43239
+
+- name: "MEDIUM | V-43239 | PATCH | Command line data must be prevented from inclusion in process creation events (Windows 2012 R2)."
+  win_regedit:
+     key: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit\'
+     value: ProcessCreationIncludeCmdLine_Enabled
+     data: 0
+     datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-43239
