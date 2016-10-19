@@ -1149,3 +1149,27 @@
       - medium
       - patch
       - V-43239
+
+- name: "MEDIUM | V-43240 | AUDIT | The network selection user interface (UI) must not be displayed on the logon screen (Windows 2012 R2)." 
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\System\ /v DontDisplayNetworkSelectionUI 
+  register: network_selection_audit 
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in network_selection_audit.stderr and network_selection_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-43240
+
+- name: "MEDIUM | V-43240 | PATCH | The network selection user interface (UI) must not be displayed on the logon screen (Windows 2012 R2)."
+  win_regedit:
+     key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System\'
+     value: DontDisplayNetworkSelectionUI
+     data: 1
+     datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-43240
