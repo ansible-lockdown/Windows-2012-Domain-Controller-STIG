@@ -1173,3 +1173,27 @@
       - medium
       - patch
       - V-43240
+
+- name: "MEDIUM | V-43245 | AUDIT | Automatically signing in the last interactive user after a system-initiated restart must be disabled (Windows 2012 R2)."
+  win_command: reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\ /v DisableAutomaticRestartSignOn
+  register: automatic_restart_signin_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in automatic_restart_signin_audit.stderr and automatic_restart_signin_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-43245
+
+- name: "MEDIUM | V-43245 | PATCH | Automatically signing in the last interactive user after a system-initiated restart must be disabled (Windows 2012 R2)."
+  win_regedit:
+     key: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\'
+     value: DontDisplayNetworkSelectionUI
+     data: 1
+     datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-43245
