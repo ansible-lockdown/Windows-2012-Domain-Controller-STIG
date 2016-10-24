@@ -1126,6 +1126,30 @@
       - patch
       - V-40204
 
+- name: "MEDIUM | V-43238 | AUDIT | The display of slide shows on the lock screen must be disabled (Windows 2012 R2)."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization\ /v NoLockScreenSlideshow
+  register: display_lock_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in display_lock_audit.stderr and display_lock_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-43238
+
+- name: "MEDIUM | V-43238 | PATCH | The display of slide shows on the lock screen must be disabled (Windows 2012 R2)."
+  win_regedit:
+     key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization\'
+     value: NoLockScreenSlideshow
+     data: 1
+     datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-43238
+
 - name: "MEDIUM | V-43239 | AUDIT | Command line data must be prevented from inclusion in process creation events (Windows 2012 R2)."
   win_command: reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit\ /v ProcessCreationIncludeCmdLine_Enabled
   register: prevented_process_audit
