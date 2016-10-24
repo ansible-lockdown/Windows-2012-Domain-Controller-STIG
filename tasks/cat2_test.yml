@@ -1078,6 +1078,102 @@
       - patch
       - V-36720
 
+- name: "MEDIUM | V-36722 | AUDIT | Permissions for the Application event log must prevent access by nonprivileged accounts."
+  win_shell: Get-Acl -PATH 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Application.evtx' | Format-List
+  register: eventlog_permissions_audit
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36722
+
+#requires patched win_acl module
+- name: "MEDIUM | V-36722 | PATCH | Permissions for the Application event log must prevent access by nonprivileged accounts."
+  win_acl:
+     path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Application.evtx'
+     user: '{{ item }}'
+     rights: 'FullControl'
+     type: 'allow'
+     state: 'present'
+     inherit: 'ContainerInherit, ObjectInherit'
+     propagation: 'None'
+  with_items:
+      - 'NT SERVICE\Eventlog'
+      - 'NT AUTHORITY\SYSTEM'
+      - 'BUILTIN\Administrators'
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36722
+
+- name: "MEDIUM | V-36723 | AUDIT | Permissions for the Security event log must prevent access by nonprivileged accounts."
+  win_shell: Get-Acl -PATH 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Security.evtx' | Format-List
+  register: security_evtx_audit
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36723
+
+#requires patched win_acl module
+- name: "MEDIUM | V-36723 | PATCH | Permissions for the Security event log must prevent access by nonprivileged accounts."
+  win_acl:
+     path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Security.evtx'
+     user: '{{ item }}'
+     rights: 'FullControl'
+     type: 'allow'
+     state: 'present'
+     inherit: 'ContainerInherit, ObjectInherit'
+     propagation: 'None'
+  with_items:
+      - 'NT SERVICE\Eventlog'
+      - 'NT AUTHORITY\SYSTEM'
+      - 'BUILTIN\Administrators'
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36723
+
+- name: "MEDIUM | V-36724 | AUDIT | Permissions for the System event log must prevent access by nonprivileged accounts."
+  win_shell: Get-Acl -PATH 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\System.evtx' | Format-List
+  register: result
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36724
+
+#requires patched win_acl module
+- name: "MEDIUM | V-36724 | PATCH | Permissions for the System event log must prevent access by nonprivileged accounts."
+  win_acl:
+     path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\System.evtx'
+     user: '{{ item }}'
+     rights: 'FullControl'
+     type: 'allow'
+     state: 'present'
+     inherit: 'ContainerInherit, ObjectInherit'
+     propagation: 'None'
+  with_items:
+      - 'NT SERVICE\Eventlog'
+      - 'NT AUTHORITY\SYSTEM'
+      - 'BUILTIN\Administrators'
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36724
+
 - name: "MEDIUM | V-36773 | AUDIT | The machine inactivity limit must be set to 15 minutes, locking the system with the screensaver."
   win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System\ /v InactivityTimeoutSecs
   register: inactivity_limit_audit
@@ -1100,7 +1196,7 @@
       - cat2
       - medium
       - patch
-      - V-36773
+      - V-36773                          
 
 - name: "MEDIUM | V-40204 | AUDIT | Only the default client printer must be redirected to the Remote Desktop Session Host.  (Remote Desktop Services Role)."
   win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows NT\Terminal Services\" /v RedirectOnlyDefaultClientPrinter
