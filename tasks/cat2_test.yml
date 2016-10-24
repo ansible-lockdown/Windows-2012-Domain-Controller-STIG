@@ -1625,3 +1625,27 @@
       - patch
       - V-57479
 
+- name: "MEDIUM | V-57639 | AUDIT | Users must be required to enter a password to access private keys stored on the computer."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Cryptography\ /v ForceKeyProtection
+  register: password_private_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in password_private_audit.stderr and password_private_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57639
+
+- name: "MEDIUM | V-57639 | PATCH | Users must be required to enter a password to access private keys stored on the computer."
+  win_regedit:
+     key: 'HKLM:\SOFTWARE\Policies\Microsoft\Cryptography\'
+     value: ForceKeyProtection
+     data: 2
+     datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57639
+
