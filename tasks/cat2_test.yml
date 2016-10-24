@@ -1246,6 +1246,30 @@
       - patch
       - V-43238
 
+- name: "MEDIUM | V-57453 | AUDIT | The system must be configured to collect multiple error reports of the same event type."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v BypassDataThrottling
+  register: multiple_error_reports_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in multiple_error_reports_audit.stderr and multiple_error_reports_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57453
+
+- name: "MEDIUM | V-57453 | PATCH | The system must be configured to collect multiple error reports of the same event type."
+  win_regedit:
+     key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\'
+     value: BypassDataThrottling
+     data: 1
+     datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57453
+
 - name: "MEDIUM | V-56511 | AUDIT | The Windows Error Reporting Service must be running and configured to start automatically."
   win_shell: Get-Service -name WerSvc
   register: WER_service_audit
