@@ -1032,3 +1032,27 @@
       - low
       - patch
       - V-36673
+
+- name: "LOW | V-36677 | AUDIT | Optional component installation and component repair must be prevented from using Windows Update."
+  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Servicing\ /v UseWindowsUpdate
+  register: optional_install_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in optional_install_audit.stderr and optional_install_audit.stderr"
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-36677
+
+- name: "LOW | V-36677 | PATCH | Optional component installation and component repair must be prevented from using Windows Update."
+  win_regedit:
+      key: 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Servicing\'
+      value: UseWindowsUpdate
+      data: 2
+      datatype: dword
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-36677
