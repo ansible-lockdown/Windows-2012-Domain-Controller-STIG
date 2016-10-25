@@ -1056,3 +1056,51 @@
       - low
       - patch
       - V-36677
+
+- name: "LOW | V-36678 | AUDIT | Device driver updates must only search managed servers, not Windows Update."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\DriverSearching\ /v DriverServerSelection
+  register: search_managed_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in search_managed_audit.stderr and search_managed_audit.stderr"
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-36678
+
+- name: "LOW | V-36678 | PATCH | Device driver updates must only search managed servers, not Windows Update."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\DriverSearching\'
+      value: DriverServerSelection
+      data: 1
+      datatype: dword
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-36678
+
+- name: "LOW | V-36696 | AUDIT | The detection of compatibility issues for applications and drivers must be turned off."
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\AppCompat\ /v DisablePcaUI
+  register: detection_compatibility_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in detection_compatibility_audit.stderr and detection_compatibility_audit.stderr"
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-36696
+
+- name: "LOW | V-36696 | PATCH | The detection of compatibility issues for applications and drivers must be turned off."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\AppCompat\'
+      value: DisablePcaUI
+      data: 0
+      datatype: dword
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-36696
