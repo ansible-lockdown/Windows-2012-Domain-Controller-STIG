@@ -480,8 +480,38 @@
       - V-26070
 
 - name: "HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
-  script: v26070.ps1
+  win_acl:
+    path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+    user: "{{ item }}"
+    rights: 'FullControl'
+    type: 'allow'
+    state: 'present'
+    inherit: 'ContainerInherit, ObjectInherit'
+    propagation: 'None'
   changed_when: no
+  with_items:
+      - 'NT SERVICE\TrustedInstaller'
+      - 'NT AUTHORITY\SYSTEM'
+      - 'BUILTIN\Administrators'
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-26070
+
+- name: "HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
+  win_acl:
+    path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+    user: "{{ item }}"
+    rights: 'ReadKey'
+    type: 'allow'
+    state: 'present'
+    inherit: 'ContainerInherit, ObjectInherit'
+    propagation: 'None'
+  changed_when: no
+  with_items:
+      - 'BUILTIN\Users'
+      - 'ALL APPLICATION PACKAGES'
   tags:
       - cat1
       - high
