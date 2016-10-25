@@ -592,8 +592,57 @@
       - V-32282
 
 - name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-  script: v32282.ps1
+  win_acl:
+    path: "{{ item[0] }}"
+    user: "{{ item[1] }}"
+    rights: 'ReadKey'
+    type: 'allow'
+    state: 'present'
+    inherit: 'ContainerInherit, ObjectInherit'
+    propagation: 'None'
   changed_when: no
+  with_nested:
+      - {'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\','HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components\'}
+      - {'BUILTIN\Users', 'ALL APPLICATION PACKAGES'}
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-32282
+
+- name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+  win_acl:
+    path: "{{ item[0] }}"
+    user: "{{ item[1] }}"
+    rights: 'FullControl'
+    type: 'allow'
+    state: 'present'
+    inherit: 'ContainerInherit, ObjectInherit'
+    propagation: 'None'
+  changed_when: no
+  with_nested:
+      - {'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\','HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components\'}
+      - {'BUILTIN\Administrators', 'NT AUTHORITY\SYSTEM'}
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-32282
+
+#ContainerInherit and InheritOnly set to satisfy (subkeys only)
+- name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+  win_acl:
+    path: "{{ item }}"
+    user: 'CREATOR OWNER'
+    rights: 'FullControl'
+    type: 'allow'
+    state: 'present'
+    inherit: 'ContainerInherit, ObjectInherit'
+    propagation: 'InheritOnly'
+  changed_when: no
+  with_items:
+      - 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\'
+      - 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components\'
   tags:
       - cat1
       - high
