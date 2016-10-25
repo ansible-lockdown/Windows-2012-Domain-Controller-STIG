@@ -1152,3 +1152,51 @@
       - low
       - patch
       - V-36707
+
+- name: "LOW | V-36774 | AUDIT | A screen saver must be defined."
+  win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows\Control Panel\Desktop\" /v SCRNSAVE.EXE
+  register: screen_saver_disabled_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in screen_saver_disabled_audit.stderr and screen_saver_disabled_audit.stderr"
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-36774
+
+- name: "LOW | V-36774 | PATCH | A screen saver must be defined."
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\Control Panel\Desktop\'
+      value: SCRNSAVE.EXE
+      data: scrnsave.scr
+      datatype: string
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-36774
+
+- name: "LOW | V-36775 | AUDIT | Changing the screen saver must be prevented."
+  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System\ /v NoDispScrSavPage
+  register: screen_change_prevent_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in screen_change_prevent_audit.stderr and screen_change_prevent_audit.stderr"
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-36775
+
+- name: "LOW | V-36775 | PATCH | Changing the screen saver must be prevented."
+  win_regedit:
+      key: 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System\'
+      value: NoDispScrSavPage
+      data: 1
+      datatype: dword
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-36775
