@@ -90,7 +90,14 @@
       - V-1152
 
 - name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
-  script: v1152.ps1
+  win_acl:
+    path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\'
+    user: 'BUILTIN\Administrators'
+    rights: 'FullControl'
+    type: 'allow'
+    state: 'present'
+    inherit: 'ContainerInherit, ObjectInherit'
+    propagation: 'None'
   changed_when: no
   tags:
        - cat1
@@ -98,6 +105,35 @@
        - patch
        - V-1152
 
+- name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
+  win_acl:
+    path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\'
+    user: 'BUILTIN\Backup Operators'
+    rights: 'ReadKey'
+    type: 'allow'
+    state: 'present'
+  changed_when: no
+  tags:
+       - cat1
+       - high
+       - patch
+       - V-1152
+
+- name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
+  win_acl:
+    path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\'
+    user: 'NT AUTHORITY\LOCAL SERVICE'
+    rights: 'ReadKey'
+    type: 'allow'
+    state: 'present'
+    inherit: 'ContainerInherit, ObjectInherit'
+    propagation: 'None'
+  changed_when: no
+  tags:
+       - cat1
+       - high
+       - patch
+       - V-1152
 
 - name: "HIGH | V-1153 | AUDIT | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
   win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v LMCompatibilityLevel /t REG_DWORD /f 5
@@ -407,7 +443,6 @@
       - cat1
       - high
       - patch
-      - V-21973
 
 - name: "HIGH | V-22692 | AUDIT | The default Autorun behavior must be configured to prevent Autorun commands."
   win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\ /v NoAutorun /t REG_DWORD /f 1

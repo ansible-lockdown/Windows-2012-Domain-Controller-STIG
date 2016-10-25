@@ -1078,6 +1078,102 @@
       - patch
       - V-36720
 
+- name: "MEDIUM | V-36722 | AUDIT | Permissions for the Application event log must prevent access by nonprivileged accounts."
+  win_shell: Get-Acl -PATH 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Application.evtx' | Format-List
+  register: eventlog_permissions_audit
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36722
+
+#requires patched win_acl module
+- name: "MEDIUM | V-36722 | PATCH | Permissions for the Application event log must prevent access by nonprivileged accounts."
+  win_acl:
+     path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Application.evtx'
+     user: '{{ item }}'
+     rights: 'FullControl'
+     type: 'allow'
+     state: 'present'
+     inherit: 'ContainerInherit, ObjectInherit'
+     propagation: 'None'
+  with_items:
+      - 'NT SERVICE\Eventlog'
+      - 'NT AUTHORITY\SYSTEM'
+      - 'BUILTIN\Administrators'
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36722
+
+- name: "MEDIUM | V-36723 | AUDIT | Permissions for the Security event log must prevent access by nonprivileged accounts."
+  win_shell: Get-Acl -PATH 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Security.evtx' | Format-List
+  register: security_evtx_audit
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36723
+
+#requires patched win_acl module
+- name: "MEDIUM | V-36723 | PATCH | Permissions for the Security event log must prevent access by nonprivileged accounts."
+  win_acl:
+     path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Security.evtx'
+     user: '{{ item }}'
+     rights: 'FullControl'
+     type: 'allow'
+     state: 'present'
+     inherit: 'ContainerInherit, ObjectInherit'
+     propagation: 'None'
+  with_items:
+      - 'NT SERVICE\Eventlog'
+      - 'NT AUTHORITY\SYSTEM'
+      - 'BUILTIN\Administrators'
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36723
+
+- name: "MEDIUM | V-36724 | AUDIT | Permissions for the System event log must prevent access by nonprivileged accounts."
+  win_shell: Get-Acl -PATH 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\System.evtx' | Format-List
+  register: result
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-36724
+
+#requires patched win_acl module
+- name: "MEDIUM | V-36724 | PATCH | Permissions for the System event log must prevent access by nonprivileged accounts."
+  win_acl:
+     path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\System.evtx'
+     user: '{{ item }}'
+     rights: 'FullControl'
+     type: 'allow'
+     state: 'present'
+     inherit: 'ContainerInherit, ObjectInherit'
+     propagation: 'None'
+  with_items:
+      - 'NT SERVICE\Eventlog'
+      - 'NT AUTHORITY\SYSTEM'
+      - 'BUILTIN\Administrators'
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-36724
+
 - name: "MEDIUM | V-36773 | AUDIT | The machine inactivity limit must be set to 15 minutes, locking the system with the screensaver."
   win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System\ /v InactivityTimeoutSecs
   register: inactivity_limit_audit
@@ -1100,7 +1196,7 @@
       - cat2
       - medium
       - patch
-      - V-36773
+      - V-36773                          
 
 - name: "MEDIUM | V-40204 | AUDIT | Only the default client printer must be redirected to the Remote Desktop Session Host.  (Remote Desktop Services Role)."
   win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows NT\Terminal Services\" /v RedirectOnlyDefaultClientPrinter
@@ -1125,6 +1221,30 @@
       - medium
       - patch
       - V-40204
+
+- name: "MEDIUM | V-43238 | AUDIT | The display of slide shows on the lock screen must be disabled (Windows 2012 R2)."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization\ /v NoLockScreenSlideshow
+  register: display_lock_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in display_lock_audit.stderr and display_lock_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-43238
+
+- name: "MEDIUM | V-43238 | PATCH | The display of slide shows on the lock screen must be disabled (Windows 2012 R2)."
+  win_regedit:
+     key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization\'
+     value: NoLockScreenSlideshow
+     data: 1
+     datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-43238
 
 - name: "MEDIUM | V-43239 | AUDIT | Command line data must be prevented from inclusion in process creation events (Windows 2012 R2)."
   win_command: reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit\ /v ProcessCreationIncludeCmdLine_Enabled
@@ -1173,3 +1293,455 @@
       - medium
       - patch
       - V-43240
+
+- name: "MEDIUM | V-43245 | AUDIT | Automatically signing in the last interactive user after a system-initiated restart must be disabled (Windows 2012 R2)."
+  win_command: reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\ /v DisableAutomaticRestartSignOn
+  register: automatic_restart_signin_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in automatic_restart_signin_audit.stderr and automatic_restart_signin_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-43245
+
+- name: "MEDIUM | V-43245 | PATCH | Automatically signing in the last interactive user after a system-initiated restart must be disabled (Windows 2012 R2)."
+  win_regedit:
+     key: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\'
+     value: DontDisplayNetworkSelectionUI
+     data: 1
+     datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-43245
+
+- name: "MEDIUM | V-43238 | AUDIT | The display of slide shows on the lock screen must be disabled (Windows 2012 R2)."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization\ /v NoLockScreenSlideshow
+  register: display_lock_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in display_lock_audit.stderr and display_lock_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-43238
+
+- name: "MEDIUM | V-43238 | PATCH | The display of slide shows on the lock screen must be disabled (Windows 2012 R2)."
+  win_regedit:
+     key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization\'
+     value: NoLockScreenSlideshow
+     data: 1
+     datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-43238
+
+- name: "MEDIUM | V-56511 | AUDIT | The Windows Error Reporting Service must be running and configured to start automatically."
+  win_shell: Get-Service -name WerSvc
+  register: WER_service_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-56511
+
+- name: "MEDIUM | V-56511 | PATCH | The Windows Error Reporting Service must be running and configured to start automatically."
+  win_service: 
+      name: WerSvc
+      start_mode: auto
+      state: started
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-56511
+
+- name: "MEDIUM | V-57453 | AUDIT | The system must be configured to collect multiple error reports of the same event type."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v BypassDataThrottling
+  register: multiple_error_reports_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in multiple_error_reports_audit.stderr and multiple_error_reports_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57453
+
+- name: "MEDIUM | V-57453 | PATCH | The system must be configured to collect multiple error reports of the same event type."
+  win_regedit:
+     key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\'
+     value: BypassDataThrottling
+     data: 1
+     datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57453
+
+- name: "MEDIUM | V-57455 | AUDIT | The system must be configured to prevent the display of error messages to the user."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v DontShowUI
+  register: error_message_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "error_message_audit.stderr and reg_not_found not in error_message_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57455
+
+- name: "MEDIUM | V-57455 | PATCH | The system must be configured to prevent the display of error messages to the user."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
+      value: DontShowUI
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57455
+
+- name: "MEDIUM | V-57457 | AUDIT | The system must be configured to store error reports locally, on the system or in the enclave, and not send them to Microsoft."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v CorporateWerServer
+  register: error_message_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "error_message_audit.stderr and reg_not_found not in error_message_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57457
+
+# Only make the data " " if there isn't a value. Existing values should be error reporting server hostname or IP.
+- name: "MEDIUM | V-57457 | PATCH | The system must be configured to store error reports locally, on the system or in the enclave, and not send them to Microsoft."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
+      value: CorporateWerServer
+      data: " "
+  when: not error_message_audit.stdout
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57457
+
+# Need to recheck if WER is being used first. Skip the rest if WER is not configured.
+- name: "MEDIUM | V-57459 | AUDIT | The system must be configured to use SSL to forward error reports."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v CorporateWerServer
+  register: error_message_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "error_message_audit.stderr and reg_not_found not in error_message_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57459
+
+# Only run when WER server isn't blank
+- name: "MEDIUM | V-57459 | PATCH | The system must be configured to use SSL to forward error reports."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
+      value: CorporateWerUseSSL
+      data: 1
+      datatype: dword
+  when: "'CorporateWerServer    REG_SZ     \\r' not in error_message_audit.stdout and reg_not_found not in error_message_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57459
+
+# Need to recheck if WER is being used first. Skip the rest if WER is not configured.
+- name: "MEDIUM | V-57461 | AUDIT | The system must be configured to send error reports on TCP port 1232."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v CorporateWerServer
+  register: error_message_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "error_message_audit.stderr and reg_not_found not in error_message_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57461
+
+# Only run when WER server isn't blank
+- name: "MEDIUM | V-57461 | AUDIT | The system must be configured to send error reports on TCP port 1232."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v CorporateWerPortNumber
+  register: error_message_port_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "error_message_port_audit.stderr and reg_not_found not in error_message_port_audit.stderr"
+  when: "'CorporateWerServer    REG_SZ     \\r' not in error_message_audit.stdout and reg_not_found not in error_message_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57461
+
+# Only run when WER server isn't blank
+- name: "MEDIUM | V-57461 | PATCH | The system must be configured to send error reports on TCP port 1232."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
+      value: CorporateWerPortNumber
+      data: 0x000004d0
+      datatype: dword
+  when: "'CorporateWerServer    REG_SZ     \\r' not in error_message_audit.stdout and reg_not_found not in error_message_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57461
+
+- name: "MEDIUM | V-57463 | AUDIT | The system must be configured to archive error reports."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v DisableArchive
+  register: disable_archive_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "disable_archive_audit.stderr and reg_not_found not in disable_archive_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57463
+
+- name: "MEDIUM | V-57463 | PATCH | The system must be configured to archive error reports."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
+      value: DisableArchive
+      data: 0
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57463
+
+- name: "MEDIUM | V-57465 | AUDIT | The system must be configured to store all data in the error report archive."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v ConfigureArchive
+  register: archive_error_reports_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "archive_error_reports_audit.stderr and reg_not_found not in archive_error_reports_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57465
+
+- name: "MEDIUM | V-57465 | PATCH | The system must be configured to store all data in the error report archive."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
+      value: ConfigureArchive
+      data: 0x00000002
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57465
+
+- name: "MEDIUM | V-57467 | AUDIT | The maximum number of error reports to archive on a system must be configured to 100 or greater."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v MaxArchiveCount
+  register: max_achive_count_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "max_achive_count_audit.stderr and reg_not_found not in max_achive_count_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57467
+
+- name: "MEDIUM | V-57467 | PATCH | The maximum number of error reports to archive on a system must be configured to 100 or greater."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
+      value: MaxArchiveCount
+      data: 0x00000064
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57467
+
+- name: "MEDIUM | V-57469 | AUDIT | The system must be configured to queue error reports until a local or DOD-wide collector is available."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v DisableQueue
+  register: disable_queue_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "disable_queue_audit.stderr and reg_not_found not in disable_queue_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57469
+
+- name: "MEDIUM | V-57469 | PATCH | The system must be configured to queue error reports until a local or DOD-wide collector is available."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
+      value: DisableQueue
+      data: 0
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57469
+
+- name: "MEDIUM | V-57471 | AUDIT | The system must be configured to add all error reports to the queue."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v ForceQueue
+  register: force_queue_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "force_queue_audit.stderr and reg_not_found not in force_queue_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57471
+
+- name: "MEDIUM | V-57471 | PATCH | The system must be configured to add all error reports to the queue."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
+      value: ForceQueue
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57471
+
+- name: "MEDIUM | V-57473 | AUDIT | The maximum number of error reports to queue on a system must be configured to 50 or greater."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v MaxQueueCount
+  register: max_queue_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "max_queue_audit.stderr and reg_not_found not in max_queue_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57473
+
+- name: "MEDIUM | V-57473 | PATCH | The maximum number of error reports to queue on a system must be configured to 50 or greater."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
+      value: MaxQueueCount
+      data: 0x00000032
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57473
+
+- name: "MEDIUM | V-57475 | AUDIT | The system must be configured to attempt to forward queued error reports once a day."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v QueuePesterInterval
+  register: daily_forward_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "daily_forward_audit.stderr and reg_not_found not in daily_forward_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57475
+
+- name: "MEDIUM | V-57475 | PATCH | The system must be configured to attempt to forward queued error reports once a day."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
+      value: QueuePesterInterval
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57475
+
+- name: "MEDIUM | V-57477 | AUDIT | The system must be configured to automatically consent to send all data requested by a local or DOD-wide error collection site."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Consent\" /v DefaultConsent
+  register: default_consent_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "default_consent_audit.stderr and reg_not_found not in default_consent_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57477
+
+- name: "MEDIUM | V-57477 | PATCH | The system must be configured to automatically consent to send all data requested by a local or DOD-wide error collection site."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Consent'
+      value: DefaultConsent
+      data: 0x00000004
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57477
+
+- name: "MEDIUM | V-57479 | AUDIT | The system must be configured to permit the default consent levels of Windows Error Reporting to override any other consent policy setting."
+  win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Consent\" /v DefaultOverrideBehavior
+  register: override_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "override_audit.stderr and reg_not_found not in override_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57479
+
+- name: "MEDIUM | V-57479 | PATCH | The system must be configured to permit the default consent levels of Windows Error Reporting to override any other consent policy setting."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\Consent'
+      value: DefaultOverrideBehavior
+      data: 1
+      datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57479
+
+- name: "MEDIUM | V-57639 | AUDIT | Users must be required to enter a password to access private keys stored on the computer."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Cryptography\ /v ForceKeyProtection
+  register: password_private_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in password_private_audit.stderr and password_private_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57639
+
+- name: "MEDIUM | V-57639 | PATCH | Users must be required to enter a password to access private keys stored on the computer."
+  win_regedit:
+     key: 'HKLM:\SOFTWARE\Policies\Microsoft\Cryptography\'
+     value: ForceKeyProtection
+     data: 2
+     datatype: dword
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57639
+
