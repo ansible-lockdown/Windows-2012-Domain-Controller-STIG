@@ -1200,3 +1200,51 @@
       - low
       - patch
       - V-36775
+
+- name: "LOW | V-36776 | AUDIT | Notifications from Windows Push Network Service must be turned off."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\ /v NoCloudApplicationNotification
+  register: windows_push_notify_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in windows_push_notify_audit.stderr and windows_push_notify_audit.stderr"
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-36776
+
+- name: "LOW | V-36776 | PATCH | Notifications from Windows Push Network Service must be turned off."
+  win_regedit:
+      key: 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System\'
+      value: NoDispScrSavPage
+      data: 1
+      datatype: dword
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-36776
+
+- name: "LOW | V-36777 | AUDIT | Toast notifications to the lock screen must be turned off."
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\ /v NoToastApplicationNotificationOnLockScreen
+  register: toast_notifications_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in toast_notifications_audit.stderr and toast_notifications_audit.stderr"
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-36777
+
+- name: "LOW | V-36777 | PATCH | Toast notifications to the lock screen must be turned off."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\'
+      value: NoToastApplicationNotificationOnLockScreen
+      data: 1
+      datatype: dword
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-36776
