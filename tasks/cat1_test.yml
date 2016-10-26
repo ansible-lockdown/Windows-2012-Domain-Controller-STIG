@@ -709,7 +709,52 @@
       - V-39331
 
 - name: "HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
-  script: v39331.ps1
+  win_acl:
+    path: '\Windows\SYSVOL'
+    user: '{{ item }}'
+    rights: 'ReadAndExecute'
+    type: 'allow'
+    state: 'present'
+    inherit: 'ContainerInherit, ObjectInherit'
+    propagation: 'None'
+  changed_when: no
+  with_items:
+      - NT AUTHORITY\Authenticated Users
+      - BUILTIN\Server Operators
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-39331
+
+- name: "HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
+  win_acl:
+    path: '\Windows\SYSVOL'
+    user: '{{ item }}'
+    rights: 'FullControl'
+    type: 'allow'
+    state: 'present'
+    inherit: 'ContainerInherit, ObjectInherit'
+    propagation: 'InheritOnly'
+  changed_when: no
+  with_items:
+      - CREATOR OWNER
+      - BUILTIN\Administrators
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-39331
+
+- name: "HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
+  win_acl:
+    path: '\Windows\SYSVOL'
+    user: 'NT AUTHORITY\SYSTEM'
+    rights: 'FullControl'
+    type: 'allow'
+    state: 'present'
+    inherit: 'ContainerInherit, ObjectInherit'
+    propagation: 'None'
   changed_when: no
   tags:
       - cat1
