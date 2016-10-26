@@ -345,6 +345,30 @@
       - patch
       - V-4116
 
+- name: "LOW | V-4408 | AUDIT | Domain controllers must be configured to allow reset of machine account passwords."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\Netlogon\Parameters\ /v RefusePasswordChange
+  register: reset_machine_account_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in reset_machine_account_audit.stderr and reset_machine_account_audit.stderr"
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-4408
+
+- name: "LOW | V-4408 | PATCH | Domain controllers must be configured to allow reset of machine account passwords."
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Services\Netlogon\Parameters\'
+      value: RefusePasswordChange
+      data: 0
+      datatype: dword
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-4408
+
 - name: "LOW | V-4438 | AUDIT | The system must limit how many times unacknowledged TCP data is retransmitted."
   win_command: reg query HKLM\System\CurrentControlSet\Services\Tcpip\Parameters /v TcpMaxDataRetransmissions
   register: max_TCP_retransmit_audit
@@ -404,14 +428,12 @@
       - audit
       - V-4445
 
-#"Cannot bind argument to parameter 'ReferenceData' because it is null."
 - name: "LOW | V-4445 | PATCH | Optional Subsystems will not be permitted to operate on the system."
   win_regedit:
       key: 'HKLM:\System\CurrentControlSet\Control\Session Manager\Subsystems'
       value: Optional
       data: ''
       datatype: multistring
-  ignore_errors: yes
   tags:
       - cat3
       - low
