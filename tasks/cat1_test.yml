@@ -421,6 +421,49 @@
       - patch
       - V-6834
 
+- name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\NTDS\Parameters
+  register: actived_permissions_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in actived_permissions_audit.stderr and actived_permissions_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-8316
+
+- name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
+  win_shell: Get-Acl -Path \Windows\NTDS | Format-List
+  register: actived_permissions_audit2
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-8316
+
+#assumes "full access" means FullControl
+- name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
+  win_acl:
+     path: '\Windows\NTDS'
+     user: '{{ item }}'
+     rights: 'FullControl'
+     type: 'allow'
+     state: 'present'
+     inherit: 'ContainerInherit, ObjectInherit'
+     propagation: 'None'
+  with_items:
+      - NT AUTHORITY\SYSTEM
+      - BUILTIN\Administrators
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-8316
+
 - name: "HIGH | V-21973 | AUDIT | Autoplay must be turned off for non-volume devices."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume /t REG_DWORD /f 1
   register: autoplay_nonvolume_audit
