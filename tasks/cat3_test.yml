@@ -440,6 +440,14 @@
       - patch
       - V-4445
 
+- name: "LOW | V-8324 | PATCH | The time synchronization tool must be configured to enable logging of time source switching."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\W32Time\Config\ /v EventLogFlags
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-8324
+
 - name: "LOW | V-11806 | AUDIT | The system will be configured to prevent the display of the last user name on the logon screen."
   win_command: reg query \"HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System\" /v DontDisplayLastUserName
   register: last_name_audit
