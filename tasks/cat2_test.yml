@@ -1374,7 +1374,25 @@
       - cat2
       - medium
       - patch
-      - V-40200                   
+      - V-40200
+
+- name: "MEDIUM | V-40202 | AUDIT | The system must be configured to audit Object Access - Central Access Policy Staging successes."
+  win_shell: "AuditPol /get /category:*"
+  register: central_access_success_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-40202
+
+- name: "MEDIUM | V-40202 | PATCH | The system must be configured to audit Object Access - Central Access Policy Staging successes."
+  win_shell: AuditPol /set /subcategory:"Central Policy Staging" /success:enable  tags:
+      - cat2
+      - medium
+      - patch
+      - V-40202                
 
 - name: "MEDIUM | V-40204 | AUDIT | Only the default client printer must be redirected to the Remote Desktop Session Host.  (Remote Desktop Services Role)."
   win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows NT\Terminal Services\" /v RedirectOnlyDefaultClientPrinter
