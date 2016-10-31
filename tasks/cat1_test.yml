@@ -34,7 +34,7 @@
       - V-1081
 
 - name: "HIGH | V-1093 | AUDIT | Anonymous enumeration of shares must be restricted."
-  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v RestrictAnonymous /t REG_DWORD /f 1
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v RestrictAnonymous
   register: anon_shares_audit
   check_mode: no
   changed_when: no
@@ -136,7 +136,7 @@
        - V-1152
 
 - name: "HIGH | V-1153 | AUDIT | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
-  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v LMCompatibilityLevel /t REG_DWORD /f 5
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v LMCompatibilityLevel
   register: lanMan_authentication_audit
   check_mode: no
   changed_when: no
@@ -160,7 +160,7 @@
 #       - V-1153
 
 - name: "HIGH | V-1159 | AUDIT | The Recovery Console option must be set to prevent automatic logon to the system."
-  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Setup\RecoveryConsole\" /v SecurityLevel /t REG_DWORD /f 0
+  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Setup\RecoveryConsole\" /v SecurityLevel
   register: recovery_prevent_autologin_audit
   check_mode: no
   changed_when: no
@@ -184,7 +184,7 @@
       - V-1159
 
 - name: "HIGH | V-2374 | AUDIT | Autoplay must be disabled for all drives."
-  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\policies\Explorer\ /v NoDriveTypeAutoRun /t REG_DWORD /f 255 
+  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\policies\Explorer\ /v NoDriveTypeAutoRun 
   register: autoplay_disabled_audit
   check_mode: no
   changed_when: no
@@ -208,15 +208,11 @@
       - V-2374
 
 - name: "HIGH | V-3338 | AUDIT | Named pipes that can be accessed anonymously must be configured with limited values on domain controllers."
-  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters\ /v NullSessionPipes /t REG_MULTI_SZ /f {{ item }}
+  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters\ /v NullSessionPipes
   register: pipes_limited_dc_audit
   check_mode: no
   changed_when: no
   failed_when: "reg_not_found not in pipes_limited_dc_audit.stderr and pipes_limited_dc_audit.stderr"
-  with_items:
-      - netlogon
-      - samr
-      - lsarpc
   tags:
       - cat1
       - high
@@ -236,15 +232,11 @@
       - V-3338
 
 - name: "HIGH | V-3339 | AUDIT | Unauthorized remotely accessible registry paths must not be configured."
-  win_command: reg query \"HKLM\System\CurrentControlSet\Control\SecurePipeServers\ winreg\" /v Machine /t REG_MULTI_SZ /f {{ item }}
+  win_command: reg query \"HKLM\System\CurrentControlSet\Control\SecurePipeServers\ winreg\" /v Machine
   register: remotely_accessible_registry_audit
   check_mode: no
   changed_when: no
   failed_when: "reg_not_found not in remotely_accessible_registry_audit.stderr and remotely_accessible_registry_audit.stderr"
-  with_items:
-      - System\CurrentControlSet\Control\ProductOptions 
-      - \"System\CurrentControlSet\Control\Server Applications\" 
-      - \"Software\Microsoft\Windows NT\CurrentVersion\" 
   tags:
       - cat1
       - high
@@ -290,7 +282,7 @@
       - V-3340
 
 - name: "HIGH | V-3343 | AUDIT | Solicited Remote Assistance must not be allowed."
-  win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows NT\Terminal Services\" /v fAllowToGetHelp /t REG_DWORD /f 0
+  win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows NT\Terminal Services\" /v fAllowToGetHelp
   register: solicited_remote_assistance_audit
   check_mode: no
   changed_when: no
@@ -314,7 +306,7 @@
       - V-3343
 
 - name: "HIGH | V-3344 | AUDIT | Local accounts with blank passwords must be restricted to prevent access from the network."
-  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa\ /v LimitBlankPasswordUse /t REG_DWORD /f 1
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa\ /v LimitBlankPasswordUse
   register: blankpass_network_restriction_audit
   check_mode: no
   changed_when: no
@@ -362,23 +354,11 @@
       - V-3379
 
 - name: "HIGH | V-4443 | AUDIT | Unauthorized remotely accessible registry paths and sub-paths must not be configured."
-  win_command: reg query HKLM\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedPaths\ /v Machine /t REG_MULTI_SZ /f {{ item }}
+  win_command: reg query HKLM\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedPaths\ /v Machine
   register: unauthorized_remote_registry_paths_audit
   check_mode: no
   changed_when: no
-  failed_when: "reg_not_found not in unauthorized_remote_registry_paths_audit.stderr and unauthorized_remote_registry_paths_audit.stderr"
-  with_items:
-      - \"Software\Microsoft\OLAP Server\" 
-      - \"Software\Microsoft\Windows NT\CurrentVersion\Perflib\" 
-      - \"Software\Microsoft\Windows NT\CurrentVersion\Print\" 
-      - \"Software\Microsoft\Windows NT\CurrentVersion\Windows\" 
-      - System\CurrentControlSet\Control\ContentIndex 
-      - System\CurrentControlSet\Control\Print\Printers 
-      - \"System\CurrentControlSet\Control\Terminal Server\" 
-      - \"System\CurrentControlSet\Control\Terminal Server\UserConfig\" 
-      - \"System\CurrentControlSet\Control\Terminal Server\DefaultUserConfiguration\" 
-      - System\CurrentControlSet\Services\Eventlog 
-      - System\CurrentControlSet\Services\Sysmonlog 
+  failed_when: "reg_not_found not in unauthorized_remote_registry_paths_audit.stderr and unauthorized_remote_registry_paths_audit.stderr" 
   tags:
       - cat1
       - high
@@ -398,7 +378,7 @@
       - V-4443
 
 - name: "HIGH | V-6834 | AUDIT | Anonymous access to Named Pipes and Shares must be restricted."
-  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters\ /v RestrictNullSessAccess /t REG_DWORD /f 1
+  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters\ /v RestrictNullSessAccess
   register: anon_access_pipes_shares_audit
   check_mode: no
   changed_when: no
@@ -422,7 +402,7 @@
       - V-6834
 
 - name: "HIGH | V-21973 | AUDIT | Autoplay must be turned off for non-volume devices."
-  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume /t REG_DWORD /f 1
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume
   register: autoplay_nonvolume_audit
   check_mode: no
   changed_when: no
@@ -445,7 +425,7 @@
       - patch
 
 - name: "HIGH | V-22692 | AUDIT | The default Autorun behavior must be configured to prevent Autorun commands."
-  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\ /v NoAutorun /t REG_DWORD /f 1
+  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\ /v NoAutorun
   register: autorun_prevent_audit
   check_mode: no
   changed_when: no
@@ -519,7 +499,7 @@
       - V-26070
 
 - name: "HIGH | V-26283 | AUDIT | Anonymous enumeration of SAM accounts must not be allowed."
-  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa\ /v RestrictAnonymousSAM /t REG_DWORD /f 1
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa\ /v RestrictAnonymousSAM
   register: anonymous_enum_sam_audit
   check_mode: no
   changed_when: no
@@ -650,7 +630,7 @@
       - V-32282
 
 - name: "HIGH | V-34974 | AUDIT | The Windows Installer Always install with elevated privileges option must be disabled."
-  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Installer\ /v AlwaysInstallElevated /t REG_DWORD /f 0
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Installer\ /v AlwaysInstallElevated
   register: install_elevated_disabled_audit
   check_mode: no
   changed_when: no
@@ -674,7 +654,7 @@
       - V-34974
 
 - name: "HIGH | V-36718 | AUDIT | The Windows Remote Management (WinRM) service must not use Basic authentication."
-  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\ /v AllowBasic /t REG_DWORD /f 0
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\ /v AllowBasic
   register: winrm_service_basic_auth_audit
   check_mode: no
   changed_when: no
