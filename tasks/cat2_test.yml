@@ -1363,6 +1363,7 @@
       - medium
       - patch
       - V-56511
+<<<<<<< 39e006cceb7c3b0611210d3badd3a97b41080792
 
 - name: "MEDIUM | V-57453 | AUDIT | The system must be configured to collect multiple error reports of the same event type."
   win_command: reg query \"HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting\" /v BypassDataThrottling
@@ -1744,3 +1745,5 @@
       - medium
       - patch
       - V-57639
+=======
+>>>>>>> adding implements from james branch
