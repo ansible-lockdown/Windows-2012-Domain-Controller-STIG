@@ -770,6 +770,25 @@
       - patch
       - V-33664
 
+- name: "MEDIUM | V-33665 | AUDIT | The system must be configured to audit DS Access - Directory Service Changes successes."
+  win_shell: "AuditPol /get /category:*"
+  register: directory_changes_successes_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-33665
+
+- name: "MEDIUM | V-33665 | PATCH | The system must be configured to audit DS Access - Directory Service Changes successes."
+  win_shell: AuditPol /set /subcategory:"Directory Service Changes" /success:enable
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-33665
+
 - name: "MEDIUM | V-36656 | AUDIT | A screen saver must be enabled on the system."
   win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows\Control Panel\Desktop\" /v ScreenSaveActive
   register: screen_saver_enabled_audit
