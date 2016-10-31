@@ -440,6 +440,14 @@
       - patch
       - V-4445
 
+- name: "LOW | V-8324 | PATCH | The time synchronization tool must be configured to enable logging of time source switching."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\W32Time\Config\ /v EventLogFlags
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-8324
+
 - name: "LOW | V-11806 | AUDIT | The system will be configured to prevent the display of the last user name on the logon screen."
   win_command: reg query \"HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System\" /v DontDisplayLastUserName
   register: last_name_audit
@@ -1294,3 +1302,27 @@
       - low
       - patch
       - V-36776
+
+- name: "LOW | V-43241 | AUDIT | The setting to allow Microsoft accounts to be optional for modern style apps must be enabled (Windows 2012 R2)."
+  win_command: reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v MSAOptional
+  register: modern_style_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in modern_style_audit.stderr and modern_style_audit.stderr"
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-43241
+
+- name: "LOW | V-43241 | PATCH | The setting to allow Microsoft accounts to be optional for modern style apps must be enabled (Windows 2012 R2)."
+  win_regedit:
+      key: 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+      value: MSAOptional
+      data: 1
+      datatype: dword
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-43241
