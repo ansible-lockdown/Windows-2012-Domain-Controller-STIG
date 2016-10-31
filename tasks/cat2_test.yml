@@ -23,7 +23,7 @@
       - V-1141
 
 - name: "MEDIUM | V-1145 | AUDIT | Automatic logons must be disabled."
-  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v AutoAdminLogon /t REG_SZ /f 0
+  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v AutoAdminLogon
   register: disable_automatic_logons_audit
   check_mode: no
   changed_when: no
@@ -189,7 +189,7 @@
       - V-1171
 
 - name: "MEDIUM | V-3374 | AUDIT | The system must be configured to require a strong session key."
-  win_command: reg query HKLM\System\CurrentControlSet\Services\Netlogon\Parameters\ /v RequireStrongKey /t REG_DWORD /f 1
+  win_command: reg query HKLM\System\CurrentControlSet\Services\Netlogon\Parameters\ /v RequireStrongKey
   register: strong_sessionkey_audit
   check_mode: no
   changed_when: no
@@ -823,7 +823,7 @@
       - V-36668
 
 - name: "MEDIUM | V-36679 | AUDIT | Early Launch Antimalware, Boot-Start Driver Initialization Policy must be enabled and configured to only Good and Unknown."
-  win_command: reg query HKLM\System\CurrentControlSet\Policies\EarlyLaunch\ /v DriverLoadPolicy /f REG_DWORD /t 1
+  win_command: reg query HKLM\System\CurrentControlSet\Policies\EarlyLaunch\ /v DriverLoadPolicy
   register: early_initialization_audit
   check_mode: no
   changed_when: no
@@ -848,7 +848,7 @@
       - V-36679
 
 - name: "MEDIUM | V-36680 | AUDIT | Access to the Windows Store must be turned off."
-  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer\ /v NoUseStoreOpenWith /t REG_DWORD /f 1
+  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Explorer\ /v NoUseStoreOpenWith
   register: windows_store_audit
   check_mode: no
   changed_when: no
@@ -873,7 +873,7 @@
       - V-36680
 
 - name: "MEDIUM | V-36681 | AUDIT | Copying of user input methods to the system account for sign-in must be prevented."
-  win_command: reg query \"HKLM\Software\Policies\Microsoft\Control Panel\International\" /v BlockUserInputMethodsForSignIn /t REG_DWORD /f 1
+  win_command: reg query \"HKLM\Software\Policies\Microsoft\Control Panel\International\" /v BlockUserInputMethodsForSignIn
   register: copy_user_system_audit
   check_mode: no
   changed_when: no
@@ -898,7 +898,7 @@
       - V-36681
 
 - name: "MEDIUM | V-36684 | AUDIT | Local users on domain-joined computers must not be enumerated."
-  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\System\ /v EnumerateLocalUsers /t REG_DWORD /f 0
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\System\ /v EnumerateLocalUsers
   register: local_domain_joined_audit
   check_mode: no
   changed_when: no
@@ -923,7 +923,7 @@
       - V-36684
 
 - name: "MEDIUM | V-36687 | AUDIT | App notifications on the lock screen must be turned off."
-  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\System\ /v DisableLockScreenAppNotifications /t REG_DWORD /f 1
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\System\ /v DisableLockScreenAppNotifications
   register: app_notifications_audit
   check_mode: no
   changed_when: no
@@ -1831,4 +1831,3 @@
       - medium
       - patch
       - V-57639
-
