@@ -1407,7 +1407,8 @@
       - V-40200
 
 - name: "MEDIUM | V-40200 | PATCH | The system must be configured to audit Object Access - Central Access Policy Staging failures."
-  win_shell: AuditPol /set /subcategory:"Central Policy Staging" /failure:enable  tags:
+  win_shell: AuditPol /set /subcategory:"Central Policy Staging" /failure:enable
+  tags:
       - cat2
       - medium
       - patch
