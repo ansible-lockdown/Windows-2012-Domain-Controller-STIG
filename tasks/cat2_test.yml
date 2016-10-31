@@ -1395,7 +1395,7 @@
       - patch
       - V-36773
 
- name: "MEDIUM | V-40200 | AUDIT | The system must be configured to audit Object Access - Central Access Policy Staging failures."
+- name: "MEDIUM | V-40200 | AUDIT | The system must be configured to audit Object Access - Central Access Policy Staging failures."
   win_shell: "AuditPol /get /category:*"
   register: central_access_failure_audit
   check_mode: no
