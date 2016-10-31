@@ -1937,6 +1937,26 @@
       - patch
       - V-57633
 
+- name: "MEDIUM | V-57635 | AUDIT | The system must be configured to audit Policy Change - Authorization Policy Change failures."
+  win_shell: "AuditPol /get /category:*"
+  register: auth_policy_failures_audit
+  check_mode: no
+  changed_when: no
+  ignore_errors: yes
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57635
+
+- name: "MEDIUM | V-57635 | PATCH | The system must be configured to audit Policy Change - Authorization Policy Change failures."
+  win_shell: AuditPol /set /subcategory:"Central Policy Staging" /failure:enable
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-57635
+
 - name: "MEDIUM | V-57639 | AUDIT | Users must be required to enter a password to access private keys stored on the computer."
   win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Cryptography\ /v ForceKeyProtection
   register: password_private_audit
