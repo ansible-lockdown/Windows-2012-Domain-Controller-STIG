@@ -546,6 +546,43 @@
       - patch
       - V-3469
 
+- name: "MEDIUM | V-8322 | AUDIT | Time synchronization must be enabled on the domain controller."
+  win_shell: "{{ item }}"
+  register: time_sync_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in time_sync_audit.stderr and time_sync_audit.stderr"
+  with_items:
+      - reg query HKLM\System\CurrentControlSet\Services\W32Time\TimeProviders\NtpClient\ /v Enabled
+      - reg query HKLM\System\CurrentControlSet\Services\W32Time\Parameters\ /v Type
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-8322
+
+#double check on NT5DS
+- name: "MEDIUM | V-8322 | PATCH | Time synchronization must be enabled on the domain controller."
+  win_regedit:
+      key: "{{ item.key }}"
+      value: "{{ item.value }}"
+      data: "{{ item.data }}"
+      datatype: "{{ item.datatype }}"
+  with_items:
+      - key: 'HKLM:\System\CurrentControlSet\Services\W32Time\TimeProviders\NtpClient\'
+        value: Enabled
+        data: 1
+        datatype: dword
+      - key: 'HKLM:\System\CurrentControlSet\Services\W32Time\Parameters\'
+        value: Type
+        data: NT5DS
+        datatype: string
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-8322
+
 - name: "MEDIUM | V-26575 | AUDIT | The 6to4 IPv6 transition technology will be disabled."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\TCPIP\v6Transition /v 6to4_State
   register: six_to_four_audit
