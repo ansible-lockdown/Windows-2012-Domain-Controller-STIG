@@ -1395,6 +1395,92 @@
       - patch
       - V-36773
 
+- name: "MEDIUM | V-40177 | AUDIT | Permissions for program file directories must conform to minimum requirements."
+  win_shell: Get-Acl -PATH '{{ item }}' | Format-List
+  register: result
+  check_mode: no
+  changed_when: no
+  with_items:
+      - \Program Files
+      - \Program Files (x86)
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-40177
+
+- name: "MEDIUM | V-40177 | PATCH | Permissions for program file directories must conform to minimum requirements."
+  win_acl:
+     path: '{{ item }}'
+     user: 'NT SERVICE\TrustedInstaller'
+     rights: 'FullControl'
+     type: 'allow'
+     state: 'present'
+     inherit: 'ContainerInherit'
+     propagation: 'InheritOnly'
+  with_items:
+      - '\Program Files'
+      - '\Program Files (x86)'
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-40177
+
+- name: "MEDIUM | V-40177 | PATCH | Permissions for program file directories must conform to minimum requirements."
+  win_acl:
+     path: '{{ item[0] }}'
+     user: '{{ item[1] }}'
+     rights: 'Modify'
+     type: 'allow'
+     state: 'present'
+     inherit: 'None'
+     propagation: 'None'
+  with_nested:
+      - ['\Program Files', '\Program Files (x86)']
+      - [NT AUTHORITY\SYSTEM, BUILTIN\Administrators]
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-40177
+
+- name: "MEDIUM | V-40177 | PATCH | Permissions for program file directories must conform to minimum requirements."
+  win_acl:
+     path: '{{ item[0] }}'
+     user: '{{ item[1] }}'
+     rights: 'FullControl'
+     type: 'allow'
+     state: 'present'
+     inherit: 'ContainerInherit, ObjectInherit'
+     propagation: 'InheritOnly'
+  with_nested:
+      - ['\Program Files', '\Program Files (x86)']
+      - [NT AUTHORITY\SYSTEM, BUILTIN\Administrators, CREATOR OWNER]
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-40177
+
+- name: "MEDIUM | V-40177 | PATCH | Permissions for program file directories must conform to minimum requirements."
+  win_acl:
+     path: '{{ item[0] }}'
+     user: '{{ item[1] }}'
+     rights: 'ReadAndExecute'
+     type: 'allow'
+     state: 'present'
+     inherit: 'ContainerInherit, ObjectInherit'
+     propagation: 'None'
+  with_nested:
+      - ['\Program Files', '\Program Files (x86)']
+      - [BUILTIN\Users, ALL APPLICATION PACKAGES]
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-40177
+
 - name: "MEDIUM | V-40200 | AUDIT | The system must be configured to audit Object Access - Central Access Policy Staging failures."
   win_shell: "AuditPol /get /category:*"
   register: central_access_failure_audit
