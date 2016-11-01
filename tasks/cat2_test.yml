@@ -1397,7 +1397,7 @@
 
 - name: "MEDIUM | V-40177 | AUDIT | Permissions for program file directories must conform to minimum requirements."
   win_shell: Get-Acl -PATH '{{ item }}' | Format-List
-  register: program_minimum_audit
+  register: program_files_minimum_audit
   check_mode: no
   changed_when: no
   with_items:
