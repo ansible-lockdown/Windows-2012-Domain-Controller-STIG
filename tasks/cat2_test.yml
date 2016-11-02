@@ -1541,6 +1541,24 @@
       - patch
       - V-40178
 
+# Remove ACLs for users/groups not listed in STIG
+- name: "MEDIUM | V-40178 | PATCH | Permissions for system drive root directory must conform to minimum requirements."
+  win_acl:
+     path: 'C:\'
+     user: '{{ item[0] }}'
+     rights: 'AppendData,ChangePermissions,Delete,DeleteSubdirectoriesAndFiles,ExecuteFile,FullControl,ListDirectory,Modify,Read,ReadAndExecute,ReadAttributes,ReadData,ReadExtendedAttributes,ReadPermissions,Synchronize,TakeOwnership,Traverse,Write,WriteAttributes,WriteData,WriteExtendedAttributes'
+     type: '{{ item[1] }}'
+     state: 'absent'
+  when: "'SYSTEM' not in item[0] and 'Administrators' not in item[0] and 'Users' not in item[0] and 'CREATOR OWNER' not in item[0] or 'allow' not in item[1]"
+  with_nested:
+      - '{{ root_permissions_audit.stdout_lines }}'
+      - [ allow, deny ]
+  tags:
+      - cat2
+      - mediu
+      - patch
+      - V-40178
+
 - name: "MEDIUM | V-40178 | PATCH | Permissions for system drive root directory must conform to minimum requirements."
   win_acl:
      path: 'C:\'
