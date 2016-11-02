@@ -1,5 +1,5 @@
 - name: "HIGH | V-1073 | AUDIT | Systems must be maintained at a supported service pack level."
-  win_command: reg query HKLM\System\CurentControlSet\control\windows /v CSDVersion
+  win_command: wmic os get Caption, Version, CSDVersion, BuildNumber
   register: supported_pack_level_audit
   check_mode: no
   changed_when: no
