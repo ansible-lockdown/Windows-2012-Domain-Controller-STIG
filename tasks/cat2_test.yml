@@ -1417,6 +1417,19 @@
       - audit
       - V-40177
 
+- name: "MEDIUM | V-40177 | PATCH | Permissions for program file directories must conform to minimum requirements."
+  win_acl_inheritance:
+     path: '{{ item }}'
+     state: 'absent'
+  with_items:
+      - '\Program Files'
+      - '\Program Files (x86)'
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-40177
+
 # Remove ACLs for users/groups not listed in STIG
 - name: "MEDIUM | V-40177 | PATCH | Permissions for program file directories must conform to minimum requirements."
   win_acl:
