@@ -583,6 +583,30 @@
       - patch
       - V-8322
 
+- name: "MEDIUM | V-8326 | AUDIT | The directory server supporting (directly or indirectly) system access or resource authorization must run on a machine dedicated to that function."
+  win_command: net start
+  register: dedicated_supporting_machines_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-8326
+
+#"Import-Module ServerManager ;" added for win08 (may not be necessary for win08r2
+#https://technet.microsoft.com/en-us/library/ff476071.aspx
+- name: "MEDIUM | V-8326 | AUDIT | The directory server supporting (directly or indirectly) system access or resource authorization must run on a machine dedicated to that function."
+  win_shell: Import-Module ServerManager ; Get-WindowsFeature | where-object {$_.Installed -eq $True} | format-list DisplayName
+  register: dedicated_supporting_machines2_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-8326
+
 - name: "MEDIUM | V-26575 | AUDIT | The 6to4 IPv6 transition technology will be disabled."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\TCPIP\v6Transition /v 6to4_State
   register: six_to_four_audit
