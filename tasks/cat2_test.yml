@@ -584,7 +584,8 @@
       - V-8322
 
 - name: "MEDIUM | V-8326 | AUDIT | The directory server supporting (directly or indirectly) system access or resource authorization must run on a machine dedicated to that function."
-  win_command: net start
+  #win_command: net start
+  win_shell: Get-Service | Where-Object {$_.status -eq "running"} | Format-List DisplayName, Name
   register: dedicated_supporting_machines_audit
   check_mode: no
   changed_when: no
@@ -594,10 +595,10 @@
       - audit
       - V-8326
 
-#"Import-Module ServerManager ;" added for win08 (may not be necessary for win08r2)
+#"Import-Module ServerManager ;" added for win08 (may not be necessary for win08r2
 #https://technet.microsoft.com/en-us/library/ff476071.aspx
 - name: "MEDIUM | V-8326 | AUDIT | The directory server supporting (directly or indirectly) system access or resource authorization must run on a machine dedicated to that function."
-  win_shell: Import-Module ServerManager ; Get-WindowsFeature | where-object {$_.Installed -eq $True} | format-list DisplayName
+  win_shell: Import-Module ServerManager ; Get-WindowsFeature | Where-Object {$_.Installed -eq $True} | Format-List DisplayName, Name
   register: dedicated_supporting_machines2_audit
   check_mode: no
   changed_when: no
