@@ -233,7 +233,7 @@
   register: eject_removable_media_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "path_is_null not in eject_removable_media_audit.stderr and eject_removable_media_audit.stderr"
   tags:
       - cat2
       - medium
