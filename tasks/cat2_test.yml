@@ -3673,6 +3673,7 @@
   register: root_permissions_audit
   check_mode: no
   changed_when: no
+  failed_when: "path_not_found not in root_permissions_audit.stderr and root_permissions_audit.stderr"
   tags:
       - cat2
       - medium
@@ -3717,7 +3718,7 @@
      state: 'present'
      inherit: 'ContainerInherit, ObjectInherit'
      propagation: 'None'
-  ignore_errors: yes
+  when: "path_not_found not in root_permissions_audit.stderr and root_permissions_audit"
   with_items:
       - NT AUTHORITY\SYSTEM
       - BUILTIN\Administrators
@@ -3736,7 +3737,7 @@
      state: 'present'
      inherit: '{{ item.inherit }}'
      propagation: '{{ item.propagation }}'
-  ignore_errors: yes
+  when: "path_not_found not in root_permissions_audit.stderr and root_permissions_audit"
   with_items:
       - rights: 'ReadAndExecute'
         inherit: 'ContainerInherit, ObjectInherit'
@@ -3759,7 +3760,7 @@
      state: 'present'
      inherit: 'ContainerInherit, ObjectInherit'
      propagation: 'InheritOnly'
-  ignore_errors: yes
+  when: "path_not_found not in root_permissions_audit.stderr and root_permissions_audit"
   tags:
       - cat2
       - medium
