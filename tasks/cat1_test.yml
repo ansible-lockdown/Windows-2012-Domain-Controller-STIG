@@ -109,7 +109,6 @@
     state: 'present'
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'None'
-  changed_when: no
   tags:
        - cat1
        - high
@@ -123,7 +122,6 @@
     rights: 'ReadKey'
     type: 'allow'
     state: 'present'
-  changed_when: no
   tags:
        - cat1
        - high
@@ -139,7 +137,6 @@
     state: 'present'
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'None'
-  changed_when: no
   tags:
        - cat1
        - high
@@ -261,7 +258,6 @@
     value: Machine
     data: \0System\CurrentControlSet\Control\ProductOptions\0\"System\CurrentControlSet\Control\Server Applications\"\0\"Software\Microsoft\Windows NT\CurrentVersion\"\0\0
     datatype: multistring
-  changed_when: no
   tags:
       - cat1
       - high
@@ -556,7 +552,6 @@
     state: 'present'
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'None'
-  changed_when: no
   with_items:
       - 'BUILTIN\Users'
       - 'ALL APPLICATION PACKAGES'
@@ -648,7 +643,6 @@
     state: 'present'
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'None'
-  changed_when: no
   with_nested:
       - {'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\','HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components\'}
       - {'BUILTIN\Users', 'ALL APPLICATION PACKAGES'}
@@ -667,7 +661,6 @@
     state: 'present'
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'None'
-  changed_when: no
   with_nested:
       - {'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\','HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components\'}
       - {'BUILTIN\Administrators', 'NT AUTHORITY\SYSTEM'}
@@ -687,7 +680,6 @@
     state: 'present'
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'InheritOnly'
-  changed_when: no
   with_items:
       - 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\'
       - 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components\'
@@ -766,7 +758,6 @@
     state: 'present'
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'None'
-  changed_when: no
   when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit"
   with_items:
       - NT AUTHORITY\Authenticated Users
@@ -786,7 +777,6 @@
     state: 'present'
     inherit: 'None'
     propagation: 'None'
-  changed_when: no
   when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit"
   tags:
       - cat1
@@ -803,7 +793,6 @@
     state: 'present'
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'InheritOnly'
-  changed_when: no
   when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit"
   with_items:
       - CREATOR OWNER
@@ -823,7 +812,6 @@
     state: 'present'
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'None'
-  changed_when: no
   when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit"
   tags:
       - cat1
