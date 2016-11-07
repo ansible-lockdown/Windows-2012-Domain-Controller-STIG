@@ -750,7 +750,7 @@
   register: sysvol_permissions_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit.stderr"
   tags:
       - cat1
       - high
@@ -767,10 +767,27 @@
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'None'
   changed_when: no
-  ignore_errors: yes
+  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit.stderr"
   with_items:
       - NT AUTHORITY\Authenticated Users
       - BUILTIN\Server Operators
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-39331
+
+- name: "HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
+  win_acl:
+    path: '\Windows\SYSVOL'
+    user: 'BUILTIN\Administrators'
+    rights: 'Special'
+    type: 'allow'
+    state: 'present'
+    inherit: 'None'
+    propagation: 'None'
+  changed_when: no
+  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit.stderr"
   tags:
       - cat1
       - high
@@ -787,7 +804,7 @@
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'InheritOnly'
   changed_when: no
-  ignore_errors: yes
+  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit.stderr"
   with_items:
       - CREATOR OWNER
       - BUILTIN\Administrators
@@ -807,7 +824,7 @@
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'None'
   changed_when: no
-  ignore_errors: yes
+  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit.stderr"
   tags:
       - cat1
       - high
