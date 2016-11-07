@@ -3423,7 +3423,7 @@
       - patch
       - V-36720
 
- name: "MEDIUM | V-36722 | AUDIT | Permissions for the Application event log must prevent access by nonprivileged accounts."
+- name: "MEDIUM | V-36722 | AUDIT | Permissions for the Application event log must prevent access by nonprivileged accounts."
   win_shell: Get-Acl -PATH 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Application.evtx' | Format-List
   register: eventlog_permissions_audit
   check_mode: no
