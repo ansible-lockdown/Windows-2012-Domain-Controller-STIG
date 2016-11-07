@@ -767,7 +767,7 @@
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'None'
   changed_when: no
-  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit.stderr"
+  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit"
   with_items:
       - NT AUTHORITY\Authenticated Users
       - BUILTIN\Server Operators
@@ -787,7 +787,7 @@
     inherit: 'None'
     propagation: 'None'
   changed_when: no
-  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit.stderr"
+  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit"
   tags:
       - cat1
       - high
@@ -804,7 +804,7 @@
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'InheritOnly'
   changed_when: no
-  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit.stderr"
+  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit"
   with_items:
       - CREATOR OWNER
       - BUILTIN\Administrators
@@ -824,7 +824,7 @@
     inherit: 'ContainerInherit, ObjectInherit'
     propagation: 'None'
   changed_when: no
-  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit.stderr"
+  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit"
   tags:
       - cat1
       - high
