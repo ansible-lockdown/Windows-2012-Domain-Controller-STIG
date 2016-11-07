@@ -4333,7 +4333,6 @@
   register: auth_policy_successes_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat2
       - medium
@@ -4353,7 +4352,6 @@
   register: auth_policy_failures_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat2
       - medium
