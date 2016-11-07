@@ -426,17 +426,30 @@
 
 - name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
   win_shell: Get-Acl -Path \Windows\NTDS | Format-List
-  register: actived_permissions_audit2
+  register: actived_permissions2_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit"
   tags:
       - cat1
       - high
       - audit
       - V-8316
 
-#assumes "full access" means FullControl
+- name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
+  win_acl_inheritance:
+     path: '{{ item }}'
+     state: present
+  when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit"
+  with_items:
+      - NT AUTHORITY\SYSTEM
+      - BUILTIN\Administrators
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-8316
+
 - name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
   win_acl:
      path: '\Windows\NTDS'
@@ -446,9 +459,9 @@
      state: 'present'
      inherit: 'ContainerInherit, ObjectInherit'
      propagation: 'None'
-  ignore_errors: yes
+  when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit"
   with_items:
-      - NT AUTHORITY\SYSTEM
+      - NT AUTiHORITY\SYSTEM
       - BUILTIN\Administrators
   tags:
       - cat1
