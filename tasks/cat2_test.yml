@@ -3423,19 +3423,18 @@
       - patch
       - V-36720
 
-- name: "MEDIUM | V-36722 | AUDIT | Permissions for the Application event log must prevent access by nonprivileged accounts."
+ name: "MEDIUM | V-36722 | AUDIT | Permissions for the Application event log must prevent access by nonprivileged accounts."
   win_shell: Get-Acl -PATH 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Application.evtx' | Format-List
   register: eventlog_permissions_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "path_not_found not in eventlog_permissions_audit.stderr and eventlog_permissions_audit.stderr"
   tags:
       - cat2
       - medium
       - audit
       - V-36722
 
-#requires patched win_acl module
 - name: "MEDIUM | V-36722 | PATCH | Permissions for the Application event log must prevent access by nonprivileged accounts."
   win_acl:
      path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Application.evtx'
@@ -3445,6 +3444,7 @@
      state: 'present'
      inherit: 'ContainerInherit, ObjectInherit'
      propagation: 'None'
+  when: "path_not_found not in eventlog_permissions_audit.stderr and eventlog_permissions_audit.stderr"
   with_items:
       - 'NT SERVICE\Eventlog'
       - 'NT AUTHORITY\SYSTEM'
@@ -3460,14 +3460,13 @@
   register: security_evtx_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "path_not_found not in security_evtx_audit.stderr and security_evtx_audit.stderr"
   tags:
       - cat2
       - medium
       - audit
       - V-36723
 
-#requires patched win_acl module
 - name: "MEDIUM | V-36723 | PATCH | Permissions for the Security event log must prevent access by nonprivileged accounts."
   win_acl:
      path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Security.evtx'
@@ -3477,6 +3476,7 @@
      state: 'present'
      inherit: 'ContainerInherit, ObjectInherit'
      propagation: 'None'
+  when: "path_not_found not in security_evtx_audit.stderr and security_evtx_audit.stderr"
   with_items:
       - 'NT SERVICE\Eventlog'
       - 'NT AUTHORITY\SYSTEM'
@@ -3489,17 +3489,16 @@
 
 - name: "MEDIUM | V-36724 | AUDIT | Permissions for the System event log must prevent access by nonprivileged accounts."
   win_shell: Get-Acl -PATH 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\System.evtx' | Format-List
-  register: result
+  register: system_evtx_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "path_not_found not in system_evtx_audit.stderr and system_evtx_audit.stderr"
   tags:
       - cat2
       - medium
       - audit
       - V-36724
 
-#requires patched win_acl module
 - name: "MEDIUM | V-36724 | PATCH | Permissions for the System event log must prevent access by nonprivileged accounts."
   win_acl:
      path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\System.evtx'
@@ -3509,6 +3508,7 @@
      state: 'present'
      inherit: 'ContainerInherit, ObjectInherit'
      propagation: 'None'
+  when: "path_not_found not in system_evtx_audit.stderr and system_evtx_audit.stderr"
   with_items:
       - 'NT SERVICE\Eventlog'
       - 'NT AUTHORITY\SYSTEM'
