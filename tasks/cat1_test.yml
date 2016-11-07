@@ -429,7 +429,7 @@
   register: actived_permissions2_audit
   check_mode: no
   changed_when: no
-  failed_when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit"
+  failed_when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit.stderr"
   tags:
       - cat1
       - high
@@ -440,7 +440,7 @@
   win_acl_inheritance:
      path: '{{ item }}'
      state: present
-  when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit"
+  when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit.stderr"
   with_items:
       - NT AUTHORITY\SYSTEM
       - BUILTIN\Administrators
@@ -459,7 +459,7 @@
      state: 'present'
      inherit: 'ContainerInherit, ObjectInherit'
      propagation: 'None'
-  when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit"
+  when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit.stderr"
   with_items:
       - NT AUTiHORITY\SYSTEM
       - BUILTIN\Administrators
