@@ -396,7 +396,6 @@
       - audit
       - V-3382
 
-
 - name: "MEDIUM | V-3382 | PATCH | The system will be configured to meet the minimum session security requirement for NTLM SSP based clients."
   win_regedit: 
       key: 'HKLM:\System\CurrentControlSet\Control\Lsa\MSV1_0'
@@ -3065,7 +3064,6 @@
   register: removable_storage_successes_audit
   check_mode: no
   changed_when: no
-
   tags:
       - cat2
       - medium
@@ -3098,7 +3096,6 @@
       value: DriverLoadPolicy
       data: 1
       datatype: dword
-  changed_when: no
   tags:
       - cat2
       - medium
@@ -3123,7 +3120,6 @@
       value: NoUseStoreOpenWith
       data: 1
       datatype: dword
-  changed_when: no
   tags:
       - cat2
       - medium
@@ -3148,7 +3144,6 @@
       value: BlockUserInputMethodsForSignIn
       data: 1
       datatype: dword
-  changed_when: no
   tags:
       - cat2
       - medium
@@ -3173,7 +3168,6 @@
       value: EnumerateLocalUsers
       data: 0
       datatype: dword
-  changed_when: no
   tags:
       - cat2
       - medium
@@ -3198,7 +3192,6 @@
       value: DisableLockScreenAppNotifications
       data: 1
       datatype: dword
-  changed_when: no
   tags:
       - cat2
       - medium
@@ -3223,7 +3216,6 @@
       value: Enabled
       data: 0
       datatype: dword
-  changed_when: no
   tags:
       - cat2
       - medium
@@ -3248,7 +3240,6 @@
       value: DisablePasswordReveal
       data: 1
       datatype: dword
-  changed_when: no
   tags:
       - cat2
       - medium
