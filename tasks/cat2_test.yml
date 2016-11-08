@@ -3047,7 +3047,7 @@
       - patch
       - V-36657
 
- name: "MEDIUM | V-36667 | AUDIT | The system must be configured to audit Object Access - Removable Storage failures."
+- name: "MEDIUM | V-36667 | AUDIT | The system must be configured to audit Object Access - Removable Storage failures."
   win_shell: "AuditPol /get /subcategory:'Removable Storage'"
   register: removable_storage_failures_audit
   check_mode: no
