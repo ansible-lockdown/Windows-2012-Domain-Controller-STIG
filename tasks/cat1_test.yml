@@ -429,11 +429,11 @@
       - V-6834
 
 - name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
-  win_command: reg query HKLM\System\CurrentControlSet\Services\NTDS\Parameters
+  win_shell: Get-Acl -Path C:\Windows\NTDS | Format-List
   register: actived_permissions_audit
   check_mode: no
   changed_when: no
-  failed_when: "reg_not_found not in actived_permissions_audit.stderr and actived_permissions_audit.stderr"
+  failed_when: "path_not_found not in actived_permissions_audit.stderr and actived_permissions_audit.stderr"
   tags:
       - cat1
       - high
@@ -441,25 +441,40 @@
       - V-8316
 
 - name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
-  win_shell: Get-Acl -Path \Windows\NTDS | Format-List
-  register: actived_permissions2_audit
+  win_shell: (Get-Acl -Path \Windows\NTDS).Access.IdentityReference.Value
+  register: actived_permissions_audit
   check_mode: no
   changed_when: no
-  failed_when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit.stderr"
+  failed_when: "path_not_found not in actived_permissions_audit.stderr and actived_permissions_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-8316
 
+# Remove ACLs for users/groups not listed in STIG
+- name: "REMOVAL HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
+  win_acl:
+      path: '\Windows\NTDS'
+      user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
+      rights: 'FullControl'
+      type: '{{ item[1] }}'
+      state: 'absent'
+  when: "'Administrators' not in item[0] or 'allow' not in item[1]"
+  with_nested:
+      - "{{ actived_permissions_audit.stdout_lines }}"
+      - [ allow, deny ]
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-8316
+
 - name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
   win_acl_inheritance:
-     path: '{{ item }}'
+     path: '\Windows\NTDS'
      state: present
-  when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit"
-  with_items:
-      - NT AUTHORITY\SYSTEM
-      - BUILTIN\Administrators
+  when: "path_not_found not in actived_permissions_audit.stderr and actived_permissions_audit"
   tags:
       - cat1
       - high
@@ -475,16 +490,16 @@
      state: 'present'
      inherit: 'ContainerInherit, ObjectInherit'
      propagation: 'None'
-  when: "path_not_found not in actived_permissions2_audit.stderr and actived_permissions2_audit"
+  when: "path_not_found not in actived_permissions_audit.stderr and actived_permissions_audit"
   with_items:
-      - NT AUTiHORITY\SYSTEM
+      - NT AUTHORITY\SYSTEM
       - BUILTIN\Administrators
   tags:
       - cat1
       - high
       - patch
       - V-8316
-
+                                                                                       71,7          Bot
 - name: "HIGH | V-21973 | AUDIT | Autoplay must be turned off for non-volume devices."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume
   register: autoplay_nonvolume_audit
