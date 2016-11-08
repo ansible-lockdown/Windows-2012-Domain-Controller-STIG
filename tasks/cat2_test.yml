@@ -3047,7 +3047,7 @@
       - patch
       - V-36657
 
-- name: "MEDIUM | V-36667 | AUDIT | The system must be configured to audit Object Access - Removable Storage failures."
+ name: "MEDIUM | V-36667 | AUDIT | The system must be configured to audit Object Access - Removable Storage failures."
   win_shell: "AuditPol /get /subcategory:'Removable Storage'"
   register: removable_storage_failures_audit
   check_mode: no
@@ -3060,6 +3060,7 @@
 
 - name: "MEDIUM | V-36667 | PATCH | The system must be configured to audit Object Access - Removable Storage failures."
   win_shell: AuditPol /set /subcategory:"Removable Storage" /failure:enable
+  when: "'Failure' not in removable_storage_failures_audit.stdout"
   tags:
       - cat2
       - medium
@@ -3079,6 +3080,7 @@
 
 - name: "MEDIUM | V-36668 | PATCH | The system must be configured to audit Object Access - Removable Storage successes."
   win_shell: AuditPol /set /subcategory:"Removable Storage" /success:enable
+  when: "'Success' not in removable_storage_successes_audit.stdout"
   tags:
       - cat2
       - medium
