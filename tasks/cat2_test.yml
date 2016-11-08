@@ -2932,6 +2932,7 @@
 
 - name: "MEDIUM | V-33663 | PATCH | The system must be configured to audit DS Access - Directory Service Access successes."
   win_shell: AuditPol /set /subcategory:"Directory Service Access" /success:enable
+  when: "'Success' not in directory_access_successes_audit.stdout"
   tags:
       - cat2
       - medium
@@ -2951,6 +2952,7 @@
 
 - name: "MEDIUM | V-33664 | PATCH | The system must be configured to audit DS Access - Directory Service Access failures."
   win_shell: AuditPol /set /subcategory:"Directory Service Access" /failure:enable
+  when: "'Failure' not in directory_access_failures_audit.stdout"
   tags:
       - cat2
       - medium
@@ -2970,6 +2972,7 @@
 
 - name: "MEDIUM | V-33665 | PATCH | The system must be configured to audit DS Access - Directory Service Changes successes."
   win_shell: AuditPol /set /subcategory:"Directory Service Changes" /success:enable
+  when: "'Success' not in directory_changes_successes_audit.stdout"
   tags:
       - cat2
       - medium
@@ -2988,7 +2991,8 @@
       - V-33666
 
 - name: "MEDIUM | V-33666 | PATCH | The system must be configured to audit DS Access - Directory Service Changes failures."
-  win_shell: AuditPol /set /subcategory:"Directory Service Access" /failure:enable
+  win_shell: AuditPol /set /subcategory:"Directory Service Changes" /failure:enable
+  when: "'Failure' not in directory_changes_failures_audit.stdout"
   tags:
       - cat2
       - medium
