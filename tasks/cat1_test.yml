@@ -69,29 +69,19 @@
       - V-1127
 
 - name: "HIGH | V-1152 | AUDIT | Anonymous access to the registry must be restricted."
-  win_command: reg query HKLM\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg
+  win_shell: Get-Acl -PATH 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg' | Format-List
   register: anon_registry_access_audit
   check_mode: no
   changed_when: no
-  failed_when: "reg_not_found not in anon_registry_access_audit.stderr and anon_registry_access_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-1152
 
-- name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
-  win_regedit:
-    key: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\'
-  tags:
-       - cat1
-       - high
-       - patch
-       - V-1152
-
 - name: "HIGH | V-1152 | AUDIT | Anonymous access to the registry must be restricted."
-  win_shell: Get-Acl -PATH 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg' | Format-List
-  register: anon_registry_access_audit2
+  win_shell: (Get-Acl -PATH 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg').Access.IdentityReference.Value
+  register: anon_registry_access_audit
   check_mode: no
   changed_when: no
   tags:
@@ -100,7 +90,25 @@
       - audit
       - V-1152
 
-- name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
+# Remove ACLs for users/groups not listed in STIG
+- name: "REMOVAL HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
+  win_acl:
+      path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg'
+      user: '{{ item[0] }}'
+      rights: 'FullControl'
+      type: '{{ item[1] }}'
+      state: 'absent'
+  when: "'Administrators' not in item[0] or 'allow' not in item[1]"
+  with_nested:
+      - "{{ anon_registry_access_audit.stdout_lines }}"
+      - [ allow, deny ]
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-1152
+
+- name: "HIGH | V-1152 | PATCH | Admin Anonymous access to the registry must be restricted."
   win_acl:
     path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\'
     user: 'BUILTIN\Administrators'
@@ -115,20 +123,22 @@
        - patch
        - V-1152
 
-- name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
+- name: "HIGH | V-1152 | PATCH | BO Anonymous access to the registry must be restricted."
   win_acl:
     path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\'
     user: 'BUILTIN\Backup Operators'
     rights: 'ReadKey'
     type: 'allow'
     state: 'present'
+    inherit: 'None'
+    propagation: 'None'
   tags:
        - cat1
        - high
        - patch
        - V-1152
 
-- name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
+- name: "HIGH | V-1152 | PATCH | LS Anonymous access to the registry must be restricted."
   win_acl:
     path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\'
     user: 'NT AUTHORITY\LOCAL SERVICE'
@@ -143,7 +153,7 @@
        - patch
        - V-1152
 
-- name: "HIGH | V-1153 | AUDIT | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
+- na- name: "HIGH | V-1153 | AUDIT | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
   win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v LMCompatibilityLevel
   register: lanMan_authentication_audit
   check_mode: no
