@@ -2920,7 +2920,10 @@
       - V-26606
 
 - name: "MEDIUM | V-33663 | AUDIT | The system must be configured to audit DS Access - Directory Service Access successes."
-  win_shell: "AuditPol /get /category:*"
+  win_shell: "AuditPol /get /subcategory:'Directory Service Access'"
+  register: directory_access_successes_audit
+  check_mode: no
+  changed_when: no
   tags:
       - cat2
       - medium
@@ -2936,7 +2939,7 @@
       - V-33663
 
 - name: "MEDIUM | V-33664 | AUDIT | The system must be configured to audit DS Access - Directory Service Access failures."
-  win_shell: "AuditPol /get /category:*"
+  win_shell: "AuditPol /get /subcategory:'Directory Service Access'"
   register: directory_access_failures_audit
   check_mode: no
   changed_when: no
@@ -2955,7 +2958,7 @@
       - V-33664
 
 - name: "MEDIUM | V-33665 | AUDIT | The system must be configured to audit DS Access - Directory Service Changes successes."
-  win_shell: "AuditPol /get /category:*"
+  win_shell: "AuditPol /get /subcategory:'Directory Service Changes'"
   register: directory_changes_successes_audit
   check_mode: no
   changed_when: no
@@ -2974,7 +2977,7 @@
       - V-33665
 
 - name: "MEDIUM | V-33666 | AUDIT | The system must be configured to audit DS Access - Directory Service Changes failures."
-  win_shell: "AuditPol /get /category:*"
+  win_shell: "AuditPol /get /subcategory:'Directory Service Changes'"
   register: directory_changes_failures_audit
   check_mode: no
   changed_when: no
@@ -3041,7 +3044,7 @@
       - V-36657
 
 - name: "MEDIUM | V-36667 | AUDIT | The system must be configured to audit Object Access - Removable Storage failures."
-  win_shell: "AuditPol /get /category:*"
+  win_shell: "AuditPol /get /subcategory:'Removable Storage'"
   register: removable_storage_failures_audit
   check_mode: no
   changed_when: no
@@ -3060,7 +3063,7 @@
       - V-36667
 
 - name: "MEDIUM | V-36668 | AUDIT | The system must be configured to audit Object Access - Removable Storage successes."
-  win_shell: "AuditPol /get /category:*"
+  win_shell: "AuditPol /get /subcategory:'Removable Storage'"
   register: removable_storage_successes_audit
   check_mode: no
   changed_when: no
@@ -3759,7 +3762,7 @@
       - V-40178
 
 - name: "MEDIUM | V-40200 | AUDIT | The system must be configured to audit Object Access - Central Access Policy Staging failures."
-  win_shell: "AuditPol /get /category:*"
+  win_shell: "AuditPol /get /subcategory:'Central Policy Staging'"
   register: central_access_failure_audit
   check_mode: no
   changed_when: no
@@ -3778,7 +3781,7 @@
       - V-40200
 
 - name: "MEDIUM | V-40202 | AUDIT | The system must be configured to audit Object Access - Central Access Policy Staging successes."
-  win_shell: "AuditPol /get /category:*"
+  win_shell: "AuditPol /get /subcategory:'Central Policy Staging'"
   register: central_access_success_audit
   check_mode: no
   changed_when: no
@@ -4320,7 +4323,7 @@
       - V-57479
 
 - name: "MEDIUM | V-57633 | AUDIT | The system must be configured to audit Policy Change - Authorization Policy Change successes."
-  win_shell: "AuditPol /get /category:*"
+  win_shell: "AuditPol /get /subcategory:'Authorization Policy Change'"
   register: auth_policy_successes_audit
   check_mode: no
   changed_when: no
@@ -4339,7 +4342,7 @@
       - V-57633
 
 - name: "MEDIUM | V-57635 | AUDIT | The system must be configured to audit Policy Change - Authorization Policy Change failures."
-  win_shell: "AuditPol /get /category:*"
+  win_shell: "AuditPol /get /subcategory:'Authorization Policy Change'"
   register: auth_policy_failures_audit
   check_mode: no
   changed_when: no
