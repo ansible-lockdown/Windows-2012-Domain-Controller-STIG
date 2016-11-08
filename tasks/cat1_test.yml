@@ -73,6 +73,7 @@
   register: anon_registry_access_audit
   check_mode: no
   changed_when: no
+  failed_when: "path_not_found not in anon_registry_access_audit.stderr and anon_registry_access_audit.stderr"
   tags:
       - cat1
       - high
@@ -94,6 +95,7 @@
   register: anon_registry_access_audit
   check_mode: no
   changed_when: no
+  failed_when: "path_not_found not in anon_registry_access_audit.stderr and anon_registry_access_audit.stderr"
   tags:
       - cat1
       - high
@@ -551,6 +553,7 @@
   register: standard_user_read_audit
   check_mode: no
   changed_when: no
+  failed_when: "path_not_found not in standard_user_read_audit.stderr and standard_user_read_audit.stderr"
   tags:
       - cat1
       - high
@@ -562,6 +565,7 @@
   register: standard_user_read_audit
   check_mode: no
   changed_when: no
+  failed_when: "path_not_found not in standard_user_read_audit.stderr and standard_user_read_audit.stderr"
   tags:
       - cat1
       - high
@@ -653,6 +657,7 @@
   register: standard_read_active_audit
   check_mode: no
   changed_when: no
+  failed_when: "path_not_found not in standard_read_active_audit.stderr and standard_read_active_audit.stderr"
   tags:
       - cat1
       - high
@@ -665,12 +670,14 @@
   check_mode: no
   changed_when: no
   when: ansible_architecture == "64-bit"
+  failed_when: "path_not_found not in standard_read_active2_audit.stderr and standard_read_active2_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-32282
 
+# Remove ACLs for users/groups not listed in STIG
 - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
   win_acl:
      path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
@@ -688,6 +695,7 @@
       - patch
       - V-32282
 
+# Remove ACLs for users/groups not listed in STIG
 - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
   win_acl:
      path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
