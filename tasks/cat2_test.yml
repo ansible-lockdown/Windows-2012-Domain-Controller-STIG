@@ -4343,6 +4343,7 @@
 
 - name: "MEDIUM | V-57633 | PATCH | The system must be configured to audit Policy Change - Authorization Policy Change successes."
   win_shell: AuditPol /set /subcategory:"Authorization Policy Change" /success:enable
+  when: "'Success' not in auth_policy_successes_audit.stdout"
   tags:
       - cat2
       - medium
@@ -4361,7 +4362,8 @@
       - V-57635
 
 - name: "MEDIUM | V-57635 | PATCH | The system must be configured to audit Policy Change - Authorization Policy Change failures."
-  win_shell: AuditPol /set /subcategory:"Central Policy Staging" /failure:enable
+  win_shell: AuditPol /set /subcategory:"Authorization Policy Change" /failure:enable
+  when: "'Failure' not in auth_policy_failures_audit.stdout"
   tags:
       - cat2
       - medium
