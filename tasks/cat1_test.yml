@@ -887,6 +887,7 @@
       - V-39331
 
 ###################### block start - conditionally apply patches if path exists #########################
+
 - block:
    - name: "HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
      win_acl_inheritance:
