@@ -106,6 +106,16 @@
 - block:
 
    - name: "REMOVAL HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
+     win_acl_inheritance:
+        path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg'
+        state: 'absent'
+     tags:
+         - cat1
+         - high
+         - patch
+         - V-1152
+
+   - name: "REMOVAL HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
      win_acl:
         path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg'
         user: '{{ item[0] }}'
