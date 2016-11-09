@@ -485,7 +485,7 @@
          - V-8316
   when: "path_not_found not in actived_permissions_audit.stderr and actived_permissions_audit"
 ### block end ###
-                                                                                      71,7          Bot
+                                                                                     
 - name: "HIGH | V-21973 | AUDIT | Autoplay must be turned off for non-volume devices."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume
   register: autoplay_nonvolume_audit
@@ -819,7 +819,7 @@
       - patch
       - V-36718
 
-me: "HIGH | V-39331 | AUDIT | The Active Directory SYSVOL directory must have the proper access control permissions."
+- name: "HIGH | V-39331 | AUDIT | The Active Directory SYSVOL directory must have the proper access control permissions."
   win_shell: Get-Acl -Path '\Windows\SYSVOL' | Format-List
   register: sysvol_permissions_audit
   check_mode: no
