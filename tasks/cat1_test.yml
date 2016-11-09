@@ -104,6 +104,7 @@
 
 ######################## block start - conditionally apply patches if path exists #######################
 - block:
+
    - name: "REMOVAL HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
      win_acl:
         path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg'
@@ -144,6 +145,7 @@
          - high
          - patch
          - V-1152
+
   when: "path_not_found not in anon_registry_access_audit.stderr and anon_registry_access_audit"
 ###################################### block end ########################################################
 
@@ -437,6 +439,7 @@
 
 ################# block start - conditionally apply patches if path exists ##############################
 - block:
+
    - name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
      win_acl_inheritance:
         path: '\Windows\NTDS'
@@ -481,6 +484,7 @@
          - high
          - patch
          - V-8316
+
   when: "path_not_found not in actived_permissions_audit.stderr and actived_permissions_audit"
 ###################################### block end ########################################################
                                                                                      
@@ -557,6 +561,7 @@
 
 ######################## block start - conditionally apply patches if path exists #######################
 - block:
+
    - name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
      win_acl_inheritance:
         path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
@@ -619,6 +624,7 @@
          - high
          - patch
          - V-26070
+
   when: "path_not_found not in standard_user_read_audit.stderr and standard_user_read_audit"
 ########################################### block end ###################################################
 
@@ -673,6 +679,7 @@
 
 ###################### block start - conditionally apply patches if path exists #########################
 - block:
+
    - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
      win_acl_inheritance:
         path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
@@ -735,11 +742,13 @@
          - high
          - patch
          - V-32282
+
   when: "path_not_found not in standard_read_active_audit.stderr and standard_read_active_audit"
 ######################################### block end #####################################################
 
 ###################### block start - conditionally apply patches if path exists #########################
 - block:
+
    - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
      win_acl_inheritance:
         path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
@@ -802,6 +811,7 @@
          - high
          - patch
          - V-32282
+
   when: "ansible_architecture == '64-bit' and path_not_found not in standard_read_active2_audit.stderr and standard_read_active2_audit"
 ############################################ block end ##################################################  
 - name: "HIGH | V-34974 | AUDIT | The Windows Installer Always install with elevated privileges option must be disabled."
