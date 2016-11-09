@@ -456,7 +456,7 @@
         rights: 'FullControl'
         type: '{{ item[1] }}'
         state: 'absent'
-     when: "'Administrators' not in item[0] or 'allow' not in item[1]"
+     when: "not ('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
      with_nested:
          - "{{ actived_permissions_audit.stdout_lines }}"
          - [ allow, deny ]
