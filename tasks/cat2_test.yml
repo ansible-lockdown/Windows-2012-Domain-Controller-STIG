@@ -3512,25 +3512,69 @@
       - audit
       - V-36723
 
-- name: "MEDIUM | V-36723 | PATCH | Permissions for the Security event log must prevent access by nonprivileged accounts."
-  win_acl:
-     path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Security.evtx'
-     user: '{{ item }}'
-     rights: 'FullControl'
-     type: 'allow'
-     state: 'present'
-     inherit: 'ContainerInherit, ObjectInherit'
-     propagation: 'None'
-  when: "path_not_found not in security_evtx_audit.stderr and security_evtx_audit.stderr"
-  with_items:
-      - 'NT SERVICE\Eventlog'
-      - 'NT AUTHORITY\SYSTEM'
-      - 'BUILTIN\Administrators'
+- name: "MEDIUM | V-36723 | AUDIT | Permissions for the Security event log must prevent access by nonprivileged accounts."
+  win_shell: (Get-Acl -PATH 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Security.evtx').Access.IdentityReference.Value
+  register: security_evtx_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in security_evtx_audit.stderr and security_evtx_audit.stderr"
   tags:
       - cat2
       - medium
-      - patch
+      - audit
       - V-36723
+
+###################### block start - conditionally apply patches if path exists #########################
+
+- block:
+
+   - name: "REMOVAL MEDIUM | V-36723 | PATCH | Permissions for the Security event log must prevent access by nonprivileged accounts."
+     win_acl_inheritance:
+        path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Security.evtx'
+        state: 'absent'
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-36723
+
+   - name: "REMOVAL MEDIUM | V-36723 | PATCH | Permissions for the Security event log must prevent access by nonprivileged accounts."
+     win_acl:
+        path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Security.evtx'
+        user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES") }}'
+        rights: 'FullControl'
+        type: '{{ item[1] }}'
+        state: 'absent'
+     when: "not('EventLog' in item[0] or 'SYSTEM' in item[0] or 'Administrators' in item[0]) or 'allow' not in item[1]"
+     with_nested:
+         - "{{ security_evtx_audit.stdout_lines }}"
+         - [ allow, deny ]
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-36723
+
+   - name: "MEDIUM | V-36723 | PATCH | Permissions for the Security event log must prevent access by nonprivileged accounts."
+     win_acl:
+        path: 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\Security.evtx'
+        user: '{{ item }}'
+        rights: 'FullControl'
+        type: 'allow'
+        state: 'present'
+        inherit: 'ContainerInherit, ObjectInherit'
+        propagation: 'None'
+     with_items:
+         - 'NT SERVICE\Eventlog'
+         - 'NT AUTHORITY\SYSTEM'
+         - 'BUILTIN\Administrators'
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-36723
+  when: "path_not_found not in security_evtx_audit.stderr and security_evtx_audit"
+######################################### block end #####################################################
 
 - name: "MEDIUM | V-36724 | AUDIT | Permissions for the System event log must prevent access by nonprivileged accounts."
   win_shell: Get-Acl -PATH 'C:\WINDOWS\SYSTEM32\WINEVT\LOGS\System.evtx' | Format-List
