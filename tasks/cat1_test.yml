@@ -671,115 +671,139 @@
       - audit
       - V-32282
 
-# Remove ACLs for users/groups not listed in STIG
-- name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-  win_acl:
-     path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
-     user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
-     rights: 'FullControl'
-     type: '{{ item[1] }}'
-     state: 'absent'
-  when: "'Administrators' not in item[0] or 'allow' not in item[1]"
-  with_nested:
-      - "{{ standard_read_active_audit.stdout_lines }}"
-      - [ allow, deny ]
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-32282
+###################### block start - conditionally apply patches if path exists #########################
+- block:
+   - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+     win_acl_inheritance:
+        path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
+        state: absent
+     tags:
+         - cat1
+         - high
+         - patch
+         - V-32282
 
-# Remove ACLs for users/groups not listed in STIG
-- name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-  win_acl:
-     path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
-     user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
-     rights: 'FullControl'
-     type: '{{ item[1] }}'
-     state: 'absent'
-  when: "ansible_architecture == '64-bit' and 'Administrators' not in item[0] or 'allow' not in item[1]"
-  with_nested:
-      - "{{ standard_read_active2_audit.stdout_lines }}"
-      - [ allow, deny ]
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-32282
+   - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+     win_acl:
+        path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
+        user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
+        rights: 'FullControl'
+        type: '{{ item[1] }}'
+        state: 'absent'
+     when: "not('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
+     with_nested:
+         - "{{ standard_read_active_audit.stdout_lines }}"
+         - [ allow, deny ]
+     tags:
+         - cat1
+         - high
+         - patch
+         - V-32282
 
-- name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-  win_acl:
-    path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
-    user: "{{ item.user }}"
-    rights: "{{ item.rights }}"
-    type: 'allow'
-    state: 'present'
-    inherit: "{{ item.inherit }}"
-    propagation: "{{ item.propagation }}"
-  with_items:
-      - user: 'BUILTIN\Users'
-        rights: 'ReadKey'
-        inherit: 'ContainerInherit, ObjectInherit'
-        propagation: 'None'
-      - user: 'BUILTIN\Administrators'
-        rights: 'FullControl'
-        inherit: 'ContainerInherit, ObjectInherit'
-        propagation: 'None'
-      - user: 'NT AUTHORITY\SYSTEM'
-        rights: 'FullControl'
-        inherit: 'ContainerInherit, ObjectInherit'
-        propagation: 'None'
-      - user: 'CREATOR OWNER'
-        rights: 'FullControl'
-        inherit: 'ContainerInherit, ObjectInherit'
-        propagation: 'InheritOnly'
-      - user: 'ALL APPLICATION PACKAGES'
-        rights: 'ReadKey'
-        inherit: 'ContainerInherit, ObjectInherit'
-        propagation: 'None'
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-32282
+   - name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+     win_acl:
+        path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
+        user: "{{ item.user }}"
+        rights: "{{ item.rights }}"
+        type: 'allow'
+        state: 'present'
+        inherit: "{{ item.inherit }}"
+        propagation: "{{ item.propagation }}"
+     with_items:
+         - user: 'BUILTIN\Users'
+           rights: 'ReadKey'
+           inherit: 'ContainerInherit, ObjectInherit'
+           propagation: 'None'
+         - user: 'BUILTIN\Administrators'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit, ObjectInherit'
+           propagation: 'None'
+         - user: 'NT AUTHORITY\SYSTEM'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit, ObjectInherit'
+           propagation: 'None'
+         - user: 'CREATOR OWNER'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit'
+           propagation: 'InheritOnly'
+         - user: 'ALL APPLICATION PACKAGES'
+           rights: 'ReadKey'
+           inherit: 'ContainerInherit, ObjectInherit'
+           propagation: 'None'
+     tags:
+         - cat1
+         - high
+         - patch
+         - V-32282
+  when: "path_not_found not in standard_read_active_audit.stderr and standard_read_active_audit"
+######################################### block end #####################################################
 
-- name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-  win_acl:
-    path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
-    user: "{{ item.user }}"
-    rights: "{{ item.rights }}"
-    type: 'allow'
-    state: 'present'
-    inherit: "{{ item.inherit }}"
-    propagation: "{{ item.propagation }}"
-  when: ansible_architecture == '64-bit'
-  with_items:
-      - user: 'BUILTIN\Users'
-        rights: 'ReadKey'
-        inherit: 'ContainerInherit, ObjectInherit'
-        propagation: 'None'
-      - user: 'BUILTIN\Administrators'
-        rights: 'FullControl'
-        inherit: 'ContainerInherit, ObjectInherit'
-        propagation: 'None'
-      - user: 'NT AUTHORITY\SYSTEM'
-        rights: 'FullControl'
-        inherit: 'ContainerInherit, ObjectInherit'
-        propagation: 'None'
-      - user: 'CREATOR OWNER'
-        rights: 'FullControl'
-        inherit: 'ContainerInherit, ObjectInherit'
-        propagation: 'InheritOnly'
-      - user: 'ALL APPLICATION PACKAGES'
-        rights: 'ReadKey'
-        inherit: 'ContainerInherit, ObjectInherit'
-        propagation: 'None'
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-32282
+###################### block start - conditionally apply patches if path exists #########################
+- block:
+   - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+     win_acl_inheritance:
+        path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
+        state: absent
+     tags:
+         - cat1
+         - high
+         - patch
+         - V-32282
 
+   - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+     win_acl:
+        path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
+        user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
+        rights: 'FullControl'
+        type: '{{ item[1] }}'
+        state: 'absent'
+     when: "not('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
+     with_nested:
+         - "{{ standard_read_active2_audit.stdout_lines }}"
+         - [ allow, deny ]
+     tags:
+         - cat1
+         - high
+         - patch
+         - V-32282
+
+   - name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+     win_acl:
+        path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
+        user: "{{ item.user }}"
+        rights: "{{ item.rights }}"
+        type: 'allow'
+        state: 'present'
+        inherit: "{{ item.inherit }}"
+        propagation: "{{ item.propagation }}"
+     with_items:
+         - user: 'BUILTIN\Users'
+           rights: 'ReadKey'
+           inherit: 'ContainerInherit, ObjectInherit'
+           propagation: 'None'
+         - user: 'BUILTIN\Administrators'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit, ObjectInherit'
+           propagation: 'None'
+         - user: 'NT AUTHORITY\SYSTEM'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit, ObjectInherit'
+           propagation: 'None'
+         - user: 'CREATOR OWNER'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit'
+           propagation: 'InheritOnly'
+         - user: 'ALL APPLICATION PACKAGES'
+           rights: 'ReadKey'
+           inherit: 'ContainerInherit, ObjectInherit'
+           propagation: 'None'
+     tags:
+         - cat1
+         - high
+         - patch
+         - V-32282
+  when: "ansible_architecture == '64-bit' and path_not_found not in standard_read_active2_audit.stderr and standard_read_active2_audit"
+############################################ block end ##################################################  
 - name: "HIGH | V-34974 | AUDIT | The Windows Installer Always install with elevated privileges option must be disabled."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Installer\ /v AlwaysInstallElevated
   register: install_elevated_disabled_audit
