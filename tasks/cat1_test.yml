@@ -438,7 +438,6 @@
 
 ### block start - conditionally apply patches if path exists ###
 - block:
-  # Remove ACLs for users/groups not listed in STIG
    - name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
      win_acl_inheritance:
         path: '\Windows\NTDS'
@@ -559,7 +558,16 @@
 
 ### block start - conditionally apply patches if path exists ###
 - block:
-   # Remove ACLs for users/groups not listed in STIG
+   - name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
+     win_acl_inheritance:
+        path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+        state: absent
+     tags:
+         - cat1
+         - high
+         - patch
+         - V-26070
+
    - name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
      win_acl:
         path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
