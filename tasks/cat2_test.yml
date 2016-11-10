@@ -121,17 +121,17 @@
       - audit
       - V-1162
 
-- name: "MEDIUM | V-1162 | PATCH | The Windows SMB server will perform SMB packet signing when possible."
-  win_regedit: 
-      key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters'
-      value: EnableSecuritySignature
-      data: 1
-      datatype: dword
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-1162
+#- name: "MEDIUM | V-1162 | PATCH | The Windows SMB server will perform SMB packet signing when possible."
+#  win_regedit: 
+#      key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters'
+#      value: EnableSecuritySignature
+#      data: 1
+#      datatype: dword
+#  tags:
+#      - cat2
+#      - medium
+#      - patch
+#      - V-1162
 
 - name: "MEDIUM | V-1163 | AUDIT | Outgoing secure channel traffic will be encrypted when possible."
   win_command: reg query HKLM\System\CurrentControlSet\Services\Netlogon\Parameters /v SealSecureChannel
@@ -3339,17 +3339,17 @@
       - audit
       - V-36713
 
-- name: "MEDIUM | V-36713 | PATCH | The Windows Remote Management (WinRM) client must not allow unencrypted traffic."
-  win_regedit:
-      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Client\'
-      value: AllowUnencryptedTraffic
-      data: 0
-      datatype: dword
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-36713
+#- name: "MEDIUM | V-36713 | PATCH | The Windows Remote Management (WinRM) client must not allow unencrypted traffic."
+#  win_regedit:
+#      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Client\'
+#      value: AllowUnencryptedTraffic
+#      data: 0
+#      datatype: dword
+#  tags:
+#      - cat2
+#      - medium
+#      - patch
+#      - V-36713
 
 - name: "MEDIUM | V-36714 | AUDIT | The Windows Remote Management (WinRM) client must not use Digest authentication."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Client\ /v AllowDigest
@@ -3363,17 +3363,17 @@
       - audit
       - V-36714
 
-- name: "MEDIUM | V-36714 | PATCH | The Windows Remote Management (WinRM) client must not use Digest authentication."
-  win_regedit:
-      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Client\'
-      value: AllowDigest
-      data: 0
-      datatype: dword
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-36714
+#- name: "MEDIUM | V-36714 | PATCH | The Windows Remote Management (WinRM) client must not use Digest authentication."
+#  win_regedit:
+#      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Client\'
+#      value: AllowDigest
+#      data: 0
+#      datatype: dword
+#  tags:
+#      - cat2
+#      - medium
+#      - patch
+#      - V-36714
 
 - name: "MEDIUM | V-36719 | AUDIT | The Windows Remote Management (WinRM) service must not allow unencrypted traffic."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\ /v AllowUnencryptedTraffic
@@ -3387,17 +3387,17 @@
       - audit
       - V-36719
 
-- name: "MEDIUM | V-36719 | PATCH | The Windows Remote Management (WinRM) service must not allow unencrypted traffic."
-  win_regedit:
-      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Service\'
-      value: AllowUnencryptedTraffic
-      data: 0
-      datatype: dword
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-36719
+#- name: "MEDIUM | V-36719 | PATCH | The Windows Remote Management (WinRM) service must not allow unencrypted traffic."
+#  win_regedit:
+#      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Service\'
+#      value: AllowUnencryptedTraffic
+#      data: 0
+#      datatype: dword
+#  tags:
+#      - cat2
+#      - medium
+#      - patch
+#      - V-36719
 
 - name: "MEDIUM | V-36720 | AUDIT | The Windows Remote Management (WinRM) service must not store RunAs credentials."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\ /v DisableRunAs
