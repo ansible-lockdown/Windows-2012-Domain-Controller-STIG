@@ -3886,92 +3886,91 @@
       - audit
       - V-40178
 
-- name: "MEDIUM | V-40178 | PATCH | Permissions for system drive root directory must conform to minimum requirements."
-  win_acl_inheritance:
-     path: 'C:\'
-     state: 'absent'
+- name: "MEDIUM | V-40178 | AUDIT | Permissions for system drive root directory must conform to minimum requirements."
+  win_shell: (Get-Acl -PATH 'C:').Access.IdentityReference.Value
+  register: root_permissions_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in root_permissions_audit.stderr and root_permissions_audit.stderr"
   tags:
       - cat2
       - medium
-      - patch
+      - audit
       - V-40178
 
-# Remove ACLs for users/groups not listed in STIG
-- name: "MEDIUM | V-40178 | PATCH | Permissions for system drive root directory must conform to minimum requirements."
-  win_acl:
-     path: 'C:\'
-     user: '{{ item[0] }}'
-     rights: 'AppendData,ChangePermissions,Delete,DeleteSubdirectoriesAndFiles,ExecuteFile,FullControl,ListDirectory,Modify,Read,ReadAndExecute,ReadAttributes,ReadData,ReadExtendedAttributes,ReadPermissions,Synchronize,TakeOwnership,Traverse,Write,WriteAttributes,WriteData,WriteExtendedAttributes'
-     type: '{{ item[1] }}'
-     state: 'absent'
-  when: "'SYSTEM' not in item[0] and 'Administrators' not in item[0] and 'Users' not in item[0] and 'CREATOR OWNER' not in item[0] or 'allow' not in item[1]"
-  ignore_errors: yes
-  with_nested:
-      - '{{ root_permissions_audit.stdout_lines }}'
-      - [ allow, deny ]
-  tags:
-      - cat2
-      - mediu
-      - patch
-      - V-40178
+###################### block start - conditionally apply patches if paths exist #########################
 
-- name: "MEDIUM | V-40178 | PATCH | Permissions for system drive root directory must conform to minimum requirements."
-  win_acl:
-     path: 'C:\'
-     user: '{{ item }}'
-     rights: 'FullControl'
-     type: 'allow'
-     state: 'present'
-     inherit: 'ContainerInherit, ObjectInherit'
-     propagation: 'None'
+- block:
+
+   - name: "MEDIUM | V-40178 | PATCH | Permissions for system drive root directory must conform to minimum requirements."
+     win_acl_inheritance:
+        path: 'C:'
+        state: 'absent'
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-40178
+
+   - name: "REMOVAL MEDIUM | V-40178 | PATCH | Permissions for system drive root directory must conform to minimum requirements."
+     win_acl:
+        path: 'C:'
+        user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
+        rights: 'FullControl'
+        type: '{{ item[1] }}'
+        state: 'absent'
+     when: "not('SYSTEM' in item[0] or 'Administrators' in item[0] or 'CREATOR OWNER' in item[0]) or 'allow' not in item[1]"
+     with_nested:
+         - '{{ root_permissions_audit.stdout_lines }}'
+         - [ allow, deny ]
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-40178
+
+   - name: "MEDIUM | V-40178 | PATCH | Permissions for system drive root directory must conform to minimum requirements."
+     win_acl:
+        path: 'C:'
+        user: '{{ item.user }}'
+        rights: '{{ item.rights }}'
+        type: 'allow'
+        state: 'present'
+        inherit: '{{ item.inherit }}'
+        propagation: '{{ item.propagation }}'
+     with_items:
+         - user: 'NT AUTHORITY\SYSTEM'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit,ObjectInherit'
+           propagation: 'None'
+         - user: 'BUILTIN\Administrators'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit,ObjectInherit'
+           propagation: 'None'
+         - user: 'BUILTIN\Users'
+           rights: 'ReadAndExecute'
+           inherit: 'ContainerInherit,ObjectInherit'
+           propagation: 'None'
+         - user: 'BUILTIN\Users'
+           rights: 'AppendData'
+           inherit: 'ContainerInherit'
+           propagation: 'None'
+         - user: 'BUILTIN\Users'
+           rights: 'CreateFiles,WriteData'
+           inherit: 'ContainerInherit'
+           propagation: 'InheritOnly'
+         - user: 'CREATOR OWNER'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit,ObjectInherit'
+           propagation: 'InheritOnly'
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-40178
+
   when: "path_not_found not in root_permissions_audit.stderr and root_permissions_audit"
-  with_items:
-      - NT AUTHORITY\SYSTEM
-      - BUILTIN\Administrators
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-40178
-
-- name: "MEDIUM | V-40178 | PATCH | Permissions for system drive root directory must conform to minimum requirements."
-  win_acl:
-     path: 'C:\'
-     user: 'BUILTIN\Users'
-     rights: '{{ item.rights }}'
-     type: 'allow'
-     state: 'present'
-     inherit: '{{ item.inherit }}'
-     propagation: '{{ item.propagation }}'
-  when: "path_not_found not in root_permissions_audit.stderr and root_permissions_audit"
-  with_items:
-      - rights: 'ReadAndExecute'
-        inherit: 'ContainerInherit, ObjectInherit'
-        propagation: 'None'
-      - rights: 'AppendData'
-        inherit: 'ContainerInherit'
-        propagation: 'None'
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-40178
-
-- name: "MEDIUM | V-40178 | PATCH | Permissions for system drive root directory must conform to minimum requirements."
-  win_acl:
-     path: 'C:\'
-     user: 'CREATOR OWNER'
-     rights: 'FullControl'
-     type: 'allow'
-     state: 'present'
-     inherit: 'ContainerInherit, ObjectInherit'
-     propagation: 'InheritOnly'
-  when: "path_not_found not in root_permissions_audit.stderr and root_permissions_audit"
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-40178
+######################################### block end #####################################################
 
 - name: "MEDIUM | V-40200 | AUDIT | The system must be configured to audit Object Access - Central Access Policy Staging failures."
   win_shell: "AuditPol /get /subcategory:'Central Policy Staging'"
