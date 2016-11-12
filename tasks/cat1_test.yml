@@ -171,17 +171,17 @@
       - audit
       - V-1153
 
-# - name: "HIGH | V-1153 | PATCH | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
-#   win_regedit:
-#     key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
-#     value: LMCompatibilityLevel
-#     data: 5
-#     datatype: dword
-#   tags:
-#       - cat1
-#       - high
-#       - patch
-#       - V-1153
+- name: "HIGH | V-1153 | PATCH | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
+  win_regedit:
+    key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
+    value: LMCompatibilityLevel
+    data: 5
+    datatype: dword
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-1153
 
 - name: "HIGH | V-1159 | AUDIT | The Recovery Console option must be set to prevent automatic logon to the system."
   win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Setup\RecoveryConsole\" /v SecurityLevel
@@ -570,17 +570,17 @@
       - V-26070
 
 ######################## block start - conditionally apply patches if path exists #######################
-- block:
+- block: 
 
-   - name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
-     win_acl_inheritance:
-        path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
-        state: absent
-     tags:
-         - cat1
-         - high
-         - patch
-         - V-26070
+   #- name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
+   #  win_acl_inheritance:
+   #     path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+   #     state: absent
+   #  tags:
+   #      - cat1
+   #      - high
+   #      - patch
+   #      - V-26070
 
    - name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
      win_acl:
@@ -590,6 +590,7 @@
         type: '{{ item[1] }}'
         state: 'absent'
      when: "not ('TrustedInstaller' in item[0] or 'SYSTEM' in item[0] or 'Administrators' in item[0]) or 'allow' not in item[1]"
+     ignore_errors: yes
      with_nested:
          - "{{ standard_user_read_audit.stdout_lines }}"
          - [ allow, deny ]
@@ -629,6 +630,7 @@
            rights: 'ReadKey'
            inherit: 'ContainerInherit, ObjectInherit'
            propagation: 'None'
+     ignore_errors: yes
      tags:
          - cat1
          - high
@@ -690,15 +692,15 @@
 ###################### block start - conditionally apply patches if path exists #########################
 - block:
 
-   - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-     win_acl_inheritance:
-        path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
-        state: absent
-     tags:
-         - cat1
-         - high
-         - patch
-         - V-32282
+   #- name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+   #  win_acl_inheritance:
+   #     path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
+   #     state: absent
+   #  tags:
+   #      - cat1
+   #      - high
+   #      - patch
+   #      - V-32282
 
    - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
      win_acl:
@@ -708,6 +710,7 @@
         type: '{{ item[1] }}'
         state: 'absent'
      when: "not('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
+     ignore_errors: yes
      with_nested:
          - "{{ standard_read_active_audit.stdout_lines }}"
          - [ allow, deny ]
@@ -726,6 +729,7 @@
         state: 'present'
         inherit: "{{ item.inherit }}"
         propagation: "{{ item.propagation }}"
+     ignore_errors: yes
      with_items:
          - user: 'BUILTIN\Users'
            rights: 'ReadKey'
@@ -759,15 +763,15 @@
 ###################### block start - conditionally apply patches if path exists #########################
 - block:
 
-   - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-     win_acl_inheritance:
-        path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
-        state: absent
-     tags:
-         - cat1
-         - high
-         - patch
-         - V-32282
+   #- name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+   #  win_acl_inheritance:
+   #     path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
+   #     state: absent
+   #  tags:
+   #      - cat1
+   #      - high
+   #      - patch
+   #      - V-32282
 
    - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
      win_acl:
@@ -777,6 +781,7 @@
         type: '{{ item[1] }}'
         state: 'absent'
      when: "not('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
+     ignore_errors: yes
      with_nested:
          - "{{ standard_read_active2_audit.stdout_lines }}"
          - [ allow, deny ]
@@ -795,6 +800,7 @@
         state: 'present'
         inherit: "{{ item.inherit }}"
         propagation: "{{ item.propagation }}"
+     ignore_errors: yes
      with_items:
          - user: 'BUILTIN\Users'
            rights: 'ReadKey'
