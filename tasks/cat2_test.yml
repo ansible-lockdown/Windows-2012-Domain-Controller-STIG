@@ -4845,3 +4845,83 @@
       - medium
       - patch
       - V-57639
+
+- name: "MEDIUM | V-57721 | AUDIT | Event Viewer must be protected from unauthorized modification and deletion."
+  win_shell: Get-Acl -PATH 'C:\SYSTEM32\Eventvwr.exe' | Format-List
+  register: event_viewer_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in event_viewer_audit.stderr and event_viewer_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57721
+
+- name: "MEDIUM | V-57721 | AUDIT | Event Viewer must be protected from unauthorized modification and deletion."
+  win_shell: (Get-Acl -PATH 'C:\SYSTEM32\Eventvwr.exe').Access.IdentityReference.Value
+  register: event_viewer_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in event_viewer_audit.stderr and event_viewer_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57721
+
+###################### block start - conditionally apply patches if path exists #########################
+
+- block:
+
+   - name: "MEDIUM | V-57721 | PATCH | Event Viewer must be protected from unauthorized modification and deletion."
+     win_acl:
+        path: 'C:\SYSTEM32\Eventvwr.exe'
+        user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES") }}'
+        rights: 'FullControl'
+        type: '{{ item[1] }}'
+        state: 'absent'
+     when: "not('TrustedInstaller' in item[0] or 'Administrators' in item[0]) or 'allow' not in item[1]"
+     with_nested:
+         - "{{ event_viewer_audit.stdout_lines }}"
+         - [ allow, deny ]
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-57721
+
+   - name: "MEDIUM | V-57721 | PATCH | Event Viewer must be protected from unauthorized modification and deletion."
+     win_acl:
+        path: 'C:\SYSTEM32\Eventvwr.exe'
+        user: '{{ item.user }}'
+        rights: '{{ item.rights }}'
+        type: 'allow'
+        state: 'present'
+        inherit: '{{ item.inherit }}'
+        propagation: '{{ item.propagation }}'
+     with_items:
+         - user: 'NT SERVICE\TrustedInstaller'
+           rights: 'FullControl'
+           inherit: 'None'
+           propagation: 'None'
+         - user: 'NT AUTHORITY\SYSTEM'
+           rights: 'ReadAndExecute'
+           inherit: 'None'
+           propagation: 'None'
+         - user: 'BUILTIN\Users'
+           rights: 'ReadAndExecute'
+           inherit: 'None'
+           propagation: 'None'
+         - user: 'ALL APPLICATION PACKAGES'
+           rights: 'ReadAndExecute'
+           inherit: 'None'
+           propagation: 'None'
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-57721
+
+  when: "path_not_found not in event_viewer_audit.stderr and event_viewer_audit"
+######################################### block end #####################################################
