@@ -103,6 +103,7 @@
       - V-1152
 
 ######################## block start - conditionally apply patches if path exists #######################
+
 - block:
 
    - name: "REMOVAL HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
@@ -422,6 +423,17 @@
       - high
       - patch
       - V-6834
+
+- name: "HIGH | V-7002 | AUDIT | DoD information system access will require the use of a password."
+  win_shell: (([ADSI]"WinNT://$env:computername").Children | Where-Object {$_.schemaclassname -eq 'user' -and $_.PasswordRequired -eq $False}).Name
+  register: no_password_users_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-7002
 
 - name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
   win_shell: Get-Acl -Path C:\Windows\NTDS | Format-List
