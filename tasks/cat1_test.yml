@@ -571,6 +571,7 @@
       - V-26070
 
 ######################## block start - conditionally apply patches if path exists #######################
+
 - block: 
 
    #- name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
@@ -691,6 +692,7 @@
       - V-32282
 
 ###################### block start - conditionally apply patches if path exists #########################
+
 - block:
 
    #- name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
@@ -762,6 +764,7 @@
 ######################################### block end #####################################################
 
 ###################### block start - conditionally apply patches if path exists #########################
+
 - block:
 
    #- name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
@@ -830,7 +833,7 @@
          - V-32282
 
   when: "ansible_architecture == '64-bit' and path_not_found not in standard_read_active2_audit.stderr and standard_read_active2_audit"
-############################################ block end ##################################################  
+############################################ block end ##################################################
 
 - name: "HIGH | V-34974 | AUDIT | The Windows Installer Always install with elevated privileges option must be disabled."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Installer\ /v AlwaysInstallElevated
