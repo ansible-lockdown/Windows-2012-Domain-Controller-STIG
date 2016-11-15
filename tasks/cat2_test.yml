@@ -127,6 +127,17 @@
       - patch
       - V-1113
 
+- name: "MEDIUM | V-1119 | AUDIT | Booting into alternate non STIG compliant operating systems will not be permitted."
+  win_command: bcdedit
+  register: OS_list_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1119
+
 - name: "MEDIUM | V-1141 | AUDIT | Unencrypted passwords must not be sent to third-party SMB Servers."
   win_command: reg query HKLM\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters /v EnablePlainTextPassword
   register: plain_text_password_audit
