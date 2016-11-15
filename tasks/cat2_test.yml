@@ -18,6 +18,29 @@
       - patch
       - V-1097
 
+- name: "MEDIUM | V-1099 | AUDIT | The account lockout duration must be configured to require an administrator to unlock an account."
+  debug: var=secedit_rules.System_Access.LockoutDuration
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1099
+
+- name: "MEDIUM | V-1099 | PATCH | The account lockout duration must be configured to require an administrator to unlock an account."
+  win_secedit: 
+      category: 'System Access'
+      key: LockoutDuration
+      value: -1
+  register: secedit
+  failed_when: "secedit.failed is defined and 'This host is joined to a Domain Controller' not in secedit.msg"
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-1099
+
 - name: "MEDIUM | V-1104 | AUDIT | The maximum password age must be configured to 60 days or less."
   win_shell: net accounts | Select-String -Pattern "Max"
   register: max_password_age_audit
