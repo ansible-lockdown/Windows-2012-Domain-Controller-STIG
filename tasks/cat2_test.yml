@@ -939,6 +939,43 @@
       - audit
       - V-8326
 
+- name: "MEDIUM | V-8327 | AUDIT | Windows services that are critical for directory server operation must be configured for automatic startup."
+  win_command: Sc qc "{{ item }}"
+  register: auto_services_startup_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "service_not_installed in auto_services_startup_audit.stderr and auto_services_startup_audit.stderr"
+  with_items:
+      - Distributed File System
+      - Dnscache #DNS Client
+      - DFSR #File Replication Service
+      - IsmServ #Intersite Messaging
+      - Kdc #Kerberos Key Distribution Center
+      - Netlogon #Net Logon
+      - W32Time #Windows Time
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-8327
+
+- name: "MEDIUM | V-8327 | PATCH | Windows services that are critical for directory server operation must be configured for automatic startup."
+  win_command: Sc config "{{ item }}" start=auto
+  #when: "service_not_installed not in auto_services_startup_audit.stderr"
+  with_items:
+      - Distributed File System
+      - Dnscache #DNS Client
+      - DFSR #File Replication Service
+      - IsmServ #Intersite Messaging
+      - Kdc #Kerberos Key Distribution Center
+      - Netlogon #Net Logon
+      - W32Time #Windows Time
+  tags:
+      - cat2
+      - medium
+      - patch
+      - V-8327
+
 - name: "MEDIUM | V-14228 | AUDIT | Auditing Access of Global System Objects must be turned off."
   win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v AuditBaseObjects
   register: audit_base_objects_audit
