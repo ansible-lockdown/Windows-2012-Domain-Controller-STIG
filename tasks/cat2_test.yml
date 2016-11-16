@@ -4356,29 +4356,29 @@
       - patch
       - V-40202
 
-- name: "MEDIUM | V-40204 | AUDIT | Only the default client printer must be redirected to the Remote Desktop Session Host.  (Remote Desktop Services Role)."
-  win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows NT\Terminal Services\" /v RedirectOnlyDefaultClientPrinter
-  register: default_printer_rds_audit
-  check_mode: no
-  changed_when: no
-  failed_when: "reg_not_found not in default_printer_rds_audit.stderr and default_printer_rds_audit.stderr"
-  tags:
-      - cat2
-      - medium
-      - audit
-      - V-40204
+#- name: "MEDIUM | V-40204 | AUDIT | Only the default client printer must be redirected to the Remote Desktop Session Host.  (Remote Desktop Services Role)."
+#  win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows NT\Terminal Services\" /v RedirectOnlyDefaultClientPrinter
+#  register: default_printer_rds_audit
+#  check_mode: no
+#  changed_when: no
+#  failed_when: "reg_not_found not in default_printer_rds_audit.stderr and default_printer_rds_audit.stderr"
+#  tags:
+#      - cat2
+#      - medium
+#      - audit
+#      - V-40204
 
-- name: "MEDIUM | V-40204 | PATCH | Only the default client printer must be redirected to the Remote Desktop Session Host.  (Remote Desktop Services Role)."
-  win_regedit:
-     key: 'HKLM:\Software\Policies\Microsoft\Windows NT\Terminal Services\'
-     value: RedirectOnlyDefaultClientPrinter
-     data: 1
-     datatype: dword
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-40204
+#- name: "MEDIUM | V-40204 | PATCH | Only the default client printer must be redirected to the Remote Desktop Session Host.  (Remote Desktop Services Role)."
+#  win_regedit:
+#     key: 'HKLM:\Software\Policies\Microsoft\Windows NT\Terminal Services\'
+#     value: RedirectOnlyDefaultClientPrinter
+#     data: 1
+#     datatype: dword
+#  tags:
+#      - cat2
+#      - medium
+#      - patch
+#      - V-40204
 
 - name: "MEDIUM | V-43238 | AUDIT | The display of slide shows on the lock screen must be disabled (Windows 2012 R2)."
   win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization\ /v NoLockScreenSlideshow
