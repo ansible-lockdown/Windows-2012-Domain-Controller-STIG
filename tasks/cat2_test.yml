@@ -365,30 +365,6 @@
       - audit
       - V-3245
 
-- name: "MEDIUM | V-3372 | AUDIT | A system must be logged on to before removing from a docking station."
-  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v UndockWithoutLogon
-  register: undock_logon_audit
-  check_mode: no
-  changed_when: no
-  failed_when: "reg_not_found not in undock_logon_audit.stderr and undock_logon_audit.stderr"
-  tags:
-      - cat2
-      - medium
-      - audit
-      - V-3372
-
-- name: "MEDIUM | V-3372 | PATCH | A system must be logged on to before removing from a docking station."
-  win_regedit: 
-      key: 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System'
-      value: UndockWithoutLogon
-      data: 0
-      datatype: dword
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-3372
-
 - name: "MEDIUM | V-3374 | AUDIT | The system must be configured to require a strong session key."
   win_command: reg query HKLM\System\CurrentControlSet\Services\Netlogon\Parameters\ /v RequireStrongKey
   register: strong_sessionkey_audit
