@@ -245,17 +245,17 @@
       - audit
       - V-1162
 
-- name: "MEDIUM | V-1162 | PATCH | The Windows SMB server will perform SMB packet signing when possible."
-  win_regedit: 
-      key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters'
-      value: EnableSecuritySignature
-      data: 1
-      datatype: dword
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-1162
+#- name: "MEDIUM | V-1162 | PATCH | The Windows SMB server will perform SMB packet signing when possible."
+#  win_regedit: 
+#      key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters'
+#      value: EnableSecuritySignature
+#      data: 1
+#      datatype: dword
+#  tags:
+#      - cat2
+#      - medium
+#      - patch
+#      - V-1162
 
 - name: "MEDIUM | V-1163 | AUDIT | Outgoing secure channel traffic will be encrypted when possible."
   win_command: reg query HKLM\System\CurrentControlSet\Services\Netlogon\Parameters /v SealSecureChannel
