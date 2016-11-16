@@ -316,17 +316,17 @@
       - audit
       - V-1166
 
-- name: "MEDIUM | V-1166 | PATCH | The Windows SMB client will be enabled to perform SMB packet signing when possible."
-  win_regedit: 
-      key: 'HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters'
-      value: EnableSecuritySignature
-      data: 1
-      datatype: dword
-  tags:
-      - cat2
-      - medium
-      - patch
-      - V-1166
+#- name: "MEDIUM | V-1166 | PATCH | The Windows SMB client will be enabled to perform SMB packet signing when possible."
+#  win_regedit: 
+#      key: 'HKLM:\System\CurrentControlSet\Services\LanmanWorkstation\Parameters'
+#      value: EnableSecuritySignature
+#      data: 1
+#      datatype: dword
+#  tags:
+#      - cat2
+#      - medium
+#      - patch
+#      - V-1166
 
 - name: "MEDIUM | V-1171 | AUDIT | Ejection of removable NTFS media is not restricted to Administrators."
   win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\" /v AllocateDASD
