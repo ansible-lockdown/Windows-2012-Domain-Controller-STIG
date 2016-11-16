@@ -544,7 +544,6 @@
       - patch
       - V-15686
 
-
 - name: "LOW | V-15687 | AUDIT | Users will not be presented with Privacy and Installation options on first use of Windows Media Player."
   win_command: reg query HKLM\Software\Policies\Microsoft\WindowsMediaPlayer /v GroupPrivacyAcceptance
   register: group_privacy_acceptance_audit
