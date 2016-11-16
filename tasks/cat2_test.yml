@@ -1972,7 +1972,6 @@
       - patch
       - V-16000
 
-
 - name: "MEDIUM | V-16008 | AUDIT | Windows will elevate all applications in User Account Control, not just signed ones."
   win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v ValidateAdminCodeSignatures
   register: elevate_all_audit
