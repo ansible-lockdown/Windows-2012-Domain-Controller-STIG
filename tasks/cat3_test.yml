@@ -568,7 +568,6 @@
       - patch
       - V-15687
 
-
 - name: "LOW | V-15701 | AUDIT | A system restore point will be created when a new device driver is installed."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\DeviceInstall\Settings /v DisableSystemRestore
   register: restore_point_audit
