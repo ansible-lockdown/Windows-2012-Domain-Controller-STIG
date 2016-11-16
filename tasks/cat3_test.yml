@@ -784,7 +784,6 @@
       - patch
       - V-16005
 
-
 - name: "LOW | V-21955 | AUDIT | IPv6 source routing will be configured to highest protection."
   win_command: reg query HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters /v DisableIPSourceRouting
   register: IPv6_source_routing_audit
