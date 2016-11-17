@@ -273,7 +273,9 @@
   win_regedit:
     key: 'HKLM:\System\CurrentControlSet\Control\SecurePipeServers\ winreg'
     value: Machine
-    data: System\CurrentControlSet\Control\ProductOptions\0\"System\CurrentControlSet\Control\Server Applications\"\0\"Software\Microsoft\Windows NT\CurrentVersion\"\0\0
+    data: System\CurrentControlSet\Control\ProductOptions\0
+          \"System\CurrentControlSet\Control\Server Applications\"\0
+          \"Software\Microsoft\Windows NT\CurrentVersion\"\0\0
     datatype: multistring
   tags:
       - cat1
