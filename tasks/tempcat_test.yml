@@ -1,0 +1,183 @@
+- name: "MEDIUM | V-40179 | AUDIT | Permissions for Windows installation directory must conform to minimum requirements."
+  win_command: reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion /v ProgramFilesDir
+  register: windows_installation_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in windows_installation_audit.stderr and windows_installation_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-40179
+
+- name: "MEDIUM | V-40179 | AUDIT | Permissions for Windows installation directory must conform to minimum requirements."
+  win_shell: (Get-Acl -PATH 'C:\Windows').Access.IdentityReference.Value
+  register: windows_installation_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in windows_installation_audit.stderr and windows_installation_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-40179
+
+###################### block start - conditionally apply patches if path exists #########################
+
+- block:
+
+   - name: "REMOVAL MEDIUM | V-40179 | PATCH | Permissions for Windows installation directory must conform to minimum requirements."
+     win_acl_inheritance:
+        path: 'C:\Windows'
+        state: 'absent'
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-40179
+
+   - name: "REMOVAL MEDIUM | V-40179 | PATCH | Permissions for Windows installation directory must conform to minimum requirements."
+     win_acl:
+        path: 'C:\Windows'
+        user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES") }}'
+        rights: 'FullControl'
+        type: '{{ item[1] }}'
+        state: 'absent'
+     when: "not('TrustedInstaller' in item[0] or 'SYSTEM' in item[0] or 'Administrators' in item[0] or 'CREATOR OWNER' in item[0]) or 'allow' not in item[1]"
+     with_nested:
+         - "{{ windows_installation_audit.stdout_lines }}"
+         - [ allow, deny ]
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-40179
+
+   - name: "MEDIUM | V-40179 | PATCH | Permissions for Windows installation directory must conform to minimum requirements."
+     win_acl:
+        path: 'C:\Windows'
+        user: '{{ item.user }}'
+        rights: '{{ item.rights }}'
+        type: 'allow'
+        state: 'present'
+        inherit: '{{ item.inherit }}'
+        propagation: '{{ item.propagation }}'
+     with_items:
+         - user: 'NT SERVICE\TrustedInstaller'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit'
+           propagation: 'None'
+         - user: 'NT AUTHORITY\SYSTEM'
+           rights: 'Modify'
+           inherit: 'None'
+           propagation: 'None'
+         - user: 'NT AUTHORITY\SYSTEM'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit,ObjectInherit'
+           propagation: 'InheritOnly'
+         - user: 'BUILTIN\Administrators'
+           rights: 'Modify'
+           inherit: 'None'
+           propagation: 'None'
+         - user: 'BUILTIN\Administrators'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit,ObjectInherit'
+           propagation: 'InheritOnly'
+         - user: 'CREATOR OWNER'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit,ObjectInherit'
+           propagation: 'InheritOnly'
+         - user: 'ALL APPLICATION PACKAGES'
+           rights: 'FullControl'
+           inherit: 'ContainerInherit,ObjectInherit'
+           propagation: 'None'
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-40179
+
+  when: "path_not_found not in windows_installation_audit.stderr and windows_installation_audit"
+######################################### block end #####################################################
+
+- name: "MEDIUM | V-57721 | AUDIT | Event Viewer must be protected from unauthorized modification and deletion."
+  win_shell: Get-Acl -PATH 'C:\Windows\System32\Eventvwr.exe' | Format-List
+  register: event_viewer_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in event_viewer_audit.stderr and event_viewer_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57721
+
+- name: "MEDIUM | V-57721 | AUDIT | Event Viewer must be protected from unauthorized modification and deletion."
+  win_shell: (Get-Acl -PATH 'C:\Windows\System32\Eventvwr.exe').Access.IdentityReference.Value
+  register: event_viewer_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in event_viewer_audit.stderr and event_viewer_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-57721
+
+###################### block start - conditionally apply patches if path exists #########################
+
+- block:
+
+   - name: "MEDIUM | V-57721 | PATCH | Event Viewer must be protected from unauthorized modification and deletion."
+     win_acl:
+        path: 'C:\Windows\System32\Eventvwr.exe'
+        user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES") }}'
+        rights: 'FullControl'
+        type: '{{ item[1] }}'
+        state: 'absent'
+     when: "not('TrustedInstaller' in item[0] or 'Administrators' in item[0]) or 'allow' not in item[1]"
+     with_nested:
+         - "{{ event_viewer_audit.stdout_lines }}"
+         - [ allow, deny ]
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-57721
+    
+   - name: "MEDIUM | V-57721 | PATCH | Event Viewer must be protected from unauthorized modification and deletion."
+     win_acl:
+        path: 'C:\Windows\System32\Eventvwr.exe'
+        user: '{{ item.user }}'
+        rights: '{{ item.rights }}'
+        type: 'allow'
+        state: 'present'
+        inherit: '{{ item.inherit }}'
+        propagation: '{{ item.propagation }}'
+     with_items:
+         - user: 'NT SERVICE\TrustedInstaller'
+           rights: 'FullControl'
+           inherit: 'None'
+           propagation: 'None'
+         - user: 'NT AUTHORITY\SYSTEM'
+           rights: 'ReadAndExecute'
+           inherit: 'None'
+           propagation: 'None'
+         - user: 'BUILTIN\Users'
+           rights: 'ReadAndExecute'
+           inherit: 'None'
+           propagation: 'None'
+         - user: 'ALL APPLICATION PACKAGES'
+           rights: 'ReadAndExecute'
+           inherit: 'None'
+           propagation: 'None'
+     tags:
+         - cat2
+         - medium
+         - patch
+         - V-57721 
+
+  when: "path_not_found not in event_viewer_audit.stderr and event_viewer_audit"
+######################################### block end #####################################################
+
+

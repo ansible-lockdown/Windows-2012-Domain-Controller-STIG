@@ -249,7 +249,7 @@
   win_regedit:
     key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters\'
     value: NullSessionPipes
-    data: netlogon\0samr\0lsarpc\0\0
+    data: "netlogon\0samr\0lsarpc\0\0"
     datatype: multistring
   tags:
       - cat1
@@ -273,9 +273,9 @@
   win_regedit:
     key: 'HKLM:\System\CurrentControlSet\Control\SecurePipeServers\ winreg'
     value: Machine
-    data: System\CurrentControlSet\Control\ProductOptions\0
+    data: 'System\CurrentControlSet\Control\ProductOptions\0
           \"System\CurrentControlSet\Control\Server Applications\"\0
-          \"Software\Microsoft\Windows NT\CurrentVersion\"\0\0
+          \"Software\Microsoft\Windows NT\CurrentVersion\"\0\0'
     datatype: multistring
   tags:
       - cat1
@@ -296,11 +296,12 @@
       - V-3340
 
 - name: "HIGH | V-3340 | PATCH | Network shares that can be accessed anonymously will not be allowed."
-  win_regedit:
-      key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters'
-      value: NullSessionShares
-      data: ''
-      datatype: multistring
+  win_command: reg add HKLM\System\CurrentControlSet\Services\LanManServer\Parameters /v test /t REG_MULTI_SZ /f
+  #win_regedit:
+  #    key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters'
+  #    value: NullSessionShares
+  #    data: ''
+  #    datatype: multistring
   tags:
       - cat1
       - high
@@ -395,7 +396,7 @@
   win_regedit:
       key: 'HKLM:\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedPaths\'
       value: Machine
-      data: \"Software\Microsoft\OLAP Server\"\0
+      data: '\"Software\Microsoft\OLAP Server\"\0
             \"Software\Microsoft\Windows NT\CurrentVersion\Perflib\"\0
             \"Software\Microsoft\Windows NT\CurrentVersion\Print\"\0
             \"Software\Microsoft\Windows NT\CurrentVersion\Windows\"\0
@@ -405,7 +406,7 @@
             \"System\CurrentControlSet\Control\Terminal Server\UserConfig\"\0
             \"System\CurrentControlSet\Control\Terminal Server\DefaultUserConfiguration\"\0
             System\CurrentControlSet\Services\Eventlog\0
-            System\CurrentControlSet\Services\Sysmonlog\0\0
+            System\CurrentControlSet\Services\Sysmonlog\0\0'
       datatype: multistring
   tags:
       - cat1
@@ -436,6 +437,17 @@
       - high
       - patch
       - V-6834
+
+- name: "HIGH | V-7002 | AUDIT | Accounts must require passwords."
+  win_shell: Get-ADDefaultDomainPasswordPolicy
+  register: accounts_passwords_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-7002
 
 - name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
   win_shell: Get-Acl -Path C:\Windows\NTDS | Format-List
