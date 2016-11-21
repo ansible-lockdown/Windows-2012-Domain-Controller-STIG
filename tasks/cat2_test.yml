@@ -814,7 +814,7 @@
       - V-6833
 
 - name: "MEDIUM | V-6840 | AUDIT | System mechanisms will be implemented to enforce automatic expiration of passwords."
-  win_shell: (Get-WmiObject -Class Win32_UserAccount -Filter "PasswordExpires=$False and Domain='$env:computername'").Name
+  win_shell: Search-ADAccount -PasswordNeverExpires -UsersOnly
   register: password_expiry_audit
   check_mode: no
   changed_when: no
