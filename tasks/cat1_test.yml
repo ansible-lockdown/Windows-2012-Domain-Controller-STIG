@@ -271,11 +271,9 @@
 
 - name: "HIGH | V-3339 | PATCH | Unauthorized remotely accessible registry paths must not be configured."
   win_regedit:
-    key: 'HKLM:\System\CurrentControlSet\Control\SecurePipeServers\ winreg'
+    key: 'HKLM:\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedExactPaths'
     value: Machine
-    data: 'System\CurrentControlSet\Control\ProductOptions\0
-          \"System\CurrentControlSet\Control\Server Applications\"\0
-          \"Software\Microsoft\Windows NT\CurrentVersion\"\0\0'
+    data: "System\\CurrentControlSet\\Control\\ProductOptions\0System\\CurrentControlSet\\Control\\Server Applications\0Software\\Microsoft\\Windows NT\\CurrentVersion"
     datatype: multistring
   tags:
       - cat1
