@@ -295,11 +295,6 @@
 
 - name: "HIGH | V-3340 | PATCH | Network shares that can be accessed anonymously will not be allowed."
   win_command: reg add HKLM\System\CurrentControlSet\Services\LanManServer\Parameters /v test /t REG_MULTI_SZ /f
-  #win_regedit:
-  #    key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters'
-  #    value: NullSessionShares
-  #    data: ''
-  #    datatype: multistring
   tags:
       - cat1
       - high
