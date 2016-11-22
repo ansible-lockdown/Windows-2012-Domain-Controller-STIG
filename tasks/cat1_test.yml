@@ -467,6 +467,7 @@
       - V-8316
 
 ################# block start - conditionally apply patches if path exists ##############################
+
 - block:
 
    - name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
@@ -592,15 +593,15 @@
 
 - block: 
 
-   #- name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
-   #  win_acl_inheritance:
-   #     path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
-   #     state: absent
-   #  tags:
-   #      - cat1
-   #      - high
-   #      - patch
-   #      - V-26070
+   - name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
+     win_acl_inheritance:
+         path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+         state: absent
+     tags:
+         - cat1
+         - high
+         - patch
+         - V-26070
 
    - name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
      win_acl:
@@ -711,15 +712,15 @@
 
 - block:
 
-   #- name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-   #  win_acl_inheritance:
-   #     path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
-   #     state: absent
-   #  tags:
-   #      - cat1
-   #      - high
-   #      - patch
-   #      - V-32282
+   - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+     win_acl_inheritance:
+         path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
+         state: absent
+     tags:
+         - cat1
+         - high
+         - patch
+         - V-32282
 
    - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
      win_acl:
@@ -781,16 +782,6 @@
 
 - block:
 
-   #- name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-   #  win_acl_inheritance:
-   #     path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
-   #     state: absent
-   #  tags:
-   #      - cat1
-   #      - high
-   #      - patch
-   #      - V-32282
-
    - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
      win_acl:
          path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
@@ -810,7 +801,7 @@
 
    - name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
      win_acl:
-         path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
+         path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
          user: "{{ item.user }}"
          rights: "{{ item.rights }}"
          type: 'allow'
@@ -843,6 +834,17 @@
          - high
          - patch
          - V-32282
+
+   #Inheritance removal must be last otherwise all permisisons for the key are wiped and win_acl tasks are unable to run
+   - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+     win_acl_inheritance:
+         path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
+         state: absent
+     tags:
+          - cat1
+          - high
+          - patch
+          - V-32282
 
   when: "ansible_architecture == '64-bit' and path_not_found not in standard_read_active2_audit.stderr and standard_read_active2_audit"
 ############################################ block end ##################################################
