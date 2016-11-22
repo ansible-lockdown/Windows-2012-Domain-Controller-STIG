@@ -433,6 +433,7 @@
       key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
       value: ScreenSaverGracePeriod
       data: 0
+      datatype: string
   tags:
       - cat3
       - low
