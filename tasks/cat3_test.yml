@@ -504,6 +504,26 @@
       - audit
       - V-15672
 
+- name: "LOW | V-14831 | AUDIT | The directory service must be configured to terminate LDAP-based network connections to the directory server after five (5) minutes of inactivity."
+  win_shell: ntdsutil "LDAP policies" "connections" "connect to server $env:computername" q "Show Values" q q | select-string -pattern "MaxConnIdleTime"
+  register: max_connection_idle_time_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-14831
+
+- name: "LOW | V-14831 | PATCH | The directory service must be configured to terminate LDAP-based network connections to the directory server after five (5) minutes of inactivity."
+  win_shell: ntdsutil "LDAP policies" "connections" "connect to server $env:computername" q "set MaxConnIdleTime to 300" "Commit Changes" "Show Values" q q
+  when: "'300' not in max_connection_idle_time_audit.stdout"
+  tags:
+      - cat3
+      - low
+      - patch
+      - V-14831
+
 - name: "LOW | V-15672 | PATCH | Event Viewer Events.asp links will be turned off."
   win_regedit:
       key: 'HKLM:\Software\Policies\Microsoft\EventViewer'
