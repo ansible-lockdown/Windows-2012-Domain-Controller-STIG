@@ -492,18 +492,6 @@
       - patch
       - V-11806
 
-- name: "LOW | V-15672 | AUDIT | Event Viewer Events.asp links will be turned off."
-  win_command: reg query HKLM\Software\Policies\Microsoft\EventViewer /v MicrosoftEventVwrDisableLinks
-  register: event_viewer_links_audit
-  check_mode: no
-  changed_when: no
-  failed_when: "reg_not_found not in event_viewer_links_audit.stderr and event_viewer_links_audit.stderr"
-  tags:
-      - cat3
-      - low
-      - audit
-      - V-15672
-
 - name: "LOW | V-14831 | AUDIT | The directory service must be configured to terminate LDAP-based network connections to the directory server after five (5) minutes of inactivity."
   win_shell: ntdsutil "LDAP policies" "connections" "connect to server $env:computername" q "Show Values" q q | select-string -pattern "MaxConnIdleTime"
   register: max_connection_idle_time_audit
@@ -523,6 +511,18 @@
       - low
       - patch
       - V-14831
+
+- name: "LOW | V-15672 | AUDIT | Event Viewer Events.asp links will be turned off."
+  win_command: reg query HKLM\Software\Policies\Microsoft\EventViewer /v MicrosoftEventVwrDisableLinks
+  register: event_viewer_links_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in event_viewer_links_audit.stderr and event_viewer_links_audit.stderr"
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-15672
 
 - name: "LOW | V-15672 | PATCH | Event Viewer Events.asp links will be turned off."
   win_regedit:
