@@ -3714,7 +3714,7 @@
 
 - block:
 
-   - name: "REMOVAL MEDIUM | V-40177 | PATCH | Permissions for program file directories must conform to minimum requirements."
+  - name: "REMOVAL MEDIUM | V-40177 | PATCH | Permissions for program file directories must conform to minimum requirements."
     win_acl:
         path: '\Program Files'
         user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
@@ -3844,7 +3844,7 @@
         - patch
         - V-40177
 
-   - name: "REMOVAL MEDIUM | V-40177 | PATCH | Permissions for program file directories must conform to minimum requirements."
+  - name: "REMOVAL MEDIUM | V-40177 | PATCH | Permissions for program file directories must conform to minimum requirements."
     win_acl_inheritance:
         path: '{{ item }}'
         state: absent
