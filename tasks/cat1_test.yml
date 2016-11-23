@@ -443,11 +443,11 @@
       - V-7002
 
 - name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
-  win_shell: Get-Acl -Path C:\Windows\NTDS | Format-List
-  register: actived_permissions_audit
+  win_shell: (Get-ItemProperty "HKLM:\System\CurrentControlSet\Services\NTDS\Parameters")."Database log files path"
+  register: database_log_path_audit
   check_mode: no
   changed_when: no
-  failed_when: "path_not_found not in actived_permissions_audit.stderr and actived_permissions_audit.stderr"
+  failed_when: "path_not_found not in database_log_path_audit.stderr and database_log_path_audit.stderr"
   tags:
       - cat1
       - high
@@ -455,11 +455,35 @@
       - V-8316
 
 - name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
-  win_shell: (Get-Acl -Path \Windows\NTDS).Access.IdentityReference.Value
-  register: actived_permissions_audit
+  win_shell: (Get-Acl -Path (Get-ItemProperty "HKLM:\System\CurrentControlSet\Services\NTDS\Parameters")."Database log files path").Access.IdentityReference.Value
+  register: database_log_acl_audit
   check_mode: no
   changed_when: no
-  failed_when: "path_not_found not in actived_permissions_audit.stderr and actived_permissions_audit.stderr"
+  failed_when: "path_not_found not in database_log_path_audit.stderr and database_log_path_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-8316
+
+- name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
+  win_shell: (Get-ItemProperty "HKLM:\System\CurrentControlSet\Services\NTDS\Parameters")."DSA Database file"
+  register: dsa_database_file_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in dsa_database_file_audit.stderr and dsa_database_file_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-8316
+
+- name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
+  win_shell: (Get-Acl -Path (Get-ItemProperty "HKLM:\System\CurrentControlSet\Services\NTDS\Parameters")."DSA Database file").Access.IdentityReference.Value
+  register: dsa_database_acl_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in dsa_database_file_audit.stderr and dsa_database_file_audit.stderr"
   tags:
       - cat1
       - high
@@ -472,8 +496,11 @@
 
    - name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
      win_acl_inheritance:
-         path: '\Windows\NTDS'
+         path: '{{ item }}'
          state: present
+     with_items:
+         - '{{ database_log_path_audit.stdout_lines }}'
+         - '{{ dsa_database_file_audit.stdout_lines }}'
      tags:
          - cat1
          - high
@@ -482,15 +509,34 @@
 
    - name: "REMOVAL HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
      win_acl:
-         path: '\Windows\NTDS'
+         path: '{{ item[2] }}'
          user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
          rights: 'FullControl'
          type: '{{ item[1] }}'
          state: 'absent'
      when: "not ('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
      with_nested:
-         - "{{ actived_permissions_audit.stdout_lines }}"
+         - "{{ database_log_acl_audit.stdout_lines }}"
          - [ allow, deny ]
+         - "{{ database_log_path_audit.stdout_lines }}"
+     tags:
+         - cat1
+         - high
+         - patch
+         - V-8316
+
+   - name: "REMOVAL HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
+     win_acl:
+         path: '{{ item[2] }}'
+         user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
+         rights: 'FullControl'
+         type: '{{ item[1] }}'
+         state: 'absent'
+     when: "not ('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
+     with_nested:
+         - "{{ dsa_database_acl_audit.stdout_lines }}"
+         - [ allow, deny ]
+         - "{{ dsa_database_file_audit.stdout_lines }}"
      tags:
          - cat1
          - high
@@ -499,25 +545,44 @@
 
    - name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
      win_acl:
-         path: '\Windows\NTDS'
-         user: '{{ item }}'
+         path: '{{ item[1] }}'
+         user: '{{ item[0] }}'
          rights: 'FullControl'
          type: 'allow'
          state: 'present'
          inherit: 'ContainerInherit, ObjectInherit'
          propagation: 'None'
-     with_items:
-         - NT AUTHORITY\SYSTEM
-         - BUILTIN\Administrators
+     with_nested:
+         - [NT AUTHORITY\SYSTEM, BUILTIN\Administrators]
+         - ['{{ database_log_path_audit.stdout_lines }},{{ dsa_database_file_audit.stdout_lines }}']
      tags:
          - cat1
          - high
          - patch
          - V-8316
 
-  when: "path_not_found not in actived_permissions_audit.stderr and actived_permissions_audit"
+  when: "path_not_found not in (database_log_acl_audit.stderr and dsa_database_acl_audit.stderr) and database_log_acl_audit and dsa_database_file_audit"
 ###################################### block end ########################################################
                                                                                      
+- name: "HIGH | V-14820 | AUDIT | Domain Controller PKI certificates must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
+  win_command: certutil -store My
+  register: PKI_certificate_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-14820
+
+# - name: "HIGH | V-14820 | PATCH | Domain Controller PKI certificates must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
+#   win_command: true
+#   tags:
+#       - cat1
+#       - high
+#       - patch
+#       - V-14820
+
 - name: "HIGH | V-21973 | AUDIT | Autoplay must be turned off for non-volume devices."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume
   register: autoplay_nonvolume_audit
