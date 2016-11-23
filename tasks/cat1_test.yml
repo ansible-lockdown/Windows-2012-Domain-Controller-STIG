@@ -748,6 +748,25 @@
       - patch
       - V-26283
 
+- name: "HIGH | V-26683 | AUDIT | PKI certificates associated with user accounts must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
+  win_shell: get-aduser -filter * -properties "Certificates" | foreach { if($_.Certificates){ $_.Name }; $_.Certificates | foreach {New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 $_} | fl }
+  register: user_published_certificates_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-26683
+
+# - name: "HIGH | V-26683 | PATCH | PKI certificates associated with user accounts must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
+#   win_command: true
+#   tags:
+#       - cat1
+#       - high
+#       - patch
+#       - V-26683
+
 - name: "HIGH | V-32282 | AUDIT | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
   win_shell: (Get-Acl -PATH 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components').Access.IdentityReference.Value
   register: standard_read_active_audit
@@ -1048,7 +1067,7 @@
          - patch
          - V-39331
  
-   - name: "HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
+   - name: "REMOVAL HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
      win_acl_inheritance:
          path: '\Windows\SYSVOL'
          state: absent
