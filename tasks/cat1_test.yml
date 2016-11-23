@@ -447,7 +447,7 @@
   register: database_log_path_audit
   check_mode: no
   changed_when: no
-  failed_when: database_log_path_audit.stderr
+  failed_when: "'Cannot find path' not in database_log_path_audit.stderr and database_log_path_audit.stderr"
   tags:
       - cat1
       - high
@@ -473,7 +473,7 @@
   register: dsa_database_file_audit
   check_mode: no
   changed_when: no
-  failed_when: dsa_database_file_audit.stderr
+  failed_when: "'Cannot find path' not in dsa_database_file_audit.stderr and dsa_database_file_audit.stderr"
   tags:
       - cat1
       - high
@@ -565,6 +565,7 @@
          - patch
          - V-8316
 
+  when: "'Cannot find path' not in (database_log_path_audit.stderr and dsa_database_file_audit.stderr) and database_log_path_audit and dsa_database_file_audit"
 ###################################### block end ########################################################
                                                                                     
 - name: "HIGH | V-14820 | AUDIT | Domain Controller PKI certificates must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
