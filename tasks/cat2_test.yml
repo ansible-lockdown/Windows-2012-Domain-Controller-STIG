@@ -2158,6 +2158,116 @@
       - patch
       - V-21980
 
+- name: "MEDIUM | V-26469 | AUDIT | Unauthorized accounts must not have the Access Credential Manager as a trusted caller user right."
+  debug: var=secedit_rules.Privilege_Rights.SeTrustedCredManAccessPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26469
+
+- name: "MEDIUM | V-26470 | AUDIT | Unauthorized accounts must not have the Access this computer from the network user right on member servers."
+  debug: var=secedit_rules.Privilege_Rights.SeNetworkLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26470
+
+- name: "MEDIUM | V-26471 | AUDIT | Unauthorized accounts must not have the Adjust memory quotas for a process user right."
+  debug: var=secedit_rules.Privilege_Rights.SeIncreaseQuotaPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26471
+
+- name: "MEDIUM | V-26472 | AUDIT | Unauthorized accounts must not have the Allow log on locally user right."
+  debug: var=secedit_rules.Privilege_Rights.SeInteractiveLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26472
+
+- name: "MEDIUM | V-26473 | AUDIT | The Allow log on through Remote Desktop Services user right must only be assigned to the Administrators group and other approved groups."
+  debug: var=secedit_rules.Privilege_Rights.SeRemoteInteractiveLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26473
+
+- name: "MEDIUM | V-26474 | AUDIT | Unauthorized accounts must not have the Back up files and directories user right."
+  debug: var=secedit_rules.Privilege_Rights.SeBackupPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26474
+
+- name: "MEDIUM | V-26476 | AUDIT | Unauthorized accounts must not have the Change the system time user right."
+  debug: var=secedit_rules.Privilege_Rights.SeSystemtimePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26476
+
+- name: "MEDIUM | V-26478 | AUDIT | Unauthorized accounts must not have the Create a pagefile user right."
+  debug: var=secedit_rules.Privilege_Rights.SeCreatePagefilePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26478
+
+- name: "MEDIUM | V-26480 | AUDIT | Unauthorized accounts must not have the Create global objects user right."
+  debug: var=secedit_rules.Privilege_Rights.SeCreateGlobalPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26480
+
+- name: "MEDIUM | V-26481 | AUDIT | Unauthorized accounts must not have the Create permanent shared objects user right."
+  debug: var=secedit_rules.Privilege_Rights.SeCreatePermanentPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26481
+
+- name: "MEDIUM | V-26482 | AUDIT | Unauthorized accounts must not have the Create symbolic links user right."
+  debug: var=secedit_rules.Privilege_Rights.SeCreateSymbolicLinkPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26482
+
 - name: "MEDIUM | V-26529 | AUDIT | The system will be configured to audit 'Account Logon -> Credential Validation' successes."
   win_shell: AuditPol /get /subcategory:"Credential Validation"
   register: success_cred_audit
