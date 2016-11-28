@@ -2458,6 +2458,46 @@
       - audit
       - V-26501
 
+- name: "MEDIUM | V-26503 | AUDIT | Unauthorized accounts must not have the Replace a process level token user right."
+  debug: var=secedit_rules.Privilege_Rights.SeAssignPrimaryTokenPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26503
+
+- name: "MEDIUM | V-26504 | AUDIT | Unauthorized accounts must not have the Restore files and directories user right."
+  debug: var=secedit_rules.Privilege_Rights.SeRestorePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26504
+
+- name: "MEDIUM | V-26505 | AUDIT | Unauthorized accounts must not have the Shut down the system user right."
+  debug: var=secedit_rules.Privilege_Rights.SeShutdownPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26505
+
+- name: "MEDIUM | V-26506 | AUDIT | Unauthorized accounts must not have the Take ownership of files or other objects user right."
+  debug: var=secedit_rules.Privilege_Rights.SeTakeOwnershipPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26506
+
 - name: "MEDIUM | V-26529 | AUDIT | The system will be configured to audit 'Account Logon -> Credential Validation' successes."
   win_shell: AuditPol /get /subcategory:"Credential Validation"
   register: success_cred_audit
