@@ -2268,6 +2268,196 @@
       - audit
       - V-26482
 
+- name: "MEDIUM | V-26483 | AUDIT | The Deny log on as a batch job user right on member servers must be configured to prevent access from highly privileged domain accounts on domain systems and unauthenticated access on all systems."
+  debug: var=secedit_rules.Privilege_Rights.SeDenyBatchLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26483
+
+- name: "MEDIUM | V-26484 | AUDIT | The Deny log on as a service user right on member servers must be configured to prevent access from highly privileged domain accounts on domain systems.  No other groups or accounts must be assigned this right."
+  debug: var=secedit_rules.Privilege_Rights.SeDenyServiceLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26484
+
+- name: "MEDIUM | V-26485 | AUDIT | The Deny log on locally user right on member servers must be configured to prevent access from highly privileged domain accounts on domain systems and unauthenticated access on all systems."
+  debug: var=secedit_rules.Privilege_Rights.SeDenyInteractiveLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26485
+
+- name: "MEDIUM | V-26486 | AUDIT | The Deny log on through Remote Desktop Services user right on member servers must be configured to prevent access from highly privileged domain accounts and all local accounts on domain systems and unauthenticated access on all systems."
+  debug: var=secedit_rules.Privilege_Rights.SeDenyRemoteInteractiveLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26486
+
+- name: "MEDIUM | V-26487 | AUDIT | Unauthorized accounts must not have the Enable computer and user accounts to be trusted for delegation user right."
+  debug: var=secedit_rules.Privilege_Rights.SeEnableDelegationPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26487
+
+- name: "MEDIUM | V-26488 | AUDIT | Unauthorized accounts must not have the Force shutdown from a remote system user right."
+  debug: var=secedit_rules.Privilege_Rights.SeRemoteShutdownPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26488
+
+- name: "MEDIUM | V-26489 | AUDIT | Unauthorized accounts must not have the Generate security audits user right."
+  debug: var=secedit_rules.Privilege_Rights.SeAuditPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26489
+
+- name: "MEDIUM | V-26490 | AUDIT | Unauthorized accounts must not have the Impersonate a client after authentication user right."
+  debug: var=secedit_rules.Privilege_Rights.SeImpersonatePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26490
+
+- name: "MEDIUM | V-26491 | AUDIT | Unauthorized accounts must not have the Increase a process working set user right."
+  debug: var=secedit_rules.Privilege_Rights.SeIncreaseWorkingSetPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26491
+
+- name: "MEDIUM | V-26492 | AUDIT | Unauthorized accounts must not have the Increase scheduling priority user right."
+  debug: var=secedit_rules.Privilege_Rights.SeIncreaseBasePriorityPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26492
+
+- name: "MEDIUM | V-26493 | AUDIT | Unauthorized accounts must not have the Load and unload device drivers user right."
+  debug: var=secedit_rules.Privilege_Rights.SeLoadDriverPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26493
+
+- name: "MEDIUM | V-26494 | AUDIT | Unauthorized accounts must not have the Lock pages in memory user right."
+  debug: var=secedit_rules.Privilege_Rights.SeLockMemoryPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26494
+
+- name: "MEDIUM | V-26495 | AUDIT | Unauthorized accounts must not have the Log on as a batch job user right."
+  debug: var=secedit_rules.Privilege_Rights.SeBatchLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26495
+
+- name: "MEDIUM | V-26495 | AUDIT | Unauthorized accounts must not have the Log on as a batch job user right."
+  debug: var=secedit_rules.Privilege_Rights.SeBatchLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26495
+
+- name: "MEDIUM | V-26497 | AUDIT | Unauthorized accounts must not have the Modify an object label user right."
+  debug: var=secedit_rules.Privilege_Rights.SeRelabelPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26497
+
+- name: "MEDIUM | V-26498 | AUDIT | Unauthorized accounts must not have the Modify firmware environment values user right."
+  debug: var=secedit_rules.Privilege_Rights.SeSystemEnvironmentPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26498
+
+- name: "MEDIUM | V-26499 | AUDIT | Unauthorized accounts must not have the Perform volume maintenance tasks user right."
+  debug: var=secedit_rules.Privilege_Rights.SeManageVolumePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26499
+
+- name: "MEDIUM | V-26500 | AUDIT | Unauthorized accounts must not have the Profile single process user right."
+  debug: var=secedit_rules.Privilege_Rights.SeProfileSingleProcessPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26500
+
+- name: "MEDIUM | V-26501 | AUDIT | Unauthorized accounts must not have the Profile system performance user right."
+  debug: var=secedit_rules.Privilege_Rights.SeSystemProfilePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26501
+
 - name: "MEDIUM | V-26529 | AUDIT | The system will be configured to audit 'Account Logon -> Credential Validation' successes."
   win_shell: AuditPol /get /subcategory:"Credential Validation"
   register: success_cred_audit
