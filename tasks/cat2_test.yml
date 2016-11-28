@@ -3411,8 +3411,7 @@
       - V-26606
 
 - name: "MEDIUM | V-30016 | AUDIT | Unauthorized accounts must not have the Add workstations to domain user right."
-  action: win_ping
-  #debug: var=
+  debug: var=secedit_rules.Privilege_Rights.SeMachineAccountPrivilege
   register: add_workstations_domain_audit
   check_mode: no
   changed_when: no
