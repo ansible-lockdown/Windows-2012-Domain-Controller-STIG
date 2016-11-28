@@ -48,15 +48,25 @@
 
 - name: "HIGH | V-1093 | PATCH | Anonymous enumeration of shares must be restricted."
   win_regedit: 
-    key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
-    value: RestrictAnonymous
-    data: 1
-    datatype: dword
+      key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
+      value: RestrictAnonymous
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
       - patch
-      - V-109
+      - V-1093
+
+- name: "HIGH | V-1102 | AUDIT | Unauthorized accounts must not have the Act as part of the operating system user right."
+  debug: var=secedit_rules.Privilege_Rights.SeTcbPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-1102
 
 - name: "HIGH | V-1127 | AUDIT | Only administrators responsible for the system must have Administrator rights on the system."
   win_command: net localgroup Administrators
@@ -83,7 +93,7 @@
 
 - name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
   win_regedit:
-     key: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg'
+      key: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg'
   when: "reg_not_found not in anon_registry_access_audit.stderr and anon_registry_access_audit.stderr"
   tags:
       - cat1
@@ -175,10 +185,10 @@
 
 - name: "HIGH | V-1153 | PATCH | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
   win_regedit:
-    key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
-    value: LMCompatibilityLevel
-    data: 5
-    datatype: dword
+      key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
+      value: LMCompatibilityLevel
+      data: 5
+      datatype: dword
   tags:
       - cat1
       - high
@@ -199,10 +209,10 @@
 
 - name: "HIGH | V-1159 | PATCH | The Recovery Console option must be set to prevent automatic logon to the system."
   win_regedit:
-    key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Setup\RecoveryConsole\'
-    value: SecurityLevel
-    data: 0
-    datatype: dword
+      key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Setup\RecoveryConsole\'
+      value: SecurityLevel
+      data: 0
+      datatype: dword
   tags:
       - cat1
       - high
@@ -247,10 +257,10 @@
 
 - name: "HIGH | V-3338 | PATCH | Named pipes that can be accessed anonymously must be configured with limited values on domain controllers."
   win_regedit:
-    key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters\'
-    value: NullSessionPipes
-    data: "netlogon\0samr\0lsarpc\0\0"
-    datatype: multistring
+      key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters\'
+      value: NullSessionPipes
+      data: "netlogon\0samr\0lsarpc\0\0"
+      datatype: multistring
   tags:
       - cat1
       - high
@@ -271,10 +281,10 @@
 
 - name: "HIGH | V-3339 | PATCH | Unauthorized remotely accessible registry paths must not be configured."
   win_regedit:
-    key: 'HKLM:\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedExactPaths'
-    value: Machine
-    data: "System\\CurrentControlSet\\Control\\ProductOptions\0System\\CurrentControlSet\\Control\\Server Applications\0Software\\Microsoft\\Windows NT\\CurrentVersion"
-    datatype: multistring
+      key: 'HKLM:\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedExactPaths'
+      value: Machine
+      data: "System\\CurrentControlSet\\Control\\ProductOptions\0System\\CurrentControlSet\\Control\\Server Applications\0Software\\Microsoft\\Windows NT\\CurrentVersion"
+      datatype: multistring
   tags:
       - cat1
       - high
@@ -431,9 +441,9 @@
       - patch
       - V-6834
 
-- name: "HIGH | V-7002 | AUDIT | Accounts must require passwords."
-  win_shell: Get-ADDefaultDomainPasswordPolicy
-  register: accounts_passwords_audit
+- name: "HIGH | V-7002 | AUDIT | DoD information system access will require the use of a password."
+  win_shell: (([ADSI]"WinNT://$env:computername").Children | Where-Object {$_.schemaclassname -eq 'user' -and $_.PasswordRequired -eq $False}).Name
+  register: no_password_users_audit
   check_mode: no
   changed_when: no
   tags:
@@ -447,7 +457,7 @@
   register: database_log_path_audit
   check_mode: no
   changed_when: no
-  failed_when: "path_not_found not in database_log_path_audit.stderr and database_log_path_audit.stderr"
+  failed_when: "'Cannot find path' not in database_log_path_audit.stderr and database_log_path_audit.stderr"
   tags:
       - cat1
       - high
@@ -455,11 +465,13 @@
       - V-8316
 
 - name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
-  win_shell: (Get-Acl -Path (Get-ItemProperty "HKLM:\System\CurrentControlSet\Services\NTDS\Parameters")."Database log files path").Access.IdentityReference.Value
+  win_shell: (Get-Acl -Path {{ item }}).Access.IdentityReference.Value
   register: database_log_acl_audit
   check_mode: no
   changed_when: no
-  failed_when: "path_not_found not in database_log_path_audit.stderr and database_log_path_audit.stderr"
+  failed_when: database_log_acl_audit.stderr
+  with_items:
+      - "{{ database_log_path_audit.stdout_lines }}"
   tags:
       - cat1
       - high
@@ -471,7 +483,7 @@
   register: dsa_database_file_audit
   check_mode: no
   changed_when: no
-  failed_when: "path_not_found not in dsa_database_file_audit.stderr and dsa_database_file_audit.stderr"
+  failed_when: "'Cannot find path' not in dsa_database_file_audit.stderr and dsa_database_file_audit.stderr"
   tags:
       - cat1
       - high
@@ -479,11 +491,13 @@
       - V-8316
 
 - name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
-  win_shell: (Get-Acl -Path (Get-ItemProperty "HKLM:\System\CurrentControlSet\Services\NTDS\Parameters")."DSA Database file").Access.IdentityReference.Value
+  win_shell: (Get-Acl -Path {{ item }}).Access.IdentityReference.Value
   register: dsa_database_acl_audit
   check_mode: no
   changed_when: no
-  failed_when: "path_not_found not in dsa_database_file_audit.stderr and dsa_database_file_audit.stderr"
+  failed_when: dsa_database_acl_audit.stderr
+  with_items:
+    - "{{ dsa_database_file_audit.stdout_lines }}"
   tags:
       - cat1
       - high
@@ -516,7 +530,7 @@
         state: 'absent'
     when: "not ('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
     with_nested:
-        - "{{ database_log_acl_audit.stdout_lines }}"
+        - "{{ database_log_acl_audit.results[0].stdout_lines }}"
         - [ allow, deny ]
         - "{{ database_log_path_audit.stdout_lines }}"
     tags:
@@ -534,7 +548,7 @@
         state: 'absent'
     when: "not ('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
     with_nested:
-        - "{{ dsa_database_acl_audit.stdout_lines }}"
+        - "{{ dsa_database_acl_audit.results[0].stdout_lines }}"
         - [ allow, deny ]
         - "{{ dsa_database_file_audit.stdout_lines }}"
     tags:
@@ -561,9 +575,9 @@
         - patch
         - V-8316
 
-  when: "path_not_found not in (database_log_acl_audit.stderr and dsa_database_acl_audit.stderr) and database_log_acl_audit and dsa_database_file_audit"
+  when: "'Cannot find path' not in (database_log_path_audit.stderr and dsa_database_file_audit.stderr) and database_log_path_audit and dsa_database_file_audit"
 ###################################### block end ########################################################
-                                                                                     
+
 - name: "HIGH | V-14820 | AUDIT | Domain Controller PKI certificates must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
   win_command: certutil -store My
   register: PKI_certificate_audit
@@ -582,6 +596,16 @@
 #       - high
 #       - patch
 #       - V-14820
+
+- name: "HIGH | V-18010 | AUDIT | Unauthorized accounts must not have the Debug programs user right."
+  debug: var=secedit_rules.Privilege_Rights.SeDebugPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-18010
 
 - name: "HIGH | V-21973 | AUDIT | Autoplay must be turned off for non-volume devices."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume
@@ -747,6 +771,16 @@
       - high
       - patch
       - V-26283
+
+- name: "HIGH | V-26479 | AUDIT | Unauthorized accounts must not have the Create a token object user right."
+  debug: var=secedit_rules.Privilege_Rights.SeCreateTokenPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-26479
 
 - name: "HIGH | V-26683 | AUDIT | PKI certificates associated with user accounts must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
   win_shell: get-aduser -filter * -properties "Certificates" | foreach { if($_.Certificates){ $_.Name }; $_.Certificates | foreach {New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 $_} | fl }

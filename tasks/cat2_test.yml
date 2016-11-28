@@ -1,3 +1,75 @@
+- name: "MEDIUM | V-1097 | AUDIT | The system must lockout accounts after 3 invalid logon attempts within a specified time period."
+  debug: var=secedit_rules.System_Access.LockoutBadCount
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1097
+
+- name: "MEDIUM | V-1099 | AUDIT | The account lockout duration must be configured to require an administrator to unlock an account."
+  debug: var=secedit_rules.System_Access.LockoutDuration
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1099
+
+# V-1098 must run after V-1099 because Windows won't allow setting ResetLockoutCount higher than LockoutDuration or setting LockoutDuration
+# lower than ResetLockoutCount unless it's set to -1, which is done in V-1099.
+- name: "MEDIUM | V-1098 | AUDIT | The period of time before the invalid logon counter is reset must be configured to at least 60 minutes."
+  debug: var=secedit_rules.System_Access.ResetLockoutCount
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1098
+
+- name: "MEDIUM | V-1104 | AUDIT | The maximum password age must be configured to 60 days or less."
+  debug: var=secedit_rules.System_Access.MaximumPasswordAge
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1104
+
+- name: "MEDIUM | V-1105 | AUDIT | The minimum password age must be configured to at least 1 day."
+  debug: var=secedit_rules.System_Access.MinimumPasswordAge
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1105
+
+- name: "MEDIUM | V-1107 | AUDIT | The password history must be configured to 24 passwords remembered."
+  debug: var=secedit_rules.System_Access.PasswordHistorySize
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1107
+
+- name: "MEDIUM | V-1113 | AUDIT | The built-in guest account must be disabled."
+  debug: var=secedit_rules.System_Access.EnableGuestAccount
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1113
+
 - name: "MEDIUM | V-1119 | AUDIT | Booting into alternate non STIG compliant operating systems will not be permitted."
   win_command: bcdedit
   register: OS_list_audit
@@ -56,6 +128,16 @@
       - patch
       - V-1145
 
+- name: "MEDIUM | V-1150 | AUDIT | The built-in Windows password complexity policy must be enabled."
+  debug: var=secedit_rules.System_Access.PasswordComplexity
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1150
+
 - name: "MEDIUM | V-1154 | AUDIT | The Ctrl+Alt+Del security attention sequence for logons will be enabled."
   win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v DisableCAD
   register: disable_CAD_audit
@@ -79,6 +161,16 @@
       - medium
       - patch
       - V-1154
+
+- name: "MEDIUM | V-1155 | AUDIT | The Deny access to this computer from the network user right on member servers must be configured to prevent access from highly privileged domain accounts and all local accounts on domain systems and unauthenticated access on all systems."
+  debug: var=secedit_rules.Privilege_Rights.SeDenyNetworkLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-1155
 
 - name: "MEDIUM | V-1162 | AUDIT | The Windows SMB server will perform SMB packet signing when possible."
   win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters /v EnableSecuritySignature
@@ -199,6 +291,71 @@
       - medium
       - patch
       - V-1171
+
+- name: "MEDIUM | V-2372 | AUDIT | Reversible password encryption will be disabled."
+  debug: var=secedit_rules.System_Access.ClearTextPassword
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-2372
+
+- name: "MEDIUM | V-2376 | AUDIT | Kerberos user logon restrictions must be enforced."
+  debug: var=secedit_rules.Kerberos_Policy.TicketValidateClient
+  register: kerberos_logon_restrictions_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-2376
+
+- name: "MEDIUM | V-2377 | AUDIT | The Kerberos service ticket maximum lifetime must be limited to 600 minutes or less."
+  debug: var=secedit_rules.Kerberos_Policy.MaxServiceAge
+  register: kerberos_ticket_service_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-2377
+
+- name: "MEDIUM | V-2378 | AUDIT | The Kerberos user ticket lifetime must be limited to 10 hours or less."
+  debug: var=secedit_rules.Kerberos_Policy.MaxTicketAge
+  register: kerberos_ticket_lifetime_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-2378
+
+- name: "MEDIUM | V-2379 | AUDIT | The Kerberos policy user ticket renewal maximum lifetime must be limited to 7 days or less."
+  debug: var=secedit_rules.Kerberos_Policy.MaxRenewAge
+  register: kerberos_ticket_renewal_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-2379
+
+- name: "MEDIUM | V-2380 | AUDIT | The computer clock synchronization tolerance must be limited to 5 minutes or less."
+  debug: var=secedit_rules.Kerberos_Policy.MaxClockSkew
+  register: kerberos_clock_sync_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-2380
 
 - name: "MEDIUM | V-3245 | AUDIT | File share ACLs will be reconfigured to remove the Everyone group."
   win_shell:  Get-WmiObject -Class Win32_Share | Get-Acl | fl
@@ -810,6 +967,16 @@
       - medium
       - audit
       - V-6833
+
+- name: "MEDIUM | V-6836 | AUDIT | For systems utilizing a logon ID as the individual identifier, passwords will, at a minimum, be 14 characters."
+  debug: var=secedit_rules.System_Access.MinimumPasswordLength
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-6836
 
 - name: "MEDIUM | V-6840 | AUDIT | System mechanisms will be implemented to enforce automatic expiration of passwords."
   win_shell: Search-ADAccount -PasswordNeverExpires -UsersOnly
@@ -2046,6 +2213,346 @@
       - patch
       - V-21980
 
+- name: "MEDIUM | V-26469 | AUDIT | Unauthorized accounts must not have the Access Credential Manager as a trusted caller user right."
+  debug: var=secedit_rules.Privilege_Rights.SeTrustedCredManAccessPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26469
+
+- name: "MEDIUM | V-26470 | AUDIT | Unauthorized accounts must not have the Access this computer from the network user right on member servers."
+  debug: var=secedit_rules.Privilege_Rights.SeNetworkLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26470
+
+- name: "MEDIUM | V-26471 | AUDIT | Unauthorized accounts must not have the Adjust memory quotas for a process user right."
+  debug: var=secedit_rules.Privilege_Rights.SeIncreaseQuotaPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26471
+
+- name: "MEDIUM | V-26472 | AUDIT | Unauthorized accounts must not have the Allow log on locally user right."
+  debug: var=secedit_rules.Privilege_Rights.SeInteractiveLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26472
+
+- name: "MEDIUM | V-26473 | AUDIT | The Allow log on through Remote Desktop Services user right must only be assigned to the Administrators group and other approved groups."
+  debug: var=secedit_rules.Privilege_Rights.SeRemoteInteractiveLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26473
+
+- name: "MEDIUM | V-26474 | AUDIT | Unauthorized accounts must not have the Back up files and directories user right."
+  debug: var=secedit_rules.Privilege_Rights.SeBackupPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26474
+
+- name: "MEDIUM | V-26476 | AUDIT | Unauthorized accounts must not have the Change the system time user right."
+  debug: var=secedit_rules.Privilege_Rights.SeSystemtimePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26476
+
+- name: "MEDIUM | V-26478 | AUDIT | Unauthorized accounts must not have the Create a pagefile user right."
+  debug: var=secedit_rules.Privilege_Rights.SeCreatePagefilePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26478
+
+- name: "MEDIUM | V-26480 | AUDIT | Unauthorized accounts must not have the Create global objects user right."
+  debug: var=secedit_rules.Privilege_Rights.SeCreateGlobalPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26480
+
+- name: "MEDIUM | V-26481 | AUDIT | Unauthorized accounts must not have the Create permanent shared objects user right."
+  debug: var=secedit_rules.Privilege_Rights.SeCreatePermanentPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26481
+
+- name: "MEDIUM | V-26482 | AUDIT | Unauthorized accounts must not have the Create symbolic links user right."
+  debug: var=secedit_rules.Privilege_Rights.SeCreateSymbolicLinkPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26482
+
+- name: "MEDIUM | V-26483 | AUDIT | The Deny log on as a batch job user right on member servers must be configured to prevent access from highly privileged domain accounts on domain systems and unauthenticated access on all systems."
+  debug: var=secedit_rules.Privilege_Rights.SeDenyBatchLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26483
+
+- name: "MEDIUM | V-26484 | AUDIT | The Deny log on as a service user right on member servers must be configured to prevent access from highly privileged domain accounts on domain systems.  No other groups or accounts must be assigned this right."
+  debug: var=secedit_rules.Privilege_Rights.SeDenyServiceLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26484
+
+- name: "MEDIUM | V-26485 | AUDIT | The Deny log on locally user right on member servers must be configured to prevent access from highly privileged domain accounts on domain systems and unauthenticated access on all systems."
+  debug: var=secedit_rules.Privilege_Rights.SeDenyInteractiveLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26485
+
+- name: "MEDIUM | V-26486 | AUDIT | The Deny log on through Remote Desktop Services user right on member servers must be configured to prevent access from highly privileged domain accounts and all local accounts on domain systems and unauthenticated access on all systems."
+  debug: var=secedit_rules.Privilege_Rights.SeDenyRemoteInteractiveLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26486
+
+- name: "MEDIUM | V-26487 | AUDIT | Unauthorized accounts must not have the Enable computer and user accounts to be trusted for delegation user right."
+  debug: var=secedit_rules.Privilege_Rights.SeEnableDelegationPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26487
+
+- name: "MEDIUM | V-26488 | AUDIT | Unauthorized accounts must not have the Force shutdown from a remote system user right."
+  debug: var=secedit_rules.Privilege_Rights.SeRemoteShutdownPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26488
+
+- name: "MEDIUM | V-26489 | AUDIT | Unauthorized accounts must not have the Generate security audits user right."
+  debug: var=secedit_rules.Privilege_Rights.SeAuditPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26489
+
+- name: "MEDIUM | V-26490 | AUDIT | Unauthorized accounts must not have the Impersonate a client after authentication user right."
+  debug: var=secedit_rules.Privilege_Rights.SeImpersonatePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26490
+
+- name: "MEDIUM | V-26491 | AUDIT | Unauthorized accounts must not have the Increase a process working set user right."
+  debug: var=secedit_rules.Privilege_Rights.SeIncreaseWorkingSetPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26491
+
+- name: "MEDIUM | V-26492 | AUDIT | Unauthorized accounts must not have the Increase scheduling priority user right."
+  debug: var=secedit_rules.Privilege_Rights.SeIncreaseBasePriorityPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26492
+
+- name: "MEDIUM | V-26493 | AUDIT | Unauthorized accounts must not have the Load and unload device drivers user right."
+  debug: var=secedit_rules.Privilege_Rights.SeLoadDriverPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26493
+
+- name: "MEDIUM | V-26494 | AUDIT | Unauthorized accounts must not have the Lock pages in memory user right."
+  debug: var=secedit_rules.Privilege_Rights.SeLockMemoryPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26494
+
+- name: "MEDIUM | V-26495 | AUDIT | Unauthorized accounts must not have the Log on as a batch job user right."
+  debug: var=secedit_rules.Privilege_Rights.SeBatchLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26495
+
+- name: "MEDIUM | V-26495 | AUDIT | Unauthorized accounts must not have the Log on as a batch job user right."
+  debug: var=secedit_rules.Privilege_Rights.SeBatchLogonRight
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26495
+
+- name: "MEDIUM | V-26497 | AUDIT | Unauthorized accounts must not have the Modify an object label user right."
+  debug: var=secedit_rules.Privilege_Rights.SeRelabelPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26497
+
+- name: "MEDIUM | V-26498 | AUDIT | Unauthorized accounts must not have the Modify firmware environment values user right."
+  debug: var=secedit_rules.Privilege_Rights.SeSystemEnvironmentPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26498
+
+- name: "MEDIUM | V-26499 | AUDIT | Unauthorized accounts must not have the Perform volume maintenance tasks user right."
+  debug: var=secedit_rules.Privilege_Rights.SeManageVolumePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26499
+
+- name: "MEDIUM | V-26500 | AUDIT | Unauthorized accounts must not have the Profile single process user right."
+  debug: var=secedit_rules.Privilege_Rights.SeProfileSingleProcessPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26500
+
+- name: "MEDIUM | V-26501 | AUDIT | Unauthorized accounts must not have the Profile system performance user right."
+  debug: var=secedit_rules.Privilege_Rights.SeSystemProfilePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26501
+
+- name: "MEDIUM | V-26503 | AUDIT | Unauthorized accounts must not have the Replace a process level token user right."
+  debug: var=secedit_rules.Privilege_Rights.SeAssignPrimaryTokenPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26503
+
+- name: "MEDIUM | V-26504 | AUDIT | Unauthorized accounts must not have the Restore files and directories user right."
+  debug: var=secedit_rules.Privilege_Rights.SeRestorePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26504
+
+- name: "MEDIUM | V-26505 | AUDIT | Unauthorized accounts must not have the Shut down the system user right."
+  debug: var=secedit_rules.Privilege_Rights.SeShutdownPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26505
+
+- name: "MEDIUM | V-26506 | AUDIT | Unauthorized accounts must not have the Take ownership of files or other objects user right."
+  debug: var=secedit_rules.Privilege_Rights.SeTakeOwnershipPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-26506
+
 - name: "MEDIUM | V-26529 | AUDIT | The system will be configured to audit 'Account Logon -> Credential Validation' successes."
   win_shell: AuditPol /get /subcategory:"Credential Validation"
   register: success_cred_audit
@@ -2902,6 +3409,17 @@
       - medium
       - patch
       - V-26606
+
+- name: "MEDIUM | V-30016 | AUDIT | Unauthorized accounts must not have the Add workstations to domain user right."
+  debug: var=secedit_rules.Privilege_Rights.SeMachineAccountPrivilege
+  register: add_workstations_domain_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-30016
 
 - name: "MEDIUM | V-33663 | AUDIT | The system must be configured to audit DS Access - Directory Service Access successes."
   win_shell: "AuditPol /get /subcategory:'Directory Service Access'"
