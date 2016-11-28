@@ -1052,6 +1052,26 @@
       - patch
       - V-21971
 
+- name: "LOW | V-26475 | AUDIT | Unauthorized accounts must not have the Bypass traverse checking user right."
+  debug: var=secedit_rules.Privilege_Rights.SeChangeNotifyPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-26475
+
+- name: "LOW | V-26477 | AUDIT | Unauthorized accounts must not have the Change the time zone user right."
+  debug: var=secedit_rules.Privilege_Rights.SeTimeZonePrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat3
+      - low
+      - audit
+      - V-26477
+
 - name: "LOW | V-28504 | AUDIT | Windows will be prevented from sending an error report when a device driver requests additional software during installation."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\DeviceInstall\Settings /v DisableSendRequestAdditionalSoftwareToWER
   register: send_error_report_audit
