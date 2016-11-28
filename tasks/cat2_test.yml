@@ -302,6 +302,61 @@
       - audit
       - V-2372
 
+- name: "MEDIUM | V-2376 | AUDIT | Kerberos user logon restrictions must be enforced."
+  debug: var=secedit_rules.Kerberos_Policy.TicketValidateClient
+  register: result
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-2376
+
+- name: "MEDIUM | V-2377 | AUDIT | The Kerberos service ticket maximum lifetime must be limited to 600 minutes or less."
+  debug: var=secedit_rules.Kerberos_Policy.MaxServiceAge
+  register: result
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-2377
+
+- name: "MEDIUM | V-2378 | AUDIT | The Kerberos user ticket lifetime must be limited to 10 hours or less."
+  debug: var=secedit_rules.Kerberos_Policy.MaxTicketAge
+  register: result
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-2378
+
+- name: "MEDIUM | V-2379 | AUDIT | The Kerberos policy user ticket renewal maximum lifetime must be limited to 7 days or less."
+  debug: var=secedit_rules.Kerberos_Policy.MaxRenewAge
+  register: result
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-2379
+
+- name: "MEDIUM | V-2380 | AUDIT | The computer clock synchronization tolerance must be limited to 5 minutes or less."
+  debug: var=secedit_rules.Kerberos_Policy.MaxClockSkew
+  register: result
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-2380
+
 - name: "MEDIUM | V-3245 | AUDIT | File share ACLs will be reconfigured to remove the Everyone group."
   win_shell:  Get-WmiObject -Class Win32_Share | Get-Acl | fl
   register: eject_removable_media_audit
