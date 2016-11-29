@@ -960,10 +960,10 @@
         path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
         state: absent
     tags:
-         - cat1
-         - high
-         - patch
-         - V-32282
+        - cat1
+        - high
+        - patch
+        - V-32282
 
   when: "ansible_architecture == '64-bit' and path_not_found not in standard_read_active2_audit.stderr and standard_read_active2_audit"
 ############################################ block end ##################################################
