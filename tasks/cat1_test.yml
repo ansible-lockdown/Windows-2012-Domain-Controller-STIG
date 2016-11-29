@@ -968,6 +968,17 @@
   when: "ansible_architecture == '64-bit' and path_not_found not in standard_read_active2_audit.stderr and standard_read_active2_audit"
 ############################################ block end ##################################################
 
+- name: "HIGH | V-33673 | AUDIT | Active Directory Group Policy objects must have proper access control permissions."
+  action: win_ping
+  register: ad_gpo_permissions_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-33673
+
 - name: "HIGH | V-34974 | AUDIT | The Windows Installer Always install with elevated privileges option must be disabled."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Installer\ /v AlwaysInstallElevated
   register: install_elevated_disabled_audit
