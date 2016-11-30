@@ -1,4 +1,4 @@
-- namme: "PRELIM | Gather secedit facts"
+- name: "PRELIM | Gather secedit facts"
   win_secedit_facts: 
   tags:
       - cat1
