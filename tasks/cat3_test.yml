@@ -39,6 +39,7 @@
       key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
       value: CachedLogonsCount
       data: 0
+      datatype: string
   tags:
       - cat3
       - low
@@ -1254,7 +1255,7 @@
 
 - name: "LOW | V-36710 | PATCH | Automatic download of updates from the Windows Store must be turned off."
   win_regedit:
-      key: 'HKLM:\System\CurrentControlSet\Control\Session Manager\Kernel'
+      key: 'HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore\'
       value: AutoDownload
       data: 0x00000002
       datatype: dword
@@ -1313,7 +1314,7 @@
       - V-36775
 
 - name: "LOW | V-36776 | AUDIT | Notifications from Windows Push Network Service must be turned off."
-  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\ /v NoCloudApplicationNotification
+  win_command: reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\ /v NoCloudApplicationNotification
   register: windows_push_notify_audit
   check_mode: no
   changed_when: no
@@ -1326,8 +1327,8 @@
 
 - name: "LOW | V-36776 | PATCH | Notifications from Windows Push Network Service must be turned off."
   win_regedit:
-      key: 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System\'
-      value: NoDispScrSavPage
+      key: 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\'
+      value: NoCloudApplicationNotification
       data: 1
       datatype: dword
   tags:
@@ -1337,7 +1338,7 @@
       - V-36776
 
 - name: "LOW | V-36777 | AUDIT | Toast notifications to the lock screen must be turned off."
-  win_command: reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\ /v NoToastApplicationNotificationOnLockScreen
+  win_command: reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\ /v NoToastApplicationNotificationOnLockScreen
   register: toast_notifications_audit
   check_mode: no
   changed_when: no
@@ -1350,7 +1351,7 @@
 
 - name: "LOW | V-36777 | PATCH | Toast notifications to the lock screen must be turned off."
   win_regedit:
-      key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\'
+      key: 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications\'
       value: NoToastApplicationNotificationOnLockScreen
       data: 1
       datatype: dword
