@@ -146,11 +146,15 @@
     with_items:
         - user: 'BUILTIN\Administrators'
           rights: 'FullControl'
-          inherit: 'ContainerInherit, ObjectInherit'
+          inherit: 'ContainerInherit,ObjectInherit'
           propagation: 'None'
         - user: 'BUILTIN\Backup Operators'
           rights: 'ReadKey'
           inherit: 'None'
+          propagation: 'None'
+        - user: 'LOCAL SERVICE'
+          rights: 'ReadKey'
+          inherit: 'ContainerInherit,ObjectInherit'
           propagation: 'None'
     tags:
         - cat1
