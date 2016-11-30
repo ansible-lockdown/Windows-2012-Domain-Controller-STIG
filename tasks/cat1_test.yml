@@ -578,6 +578,24 @@
   when: "'Cannot find path' not in (database_log_path_audit.stderr and dsa_database_file_audit.stderr) and database_log_path_audit and dsa_database_file_audit"
 ###################################### block end ########################################################
 
+- name: "HIGH | V-12780 | AUDIT | The Synchronize directory service data user right must be configured to include no accounts or groups (blank)."
+  debug: var=secedit_rules.Privilege_Rights.SeSyncAgentPrivilege
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-12780
+
+# - name: "HIGH | V-12780 | PATCH | The Synchronize directory service data user right must be configured to include no accounts or groups (blank)."
+#   win_command: true
+#   tags:
+#       - cat1
+#       - high
+#       - patch
+#       - V-12780
+
 - name: "HIGH | V-14820 | AUDIT | Domain Controller PKI certificates must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
   win_command: certutil -store My
   register: PKI_certificate_audit
