@@ -223,24 +223,6 @@
       - patch
       - V-1159
 
-- name: "HIGH | V-12780 | AUDIT | The Synchronize directory service data user right must be configured to include no accounts or groups (blank)."
-  debug: var=secedit_rules.Privilege_Rights.SeSyncAgentPrivilege
-  check_mode: no
-  changed_when: no
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-12780
-
-# - name: "HIGH | V-12780 | PATCH | The Synchronize directory service data user right must be configured to include no accounts or groups (blank)."
-#   win_command: true
-#   tags:
-#       - cat1
-#       - high
-#       - patch
-#       - V-12780
-
 - name: "HIGH | V-2374 | AUDIT | Autoplay must be disabled for all drives."
   win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\policies\Explorer\ /v NoDriveTypeAutoRun 
   register: autoplay_disabled_audit
