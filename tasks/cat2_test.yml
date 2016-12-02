@@ -848,6 +848,26 @@
       - patch
       - V-3666
 
+- name: "MEDIUM | V-4407 | AUDIT | Domain controllers must require LDAP access signing."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\NTDS\Parameters /v LDAPServerIntegrity
+  register: LDAP_access_signing_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in LDAP_access_signing_audit.stderr and LDAP_access_signing_audit.stderr"
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-4407
+
+# - name: "MEDIUM | V-4407 | PATCH | Domain controllers must require LDAP access signing."
+#   win_command: true
+#   tags:
+#       - cat2
+#       - medium
+#       - patch
+#       - V-4407
+
 - name: "MEDIUM | V-4446 | AUDIT | Software certificate restriction policies will be enforced."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Safer\CodeIdentifiers /v AuthenticodeEnabled
   register: software_restricition_policies_audit
