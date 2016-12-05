@@ -977,15 +977,15 @@
         - V-32282
 
   #Inheritance removal must be last otherwise all permisisons for the key are wiped and win_acl tasks are unable to run
-  - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-    win_acl_inheritance:
-        path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
-        state: absent
-    tags:
-        - cat1
-        - high
-        - patch
-        - V-32282
+  #- name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+  #  win_acl_inheritance:
+  #      path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
+  #      state: absent
+  #  tags:
+  #      - cat1
+  #      - high
+  #      - patch
+  #      - V-32282
 
   when: "ansible_architecture == '64-bit' and path_not_found not in standard_read_active2_audit.stderr and standard_read_active2_audit"
 ############################################ block end ##################################################
@@ -1037,17 +1037,17 @@
       - audit
       - V-36718
 
-- name: "HIGH | V-36718 | PATCH | The Windows Remote Management (WinRM) service must not use Basic authentication."
-  win_regedit:
-      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Service\'
-      value: AllowBasic
-      data: 0
-      datatype: dword
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-36718
+#- name: "HIGH | V-36718 | PATCH | The Windows Remote Management (WinRM) service must not use Basic authentication."
+#  win_regedit:
+#      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Service\'
+#      value: AllowBasic
+#      data: 0
+#      datatype: dword
+#  tags:
+#      - cat1
+#      - high
+#      - patch
+#      - V-36718
 
 - name: "HIGH | V-39331 | AUDIT | The Active Directory SYSVOL directory must have the proper access control permissions."
   win_shell: Get-Acl -Path '\Windows\SYSVOL' | Format-List
