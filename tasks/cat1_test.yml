@@ -1024,7 +1024,6 @@
       - patch
       - V-33673
 
-
 - name: "HIGH | V-34974 | AUDIT | The Windows Installer Always install with elevated privileges option must be disabled."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Installer\ /v AlwaysInstallElevated
   register: install_elevated_disabled_audit
