@@ -3130,6 +3130,7 @@
       key: 'HKLM:\Software\Policies\Microsoft\Windows\TCPIP\v6Transition'
       value: 6to4_State
       data: Disabled
+      datatype: string
   tags:
       - cat2
       - medium
@@ -3177,6 +3178,7 @@
       key: 'HKLM:\Software\Policies\Microsoft\Windows\TCPIP\v6Transition'
       value: ISATAP_State
       data: Disabled
+      datatype: string
   tags:
       - cat2
       - medium
@@ -3200,6 +3202,7 @@
       key: 'HKLM:\Software\Policies\Microsoft\Windows\TCPIP\v6Transition'
       value: Teredo_State
       data: Disabled
+      datatype: string
   tags:
       - cat2
       - medium
@@ -3502,7 +3505,7 @@
       - V-33666
 
 - name: "MEDIUM | V-36656 | AUDIT | A screen saver must be enabled on the system."
-  win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows\Control Panel\Desktop\" /v ScreenSaveActive
+  win_command: reg query \"HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop\" /v ScreenSaveActive
   register: screen_saver_enabled_audit
   check_mode: no
   changed_when: no
@@ -3515,7 +3518,7 @@
 
 - name: "MEDIUM | V-36656 | PATCH | A screen saver must be enabled on the system."
   win_regedit:
-      key: 'HKLM:\Software\Policies\Microsoft\Windows\Control Panel\Desktop\'
+      key: 'HKCU:\Software\Policies\Microsoft\Windows\Control Panel\Desktop\'
       value: ScreenSaveActive
       data: 1
       datatype: string
@@ -3526,7 +3529,7 @@
       - V-36656
 
 - name: "MEDIUM | V-36657 | AUDIT | The screen saver must be password protected."
-  win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows\Control Panel\Desktop\" /v ScreenSaverIsSecure
+  win_command: reg query \"HKCU\Software\Policies\Microsoft\Windows\Control Panel\Desktop\" /v ScreenSaverIsSecure
   register: screen_saver_secure_audit
   check_mode: no
   changed_when: no
@@ -3539,7 +3542,7 @@
 
 - name: "MEDIUM | V-36657 | PATCH | The screen saver must be password protected."
   win_regedit:
-      key: 'HKLM:\Software\Policies\Microsoft\Windows\Control Panel\Desktop\'
+      key: 'HKCU:\Software\Policies\Microsoft\Windows\Control Panel\Desktop\'
       value: ScreenSaverIsSecure
       data: 1
       datatype: string
@@ -4826,6 +4829,7 @@
       key: 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting'
       value: CorporateWerServer
       data: " "
+      datatype: string
   when: not error_message_audit.stdout
   tags:
       - cat2
