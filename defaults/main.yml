@@ -8,3 +8,5 @@ path_not_found: 'PathNotFound_Exception'
 path_is_null: "Cannot validate argument on parameter 'Path'. The argument is null"
 
 service_not_installed: "The specified service does not exist as an installed service."
+
+missing_security_principal: "domain does not have a security principal of type"
