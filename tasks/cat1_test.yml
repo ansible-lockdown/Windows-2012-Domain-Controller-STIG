@@ -990,6 +990,7 @@
   when: "ansible_architecture == '64-bit' and path_not_found not in standard_read_active2_audit.stderr and standard_read_active2_audit"
 ############################################ block end ##################################################
 
+#CREATOR OWNER is present with correct permissions but audit fails
 - name: "HIGH | V-33673 | AUDIT | Active Directory Group Policy objects must have proper access control permissions."
   win_shell: "{{ item }}"
   register: ad_gpo_permissions_audit
@@ -1009,20 +1010,20 @@
       - audit
       - V-33673
 
-- name: "HIGH | V-33673 | PATCH | Active Directory Group Policy objects must have proper access control permissions."
-  win_shell: "{{ item }}"
-  with_items:
-      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoRead,GpoApply" -TargetName "Authenticated Users" -TargetType "Group"
-      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "None" -TargetName "CREATOR OWNER" -TargetType "Group"
-      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoEditDeleteModifySecurity" -TargetName "SYSTEM" -TargetType "Group"
-      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoEditDeleteModifySecurity" -TargetName "Domain Admins" -TargetType "Group"
-      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoEditDeleteModifySecurity" -TargetName "Enterprise Admins" -TargetType "Group"
-      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoRead" -TargetName "ENTERPRISE DOMAIN CONTROLLERS" -TargetType "Group"
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-33673
+#- name: "HIGH | V-33673 | PATCH | Active Directory Group Policy objects must have proper access control permissions."
+#  win_shell: "{{ item }}"
+#  with_items:
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoRead,GpoApply" -TargetName "Authenticated Users" -TargetType "Group"
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "None" -TargetName "CREATOR OWNER" -TargetType "Group"
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoEditDeleteModifySecurity" -TargetName "SYSTEM" -TargetType "Group"
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoEditDeleteModifySecurity" -TargetName "Domain Admins" -TargetType "Group"
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoEditDeleteModifySecurity" -TargetName "Enterprise Admins" -TargetType "Group"
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoRead" -TargetName "ENTERPRISE DOMAIN CONTROLLERS" -TargetType "Group"
+#  tags:
+#      - cat1
+#      - high
+#      - patch
+#      - V-33673
 
 - name: "HIGH | V-34974 | AUDIT | The Windows Installer Always install with elevated privileges option must be disabled."
   win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Installer\ /v AlwaysInstallElevated
