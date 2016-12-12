@@ -1186,16 +1186,27 @@
   when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit"
 ######################################### block end #####################################################
 
-#- name: "HIGH | V-39332 | AUDIT | The Active Directory Domain Controllers Organizational Unit (OU) object must have the proper access control permissions."
-#  win_shell: get-gpo -all |  %{Get-GPPermissions -Guid $_.Id -All } 
-#  register: actived_domain_controller_guid_audit
-#  check_mode: no
-#  changed_when: no
-#  tags:
-#      - cat1
-#      - high
-#      - audit
-#      - V-39332
+- name: "HIGH | V-39332 | AUDIT | The Active Directory Domain Controllers Organizational Unit (OU) object must have the proper access control permissions."
+  script: v39332.ps1
+  register: actived_domain_controller_guid_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-39332
+
+  #- name: "HIGH | V-39332 | AUDIT | The Active Directory Domain Controllers Organizational Unit (OU) object must have the proper access control permissions."
+  #win_shell: Get-ADOrganizationalUnit -Filter 'Name -like "*"' |  %{Get-GPPermissions -Name $_.DistinguishedName -All } 
+  #register: actived_domain_controller_guid_audit
+  #check_mode: no
+  #changed_when: no
+  #tags:
+  #    - cat1
+  #    - high
+  #    - audit
+  #    - V-39332
 
 #- name: "HIGH | V-39333 | AUDIT | Domain created Active Directory Organizational Unit (OU) objects must have proper access control permissions."
 #  win_shell: Get-ADOrganizationalUnit -Filter 'Name -like "*"' | FT Name, DistinguishedName -A
