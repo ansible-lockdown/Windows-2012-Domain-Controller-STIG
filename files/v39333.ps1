@@ -1,21 +1,15 @@
-import-module activedirectory
-import-module grouppolicy
-
-$listDistinguishedNames = (Get-ADOrganizationalUnit -Filter 'Name -like "*"').DistinguishedName
+#The script below is left to test that the loop functions properly when the list does indeed have values
+#$listDistinguishedNames = (Get-ADOrganizationalUnit -Filter 'Name -like "*"').DistinguishedName
+#This list in the lab environment returns null, but should correctly fetch all OU's
+$listDistinguishedNames = (Get-ADOrganizationalUnit -Filter 'Name -like "*" -and Name -notlike "Domain Controllers"').DistinguishedName
 $array = $listDistinguishedNames -split "`r`n"
 $arrayLength = $array.length
-#$listDistinguishedNames = (Get-ADOrganizationalUnit -Filter 'Name -like "*" -and Name -notlike "Domain Controllers"').DistinguishedName
-$ldnSize = $listDistinguishedNames | Measure
-$ldnSize = $ldnSize.Count
 if ($listDistinguishedNames -eq $null) {
-  echo "The list of OU's is null!"
+  echo "The list of applicable OU's is null!"
 }
-#echo "listDistinguishedNames :: $listDistinguishedNames"
-#echo "arrayLength :: $arrayLength"
 Else {
-#  Get-ACL "AD:\\$listDistinguishedName" | foreach ($_.DistinguishedName in $listDistinguishedNames) #| Select -ExpandProperty Access
   for ($i = 0; $i -lt $arrayLength; $i++) {
-    echo "arrayValue :: $($array[$i])"
-    Get-ACL "AD:\\$($array[$i])" #| Select -ExpandProperty Access
- }
+     echo "arrayValue :: $($array[$i])"
+     Get-ACL "AD:\\$($array[$i])" | Select -ExpandProperty Access
+  }
 }
