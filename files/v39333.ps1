@@ -15,7 +15,7 @@ if ($listDistinguishedNames -eq $null) {
 Else {
 #  Get-ACL "AD:\\$listDistinguishedName" | foreach ($_.DistinguishedName in $listDistinguishedNames) #| Select -ExpandProperty Access
   for ($i = 0; $i -lt $arrayLength; $i++) {
-    echo "arrayValue :: $array[1]"
-    Get-ACL "AD:\\($array[$i])" #| Select -ExpandProperty Access
+    echo "arrayValue :: $($array[$i])"
+    Get-ACL "AD:\\$($array[$i])" #| Select -ExpandProperty Access
  }
 }
