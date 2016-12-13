@@ -991,7 +991,7 @@
 ############################################ block end ##################################################
 
 - name: "HIGH | V-33673 | AUDIT | Active Directory Group Policy objects must have proper access control permissions."
-  win_shell: get-gpo -all | %{Get-GPPermissions -Guid $_.Id -All }
+  win_shell: get-gpo -all | %{$_.DisplayName, (Get-GPPermissions -Guid $_.Id -All) }
   register: ad_gpo_permissions_audit
   check_mode: no
   changed_when: no
