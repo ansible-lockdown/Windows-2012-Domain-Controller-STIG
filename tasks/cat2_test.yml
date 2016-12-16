@@ -4391,6 +4391,25 @@
       - patch
       - V-36773
 
+- name: "MEDIUM | V-39334 | AUDIT | Domain controllers must have a PKI server certificate."
+  win_command: certutil -store My
+  register: pki_server_certificate_audit
+  check_mode: no
+  changed_when: no
+  tags:
+      - cat2
+      - medium
+      - audit
+      - V-39334
+
+#- name: "MEDIUM | V-39334 | PATCH | Domain controllers must have a PKI server certificate."
+#  win_command: true
+#  tags:
+#      - cat2
+#      - medium
+#      - patch
+#      - V-39334
+
 - name: "MEDIUM | V-40177 | AUDIT | Permissions for program file directories must conform to minimum requirements."
   win_shell: Get-Acl -PATH '\Program Files' | Format-List
   register: program_files_minimum_audit
