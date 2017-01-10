@@ -307,7 +307,10 @@
       key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters\'
       value: NullSessionPipes
       data: "netlogon\0samr\0lsarpc\0\0"
-      datatype: multistring
+      datatype: '{{ item }}'
+  with_items:
+      - string
+      - multistring
   tags:
       - cat1
       - high
