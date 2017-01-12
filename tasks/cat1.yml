@@ -1,109 +1,277 @@
-- name: "HIGH | V-1081 | AUDIT | Local volumes must be formatted using NTFS."
-  win_command: true
-  register: result
+- name: "HIGH | V-1073 | AUDIT | Systems must be maintained at a supported service pack level."
+  win_command: wmic os get Caption, Version, CSDVersion, BuildNumber
+  register: supported_pack_level_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in supported_pack_level_audit.stderr and supported_pack_level_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-1073
+
+# need to include certificate update information
+- name: "HIGH | V-1074 | AUDIT | An approved DoD antivirus program must be installed and used."
+  win_command: reg query \"HKLM\Software\Wow6432Node\Network Associates\ePolicy Orchestrator\Application Plugins\VIRUSCAN8800\" /v Version
+  register: mcafee_approved_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in mcafee_approved_audit.stderr and mcafee_approved_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-1074
+
+- name: "HIGH | V-1081 | AUDIT | Local volumes must be formatted using NTFS."
+  win_shell: Get-Volume | Select-Object -Property DriveLetter,FileSystem
+  register: local_volume_format_aduit
+  check_mode: no
+  changed_when: no
   tags:
       - cat1
       - high
       - audit
       - V-1081
 
-- name: "HIGH | V-1081 | PATCH | Local volumes must be formatted using NTFS."
-  win_command: true
+- name: "HIGH | V-1093 | AUDIT | Anonymous enumeration of shares must be restricted."
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v RestrictAnonymous
+  register: anon_shares_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in anon_shares_audit.stderr and anon_shares_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-1093
+
+- name: "HIGH | V-1093 | PATCH | Anonymous enumeration of shares must be restricted."
+  win_regedit: 
+      key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
+      value: RestrictAnonymous
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
       - patch
-      - V-1081
+      - V-1093
 
 - name: "HIGH | V-1102 | AUDIT | Unauthorized accounts must not have the Act as part of the operating system user right."
-  win_command: true
-  register: result
+  debug: var=secedit_rules.Privilege_Rights.SeTcbPrivilege
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
       - audit
       - V-1102
 
-- name: "HIGH | V-1102 | PATCH | Unauthorized accounts must not have the Act as part of the operating system user right."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-1102
-
-- name: "HIGH | V-1121 | AUDIT | FTP servers must be configured to prevent access to the system drive."
-  win_command: true
-  register: result
+- name: "HIGH | V-1121 | AUDIT | Installed FTP server will not be configured to allow access to the system drive."
+  win_shell: (Get-Service -name *ftpsvc).Status
+  register: ftp_service_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "ftp_service_audit.stderr and service_not_found not in ftp_service_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-1121
 
-- name: "HIGH | V-1121 | PATCH | FTP servers must be configured to prevent access to the system drive."
-  win_command: true
+######################################### block start ###################################################
+
+- block:
+    - name: "HIGH | V-1121 | AUDIT | Get environment temp directory"
+      win_shell: echo $env:temp
+      register: temp_dir
+
+    - name: "HIGH | V-1121 | AUDIT | Copy over ftp script"
+      win_copy: 
+          src: 1121.txt
+          dest: "{{ temp_dir.stdout_lines[0] }}"
+      register: copy_hotfix
+      check_mode: no
+
+    - name: "HIGH | V-1121 | AUDIT | Installed FTP server will not be configured to allow prohibited logins."
+      win_command: ftp -s:{{ temp_dir.stdout_lines[0] }}\1121.txt
+      register: ftp_anonymous_audit
+      check_mode: no
+      changed_when: no
+
+    - name: "HIGH | V-1121 | Clean up."
+      win_file:
+          path: "{{ temp_dir.stdout_lines[0] }}/1121.txt"
+          state: absent
+      check_mode: no
+
+  when: "'Running' in ftp_service_audit.stdout"
   tags:
       - cat1
       - high
-      - patch
+      - audit
       - V-1121
+######################################### block end #####################################################
 
-- name: "HIGH | V-1127 | AUDIT | Only administrators responsible for the domain controller must have Administrator rights on the system."
-  win_command: true
-  register: result
+# - name: "HIGH | V-1121 | PATCH | FTP servers must be configured to prevent access to the system drive."
+#   win_command: true
+#   tags:
+#       - cat1
+#       - high
+#       - patch
+#       - V-1121
+
+- name: "HIGH | V-1127 | AUDIT | Only administrators responsible for the system must have Administrator rights on the system."
+  win_command: net localgroup Administrators
+  register: administrators_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
       - audit
       - V-1127
 
-- name: "HIGH | V-1127 | PATCH | Only administrators responsible for the domain controller must have Administrator rights on the system."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-1127
-
-- name: "HIGH | V-2372 | AUDIT | Reversible password encryption must be disabled."
-  win_command: true
-  register: result
+- name: "HIGH | V-1152 | AUDIT | Anonymous access to the registry must be restricted."
+  win_shell: Get-Acl -PATH 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg' | Format-List
+  register: anon_registry_access_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "path_not_found not in anon_registry_access_audit.stderr and anon_registry_access_audit.stderr"
   tags:
       - cat1
       - high
       - audit
-      - V-2372
+      - V-1152
 
-- name: "HIGH | V-2372 | PATCH | Reversible password encryption must be disabled."
-  win_command: true
+- name: "HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
+  win_regedit:
+      key: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg'
+  when: "reg_not_found not in anon_registry_access_audit.stderr and anon_registry_access_audit.stderr"
   tags:
       - cat1
       - high
       - patch
-      - V-2372
+      - V-1152
+
+- name: "HIGH | V-1152 | AUDIT | Anonymous access to the registry must be restricted."
+  win_shell: (Get-Acl -PATH 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg').Access.IdentityReference.Value
+  register: anon_registry_access_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in anon_registry_access_audit.stderr and anon_registry_access_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-1152
+
+######################## block start - conditionally apply patches if path exists #######################
+
+- block:
+    - name: "REMOVAL HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
+      win_acl:
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg'
+          user: '{{ item[0] }}'
+          rights: 'FullControl'
+          type: '{{ item[1] }}'
+          state: 'absent'
+      when: "'Administrators' not in item[0] or 'allow' not in item[1]"
+      with_nested:
+          - "{{ anon_registry_access_audit.stdout_lines }}"
+          - [ allow, deny ]
+   
+    - name: "HIGH | V-1152 | PATCH | Admin Anonymous access to the registry must be restricted."
+      win_acl:
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\'
+          user: '{{ item.user }}'
+          rights: '{{ item.rights }}'
+          type: 'allow'
+          state: 'present'
+          inherit: '{{ item.inherit }}'
+          propagation: '{{ item.propagation }}'
+      with_items:
+          - user: 'BUILTIN\Administrators'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit,ObjectInherit'
+            propagation: 'None'
+          - user: 'BUILTIN\Backup Operators'
+            rights: 'ReadKey'
+            inherit: 'None'
+            propagation: 'None'
+          - user: 'LOCAL SERVICE'
+            rights: 'ReadKey'
+            inherit: 'ContainerInherit,ObjectInherit'
+            propagation: 'None'
+     
+    - name: "REMOVAL HIGH | V-1152 | PATCH | Anonymous access to the registry must be restricted."
+      win_acl_inheritance:
+          path: 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg'
+          state: 'absent'
+    
+  when: "path_not_found not in anon_registry_access_audit.stderr and anon_registry_access_audit"
+  tags:
+        - cat1
+        - high
+        - patch
+        - V-1152
+###################################### block end ########################################################
+
+- name: "HIGH | V-1153 | AUDIT | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v LMCompatibilityLevel
+  register: lanMan_authentication_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in lanMan_authentication_audit.stderr and lanMan_authentication_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-1153
+
+- name: "HIGH | V-1153 | PATCH | The LanMan authentication level must be set to send NTLMv2 response only, and to refuse LM and NTLM."
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
+      value: LMCompatibilityLevel
+      data: 5
+      datatype: dword
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-1153
+
+- name: "HIGH | V-1159 | AUDIT | The Recovery Console option must be set to prevent automatic logon to the system."
+  win_command: reg query \"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Setup\RecoveryConsole\" /v SecurityLevel
+  register: recovery_prevent_autologin_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in recovery_prevent_autologin_audit.stderr and recovery_prevent_autologin_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-1159
+
+- name: "HIGH | V-1159 | PATCH | The Recovery Console option must be set to prevent automatic logon to the system."
+  win_regedit:
+      key: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Setup\RecoveryConsole\'
+      value: SecurityLevel
+      data: 0
+      datatype: dword
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-1159
 
 - name: "HIGH | V-2374 | AUDIT | Autoplay must be disabled for all drives."
-  win_command: true
-  register: result
+  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\policies\Explorer\ /v NoDriveTypeAutoRun 
+  register: autoplay_disabled_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in autoplay_disabled_audit.stderr and autoplay_disabled_audit.stderr"
   tags:
       - cat1
       - high
@@ -111,39 +279,23 @@
       - V-2374
 
 - name: "HIGH | V-2374 | PATCH | Autoplay must be disabled for all drives."
-  win_command: true
+  win_regedit:
+      key: 'HKLM:\Software\Microsoft\Windows\CurrentVersion\policies\Explorer\'
+      value: NoDriveTypeAutoRun
+      data: 255
+      datatype: dword
   tags:
       - cat1
       - high
       - patch
       - V-2374
 
-- name: "HIGH | V-3337 | AUDIT | Anonymous SID/Name translation must not be allowed."
-  win_command: true
-  register: result
-  check_mode: no
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-3337
-
-- name: "HIGH | V-3337 | PATCH | Anonymous SID/Name translation must not be allowed."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-3337
-
 - name: "HIGH | V-3338 | AUDIT | Named pipes that can be accessed anonymously must be configured with limited values on domain controllers."
-  win_command: true
-  register: result
+  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters\ /v NullSessionPipes
+  register: pipes_limited_dc_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in pipes_limited_dc_audit.stderr and pipes_limited_dc_audit.stderr"
   tags:
       - cat1
       - high
@@ -151,27 +303,58 @@
       - V-3338
 
 - name: "HIGH | V-3338 | PATCH | Named pipes that can be accessed anonymously must be configured with limited values on domain controllers."
-  win_command: true
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters\'
+      value: NullSessionPipes
+      data: "netlogon\0samr\0lsarpc\0\0"
+      datatype: '{{ item }}'
+  with_items:
+      - string
+      - multistring
   tags:
       - cat1
       - high
       - patch
       - V-3338
 
-- name: "HIGH | V-3340 | AUDIT | Network shares that can be accessed anonymously must not be allowed."
-  win_command: true
-  register: result
+- name: "HIGH | V-3339 | AUDIT | Unauthorized remotely accessible registry paths must not be configured."
+  win_command: reg query HKLM\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedExactPaths /v Machine
+  register: remotely_accessible_registry_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in remotely_accessible_registry_audit.stderr and remotely_accessible_registry_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-3339
+
+- name: "HIGH | V-3339 | PATCH | Unauthorized remotely accessible registry paths must not be configured."
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedExactPaths'
+      value: Machine
+      data: "System\\CurrentControlSet\\Control\\ProductOptions\0System\\CurrentControlSet\\Control\\Server Applications\0Software\\Microsoft\\Windows NT\\CurrentVersion"
+      datatype: multistring
+  tags:
+      - cat1
+      - high
+      - patch
+      - V-3339
+
+- name: "HIGH | V-3340 | AUDIT | Network shares that can be accessed anonymously will not be allowed."
+  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters /v NullSessionShares
+  register: null_session_shares_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "reg_not_found not in null_session_shares_audit.stderr and null_session_shares_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-3340
 
-- name: "HIGH | V-3340 | PATCH | Network shares that can be accessed anonymously must not be allowed."
-  win_command: true
+- name: "HIGH | V-3340 | PATCH | Network shares that can be accessed anonymously will not be allowed."
+  win_command: reg add HKLM\System\CurrentControlSet\Services\LanManServer\Parameters /v NullSessionShares /t REG_MULTI_SZ /f
   tags:
       - cat1
       - high
@@ -179,11 +362,11 @@
       - V-3340
 
 - name: "HIGH | V-3343 | AUDIT | Solicited Remote Assistance must not be allowed."
-  win_command: true
-  register: result
+  win_command: reg query \"HKLM\Software\Policies\Microsoft\Windows NT\Terminal Services\" /v fAllowToGetHelp
+  register: solicited_remote_assistance_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in solicited_remote_assistance_audit.stderr and solicited_remote_assistance_audit.stderr"
   tags:
       - cat1
       - high
@@ -191,7 +374,11 @@
       - V-3343
 
 - name: "HIGH | V-3343 | PATCH | Solicited Remote Assistance must not be allowed."
-  win_command: true
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows NT\Terminal Services'
+      value: fAllowToGetHelp
+      data: 0
+      datatype: dword
   tags:
       - cat1
       - high
@@ -199,11 +386,11 @@
       - V-3343
 
 - name: "HIGH | V-3344 | AUDIT | Local accounts with blank passwords must be restricted to prevent access from the network."
-  win_command: true
-  register: result
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa\ /v LimitBlankPasswordUse
+  register: blankpass_network_restriction_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in blankpass_network_restriction_audit.stderr and blankpass_network_restriction_audit.stderr"
   tags:
       - cat1
       - high
@@ -211,27 +398,35 @@
       - V-3344
 
 - name: "HIGH | V-3344 | PATCH | Local accounts with blank passwords must be restricted to prevent access from the network."
-  win_command: true
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Control\Lsa\'
+      value: LimitBlankPasswordUse
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
       - patch
       - V-3344
 
-- name: "HIGH | V-3379 | AUDIT | The system must be configured to prevent the storage of the LAN Manager hash of passwords."
-  win_command: true
-  register: result
+- name: "HIGH | V-3379 | AUDIT | The system will be configured to prevent the storage of the LAN Manager hash of passwords."
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa /v NoLMHash
+  register: no_LM_has_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in no_LM_has_audit.stderr and no_LM_has_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-3379
 
-- name: "HIGH | V-3379 | PATCH | The system must be configured to prevent the storage of the LAN Manager hash of passwords."
-  win_command: true
+- name: "HIGH | V-3379 | PATCH | The system will be configured to prevent the storage of the LAN Manager hash of passwords."
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Control\Lsa'
+      value: NoLMHash
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
@@ -239,11 +434,11 @@
       - V-3379
 
 - name: "HIGH | V-4443 | AUDIT | Unauthorized remotely accessible registry paths and sub-paths must not be configured."
-  win_command: true
-  register: result
+  win_command: reg query HKLM\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedPaths\ /v Machine
+  register: unauthorized_remote_registry_paths_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in unauthorized_remote_registry_paths_audit.stderr and unauthorized_remote_registry_paths_audit.stderr" 
   tags:
       - cat1
       - high
@@ -251,7 +446,21 @@
       - V-4443
 
 - name: "HIGH | V-4443 | PATCH | Unauthorized remotely accessible registry paths and sub-paths must not be configured."
-  win_command: true
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedPaths\'
+      value: Machine
+      data: "Software\\Microsoft\\OLAP Server\0\
+            Software\\Microsoft\\Windows NT\\CurrentVersion\\Perflib\0\
+            Software\\Microsoft\\Windows NT\\CurrentVersion\\Print\0\
+            Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows\0\
+            System\\CurrentControlSet\\Control\\ContentIndex\0\
+            System\\CurrentControlSet\\Control\\Print\\Printers\0\
+            System\\CurrentControlSet\\Control\\Terminal Server\0\
+            System\\CurrentControlSet\\Control\\Terminal Server\\UserConfig\0\
+            System\\CurrentControlSet\\Control\\Terminal Server\\DefaultUserConfiguration\0\
+            System\\CurrentControlSet\\Services\\Eventlog\0\
+            System\\CurrentControlSet\\Services\\Sysmonlog"
+      datatype: multistring
   tags:
       - cat1
       - high
@@ -259,11 +468,11 @@
       - V-4443
 
 - name: "HIGH | V-6834 | AUDIT | Anonymous access to Named Pipes and Shares must be restricted."
-  win_command: true
-  register: result
+  win_command: reg query HKLM\System\CurrentControlSet\Services\LanManServer\Parameters\ /v RestrictNullSessAccess
+  register: anon_access_pipes_shares_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in anon_access_pipes_shares_audit.stderr and anon_access_pipes_shares_audit.stderr"
   tags:
       - cat1
       - high
@@ -271,139 +480,178 @@
       - V-6834
 
 - name: "HIGH | V-6834 | PATCH | Anonymous access to Named Pipes and Shares must be restricted."
-  win_command: true
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Services\LanManServer\Parameters\'
+      value: RestrictNullSessAccess
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
       - patch
       - V-6834
 
-- name: "HIGH | V-7002 | AUDIT | Accounts must require passwords."
-  win_command: true
-  register: result
+- name: "HIGH | V-7002 | AUDIT | DoD information system access will require the use of a password."
+  win_shell: (([ADSI]"WinNT://$env:computername").Children | Where-Object {$_.schemaclassname -eq 'user' -and $_.PasswordRequired -eq $False}).Name
+  register: no_password_users_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
       - audit
-      - V-7002
-
-- name: "HIGH | V-7002 | PATCH | Accounts must require passwords."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
       - V-7002
 
 - name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
-  win_command: true
-  register: result
+  win_shell: (Get-ItemProperty "HKLM:\System\CurrentControlSet\Services\NTDS\Parameters")."Database log files path"
+  register: database_log_path_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "'Cannot find path' not in database_log_path_audit.stderr and database_log_path_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-8316
 
-- name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
-  win_command: true
+- name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
+  win_shell: (Get-Acl -Path {{ item }}).Access.IdentityReference.Value
+  register: database_log_acl_audit
+  check_mode: no
+  changed_when: no
+  failed_when: database_log_acl_audit.stderr
+  with_items:
+      - "{{ database_log_path_audit.stdout_lines }}"
   tags:
       - cat1
       - high
-      - patch
+      - audit
       - V-8316
+
+- name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
+  win_shell: (Get-ItemProperty "HKLM:\System\CurrentControlSet\Services\NTDS\Parameters")."DSA Database file"
+  register: dsa_database_file_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "'Cannot find path' not in dsa_database_file_audit.stderr and dsa_database_file_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-8316
+
+- name: "HIGH | V-8316 | AUDIT | Active Directory data files must have proper access control permissions."
+  win_shell: (Get-Acl -Path {{ item }}).Access.IdentityReference.Value
+  register: dsa_database_acl_audit
+  check_mode: no
+  changed_when: no
+  failed_when: dsa_database_acl_audit.stderr
+  with_items:
+    - "{{ dsa_database_file_audit.stdout_lines }}"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-8316
+
+################# block start - conditionally apply patches if path exists ##############################
+
+- block:
+    - name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
+      win_acl_inheritance:
+          path: '{{ item }}'
+          state: present
+      with_items:
+          - '{{ database_log_path_audit.stdout_lines }}'
+          - '{{ dsa_database_file_audit.stdout_lines }}'
+   
+    - name: "REMOVAL HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
+      win_acl:
+          path: '{{ item[2] }}'
+          user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
+          rights: 'FullControl'
+          type: '{{ item[1] }}'
+          state: 'absent'
+      when: "not ('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
+      with_nested:
+          - "{{ database_log_acl_audit.results[0].stdout_lines }}"
+          - [ allow, deny ]
+          - "{{ database_log_path_audit.stdout_lines }}"
+     
+    - name: "HIGH | V-8316 | PATCH | Active Directory data files must have proper access control permissions."
+      win_acl:
+          path: '{{ item[1] }}'
+          user: '{{ item[0] }}'
+          rights: 'FullControl'
+          type: 'allow'
+          state: 'present'
+          inherit: 'ContainerInherit, ObjectInherit'
+          propagation: 'None'
+      with_nested:
+          - [NT AUTHORITY\SYSTEM, BUILTIN\Administrators]
+          - ['{{ database_log_path_audit.stdout_lines }},{{ dsa_database_file_audit.stdout_lines }}']
+  
+  when: "'Cannot find path' not in (database_log_path_audit.stderr and dsa_database_file_audit.stderr) and database_log_path_audit and dsa_database_file_audit"
+  tags:
+        - cat1
+        - high
+        - patch
+        - V-8316 
+###################################### block end ########################################################
 
 - name: "HIGH | V-12780 | AUDIT | The Synchronize directory service data user right must be configured to include no accounts or groups (blank)."
-  win_command: true
-  register: result
+  debug: var=secedit_rules.Privilege_Rights.SeSyncAgentPrivilege
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
       - audit
       - V-12780
 
-- name: "HIGH | V-12780 | PATCH | The Synchronize directory service data user right must be configured to include no accounts or groups (blank)."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-12780
-
-- name: "HIGH | V-14798 | AUDIT | Directory data (outside the root DSE) of a non-public directory must be configured to prevent anonymous access."
-  win_command: true
-  register: result
-  check_mode: no
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-14798
-
-- name: "HIGH | V-14798 | PATCH | Directory data (outside the root DSE) of a non-public directory must be configured to prevent anonymous access."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-14798
+# - name: "HIGH | V-12780 | PATCH | The Synchronize directory service data user right must be configured to include no accounts or groups (blank)."
+#   win_command: true
+#   tags:
+#       - cat1
+#       - high
+#       - patch
+#       - V-12780
 
 - name: "HIGH | V-14820 | AUDIT | Domain Controller PKI certificates must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
-  win_command: true
-  register: result
+  win_command: certutil -store My
+  register: PKI_certificate_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
       - audit
       - V-14820
 
-- name: "HIGH | V-14820 | PATCH | Domain Controller PKI certificates must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-14820
+# - name: "HIGH | V-14820 | PATCH | Domain Controller PKI certificates must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
+#   win_command: true
+#   tags:
+#       - cat1
+#       - high
+#       - patch
+#       - V-14820
 
 - name: "HIGH | V-18010 | AUDIT | Unauthorized accounts must not have the Debug programs user right."
-  win_command: true
-  register: result
+  debug: var=secedit_rules.Privilege_Rights.SeDebugPrivilege
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
       - audit
-      - V-18010
-
-- name: "HIGH | V-18010 | PATCH | Unauthorized accounts must not have the Debug programs user right."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
       - V-18010
 
 - name: "HIGH | V-21973 | AUDIT | Autoplay must be turned off for non-volume devices."
-  win_command: true
-  register: result
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Explorer\ /v NoAutoplayfornonVolume
+  register: autoplay_nonvolume_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in autoplay_nonvolume_audit.stderr and autoplay_nonvolume_audit.stderr"
   tags:
       - cat1
       - high
@@ -411,19 +659,22 @@
       - V-21973
 
 - name: "HIGH | V-21973 | PATCH | Autoplay must be turned off for non-volume devices."
-  win_command: true
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\Explorer\'
+      value: NoAutoplayfornonVolume
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
       - patch
-      - V-21973
 
 - name: "HIGH | V-22692 | AUDIT | The default Autorun behavior must be configured to prevent Autorun commands."
-  win_command: true
-  register: result
+  win_command: reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\ /v NoAutorun
+  register: autorun_prevent_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in autorun_prevent_audit.stderr and autorun_prevent_audit.stderr"
   tags:
       - cat1
       - high
@@ -431,7 +682,11 @@
       - V-22692
 
 - name: "HIGH | V-22692 | PATCH | The default Autorun behavior must be configured to prevent Autorun commands."
-  win_command: true
+  win_regedit:
+      key: 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\'
+      value: NoAutorun
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
@@ -439,31 +694,94 @@
       - V-22692
 
 - name: "HIGH | V-26070 | AUDIT | Standard user accounts must only have Read permissions to the Winlogon registry key."
-  win_command: true
-  register: result
+  win_shell: Get-Acl -PATH 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon' | Format-List
+  register: standard_user_read_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "path_not_found not in standard_user_read_audit.stderr and standard_user_read_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-26070
 
-- name: "HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
-  win_command: true
+- name: "HIGH | V-26070 | AUDIT | Standard user accounts must only have Read permissions to the Winlogon registry key."
+  win_shell: (Get-Acl -PATH 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon').Access.IdentityReference.Value
+  register: standard_user_read_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in standard_user_read_audit.stderr and standard_user_read_audit.stderr"
+  tags:
+      - cat1
+      - high
+      - audit
+      - V-26070
+
+######################## block start - conditionally apply patches if path exists #######################
+
+- block: 
+    - name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
+      win_acl:
+          path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+          user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
+          rights: 'FullControl'
+          type: '{{ item[1] }}'
+          state: 'absent'
+      when: "not ('TrustedInstaller' in item[0] or 'SYSTEM' in item[0] or 'Administrators' in item[0]) or 'allow' not in item[1]"
+      with_nested:
+          - "{{ standard_user_read_audit.stdout_lines }}"
+          - [ allow, deny ]
+     
+    - name: "HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
+      win_acl:
+          path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+          user: '{{ item.user }}'
+          rights: '{{ item.rights }}'
+          type: 'allow'
+          state: 'present'
+          inherit: '{{ item.inherit }}'
+          propagation: '{{ item.propagation }}'
+      with_items:
+          - user: 'NT SERVICE\TrustedInstaller'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'NT AUTHORITY\SYSTEM'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'BUILTIN\Administrators'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'BUILTIN\Users'
+            rights: 'ReadKey'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'ALL APPLICATION PACKAGES'
+            rights: 'ReadKey'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+   
+    - name: "REMOVAL HIGH | V-26070 | PATCH | Standard user accounts must only have Read permissions to the Winlogon registry key."
+      win_acl_inheritance:
+          path: 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon'
+          state: absent
+   
+  when: "path_not_found not in standard_user_read_audit.stderr and standard_user_read_audit"
   tags:
       - cat1
       - high
       - patch
       - V-26070
+########################################### block end ###################################################
 
 - name: "HIGH | V-26283 | AUDIT | Anonymous enumeration of SAM accounts must not be allowed."
-  win_command: true
-  register: result
+  win_command: reg query HKLM\System\CurrentControlSet\Control\Lsa\ /v RestrictAnonymousSAM
+  register: anonymous_enum_sam_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in anonymous_enum_sam_audit.stderr and anonymous_enum_sam_audit.stderr"
   tags:
       - cat1
       - high
@@ -471,7 +789,11 @@
       - V-26283
 
 - name: "HIGH | V-26283 | PATCH | Anonymous enumeration of SAM accounts must not be allowed."
-  win_command: true
+  win_regedit:
+      key: 'HKLM:\System\CurrentControlSet\Control\Lsa\'
+      value: RestrictAnonymousSAM
+      data: 1
+      datatype: dword
   tags:
       - cat1
       - high
@@ -479,91 +801,209 @@
       - V-26283
 
 - name: "HIGH | V-26479 | AUDIT | Unauthorized accounts must not have the Create a token object user right."
-  win_command: true
-  register: result
+  debug: var=secedit_rules.Privilege_Rights.SeCreateTokenPrivilege
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
       - audit
-      - V-26479
-
-- name: "HIGH | V-26479 | PATCH | Unauthorized accounts must not have the Create a token object user right."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
       - V-26479
 
 - name: "HIGH | V-26683 | AUDIT | PKI certificates associated with user accounts must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
-  win_command: true
-  register: result
+  win_shell: get-aduser -filter * -properties "Certificates" | foreach { if($_.Certificates){ $_.Name }; $_.Certificates | foreach {New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 $_} | fl }
+  register: user_published_certificates_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
       - audit
       - V-26683
 
-- name: "HIGH | V-26683 | PATCH | PKI certificates associated with user accounts must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-26683
+# - name: "HIGH | V-26683 | PATCH | PKI certificates associated with user accounts must be issued by the DoD PKI or an approved External Certificate Authority (ECA)."
+#   win_command: true
+#   tags:
+#       - cat1
+#       - high
+#       - patch
+#       - V-26683
 
 - name: "HIGH | V-32282 | AUDIT | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-  win_command: true
-  register: result
+  win_shell: (Get-Acl -PATH 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components').Access.IdentityReference.Value
+  register: standard_read_active_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "path_not_found not in standard_read_active_audit.stderr and standard_read_active_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-32282
 
-- name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
-  win_command: true
+- name: "HIGH | V-32282 | AUDIT | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+  win_shell: (Get-Acl -PATH 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components').Access.IdentityReference.Value
+  register: standard_read_active2_audit
+  check_mode: no
+  changed_when: no
+  when: ansible_architecture == "64-bit"
+  failed_when: "path_not_found not in standard_read_active2_audit.stderr and standard_read_active2_audit.stderr"
   tags:
       - cat1
       - high
-      - patch
+      - audit
       - V-32282
+
+###################### block start - conditionally apply patches if path exists #########################
+
+- block:
+    - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+      win_acl:
+          path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
+          user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
+          rights: 'FullControl'
+          type: '{{ item[1] }}'
+          state: 'absent'
+      when: "not('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
+      with_nested:
+          - "{{ standard_read_active_audit.stdout_lines }}"
+          - [ allow, deny ]
+
+    - name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+      win_acl:
+          path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
+          user: "{{ item.user }}"
+          rights: "{{ item.rights }}"
+          type: 'allow'
+          state: 'present'
+          inherit: "{{ item.inherit }}"
+          propagation: "{{ item.propagation }}"
+      with_items:
+          - user: 'BUILTIN\Users'
+            rights: 'ReadKey'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'BUILTIN\Administrators'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'NT AUTHORITY\SYSTEM'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'CREATOR OWNER'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit'
+            propagation: 'InheritOnly'
+          - user: 'ALL APPLICATION PACKAGES'
+            rights: 'ReadKey'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+     
+    - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+      win_acl_inheritance:
+          path: 'HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components'
+          state: absent
+     
+  when: "path_not_found not in standard_read_active_audit.stderr and standard_read_active_audit"
+  tags:
+        - cat1
+        - high
+        - patch
+        - V-32282
+######################################### block end #####################################################
+
+###################### block start - conditionally apply patches if path exists #########################
+
+- block:
+    - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+      win_acl:
+          path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
+          user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
+          rights: 'FullControl'
+          type: '{{ item[1] }}'
+          state: 'absent'
+      when: "not('Administrators' in item[0] or 'SYSTEM' in item[0]) or 'allow' not in item[1]"
+      with_nested:
+          - "{{ standard_read_active2_audit.stdout_lines }}"
+          - [ allow, deny ]
+   
+    - name: "HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+      win_acl:
+          path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
+          user: "{{ item.user }}"
+          rights: "{{ item.rights }}"
+          type: 'allow'
+          state: 'present'
+          inherit: "{{ item.inherit }}"
+          propagation: "{{ item.propagation }}"
+      with_items:
+          - user: 'BUILTIN\Users'
+            rights: 'ReadKey'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'BUILTIN\Administrators'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'NT AUTHORITY\SYSTEM'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'CREATOR OWNER'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit'
+            propagation: 'InheritOnly'
+          - user: 'ALL APPLICATION PACKAGES'
+            rights: 'ReadKey'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+     
+    - name: "REMOVAL HIGH | V-32282 | PATCH | Standard user accounts must only have Read permissions to the Active Setup Installed Components registry key."
+      win_acl_inheritance:
+          path: 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Active Setup\Installed Components'
+          state: absent
+   
+  when: "ansible_architecture == '64-bit' and path_not_found not in standard_read_active2_audit.stderr and standard_read_active2_audit"
+  tags:
+        - cat1
+        - high
+        - patch
+        - V-32282
+############################################ block end ##################################################
 
 - name: "HIGH | V-33673 | AUDIT | Active Directory Group Policy objects must have proper access control permissions."
-  win_command: true
-  register: result
+  win_shell: get-gpo -all | %{$_.DisplayName, (Get-GPPermissions -Guid $_.Id -All) }
+  register: ad_gpo_permissions_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
       - audit
       - V-33673
 
-- name: "HIGH | V-33673 | PATCH | Active Directory Group Policy objects must have proper access control permissions."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-33673
+#- name: "HIGH | V-33673 | PATCH | Active Directory Group Policy objects must have proper access control permissions."
+#  win_shell: "{{ item }}"
+#  with_items:
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoRead,GpoApply" -TargetName "Authenticated Users" -TargetType "Group"
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "None" -TargetName "CREATOR OWNER" -TargetType "Group"
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoEditDeleteModifySecurity" -TargetName "SYSTEM" -TargetType "Group"
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoEditDeleteModifySecurity" -TargetName "Domain Admins" -TargetType "Group"
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoEditDeleteModifySecurity" -TargetName "Enterprise Admins" -TargetType "Group"
+#      - Set-GPPermissions -Name "Default Domain Controllers Policy" -PermissionLevel "GpoRead" -TargetName "ENTERPRISE DOMAIN CONTROLLERS" -TargetType "Group"
+#  tags:
+#      - cat1
+#      - high
+#      - patch
+#      - V-33673
 
 - name: "HIGH | V-34974 | AUDIT | The Windows Installer Always install with elevated privileges option must be disabled."
-  win_command: true
-  register: result
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\Installer\ /v AlwaysInstallElevated
+  register: install_elevated_disabled_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in install_elevated_disabled_audit.stderr and install_elevated_disabled_audit.stderr"
   tags:
       - cat1
       - high
@@ -571,87 +1011,35 @@
       - V-34974
 
 - name: "HIGH | V-34974 | PATCH | The Windows Installer Always install with elevated privileges option must be disabled."
-  win_command: true
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\Installer\'
+      value: AlwaysInstallElevated
+      data: 0
+      datatype: dword
   tags:
       - cat1
       - high
       - patch
       - V-34974
 
-- name: "HIGH | V-36451 | AUDIT | Policy must require that administrative accounts not be used with applications that access the Internet, such as web browsers, or with potential Internet sources, such as email."
-  win_command: true
-  register: result
-  check_mode: no
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-36451
-
-- name: "HIGH | V-36451 | PATCH | Policy must require that administrative accounts not be used with applications that access the Internet, such as web browsers, or with potential Internet sources, such as email."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-36451
-
-- name: "HIGH | V-36659 | AUDIT | Users with Administrative privileges must have separate accounts for administrative duties and normal operational tasks."
-  win_command: true
-  register: result
-  check_mode: no
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-36659
-
-- name: "HIGH | V-36659 | PATCH | Users with Administrative privileges must have separate accounts for administrative duties and normal operational tasks."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-36659
-
-- name: "HIGH | V-36664 | AUDIT | The system must not use removable media as the boot loader."
-  win_command: true
-  register: result
-  check_mode: no
-  changed_when: no
-  ignore_errors: yes
-  tags:
-      - cat1
-      - high
-      - audit
-      - V-36664
-
-- name: "HIGH | V-36664 | PATCH | The system must not use removable media as the boot loader."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-36664
-
 - name: "HIGH | V-36712 | AUDIT | The Windows Remote Management (WinRM) client must not use Basic authentication."
-  win_command: true
-  register: result
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Client /v AllowBasic
+  register: winrm_client_basic_auth_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in winrm_client_basic_auth_audit.stderr and winrm_client_basic_auth_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-36712
-
+      
 - name: "HIGH | V-36712 | PATCH | The Windows Remote Management (WinRM) client must not use Basic authentication."
-  win_command: true
+  win_regedit:
+      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Client'
+      value: AllowBasic
+      data: 0
+      datatype: dword
   tags:
       - cat1
       - high
@@ -659,102 +1047,154 @@
       - V-36712
 
 - name: "HIGH | V-36718 | AUDIT | The Windows Remote Management (WinRM) service must not use Basic authentication."
-  win_command: true
-  register: result
+  win_command: reg query HKLM\Software\Policies\Microsoft\Windows\WinRM\Service\ /v AllowBasic
+  register: winrm_service_basic_auth_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in winrm_service_basic_auth_audit.stderr and winrm_service_basic_auth_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-36718
 
-- name: "HIGH | V-36718 | PATCH | The Windows Remote Management (WinRM) service must not use Basic authentication."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-36718
+#- name: "HIGH | V-36718 | PATCH | The Windows Remote Management (WinRM) service must not use Basic authentication."
+#  win_regedit:
+#      key: 'HKLM:\Software\Policies\Microsoft\Windows\WinRM\Service\'
+#      value: AllowBasic
+#      data: 0
+#      datatype: dword
+#  tags:
+#      - cat1
+#      - high
+#     - patch
+#      - V-36718
 
 - name: "HIGH | V-39331 | AUDIT | The Active Directory SYSVOL directory must have the proper access control permissions."
-  win_command: true
-  register: result
+  win_shell: Get-Acl -Path '\Windows\SYSVOL' | Format-List
+  register: sysvol_permissions_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-39331
 
-- name: "HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
-  win_command: true
+- name: "HIGH | V-39331 | AUDIT | The Active Directory SYSVOL directory must have the proper access control permissions."
+  win_shell: (Get-Acl -Path '\Windows\SYSVOL').Access.IdentityReference.Value
+  register: sysvol_permissions_audit
+  check_mode: no
+  changed_when: no
+  failed_when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit.stderr"
   tags:
       - cat1
       - high
-      - patch
+      - audit
       - V-39331
+
+###################### block start - conditionally apply patches if path exists #########################
+
+- block:
+    - name: "REMOVAL HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
+      win_acl:
+          path: '\Windows\SYSVOL'
+          user: '{{ item[0] | replace("APPLICATION PACKAGE AUTHORITY\ALL APPLICATION PACKAGES" , "ALL APPLICATION PACKAGES")}}'
+          rights: 'FullControl'
+          type: '{{ item[1] }}'
+          state: 'absent'
+      when: "not('Administrators' in item[0] or 'SYSTEM' in item[0] or 'CREATOR OWNER' in item[0]) or 'allow' not in item[1]"
+      with_nested:
+          - "{{ sysvol_permissions_audit.stdout_lines }}"
+          - [ allow, deny ]
+   
+    - name: "HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
+      win_acl:
+          path: '\Windows\SYSVOL'
+          user: '{{ item.user }}'
+          rights: '{{ item.rights }}'
+          type: 'allow'
+          state: 'present'
+          inherit: '{{ item.inherit }}'
+          propagation: '{{ item.propagation }}'
+      with_items:
+          - user: 'NT AUTHORITY\Authenticated Users'
+            rights: 'ReadAndExecute'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'BUILTIN\Server Operators'
+            rights: 'ReadAndExecute'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+          - user: 'BUILTIN\Administrators'
+            rights: 'Modify,ReadAndExecute,ListDirectory,Read,Write'
+            inherit: 'None'
+            propagation: 'None'
+          - user: 'CREATOR OWNER'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'InheritOnly'
+          - user: 'BUILTIN\Administrators'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'InheritOnly'
+          - user: 'NT AUTHORITY\SYSTEM'
+            rights: 'FullControl'
+            inherit: 'ContainerInherit, ObjectInherit'
+            propagation: 'None'
+     
+    - name: "REMOVAL HIGH | V-39331 | PATCH | The Active Directory SYSVOL directory must have the proper access control permissions."
+      win_acl_inheritance:
+          path: '\Windows\SYSVOL'
+          state: absent
+   
+  when: "path_not_found not in sysvol_permissions_audit.stderr and sysvol_permissions_audit"
+  tags:
+        - cat1
+        - high
+        - patch
+        - V-39331
+######################################### block end #####################################################
 
 - name: "HIGH | V-39332 | AUDIT | The Active Directory Domain Controllers Organizational Unit (OU) object must have the proper access control permissions."
-  win_command: true
-  register: result
+  script: v39332.ps1
+  register: actived_domain_controller_guid_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
       - audit
-      - V-39332
-
-- name: "HIGH | V-39332 | PATCH | The Active Directory Domain Controllers Organizational Unit (OU) object must have the proper access control permissions."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
       - V-39332
 
 - name: "HIGH | V-39333 | AUDIT | Domain created Active Directory Organizational Unit (OU) objects must have proper access control permissions."
-  win_command: true
-  register: result
+  script: v39333.ps1 
+  register: actived_objects_ou_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
   tags:
       - cat1
       - high
       - audit
-      - V-39333
-
-- name: "HIGH | V-39333 | PATCH | Domain created Active Directory Organizational Unit (OU) objects must have proper access control permissions."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
       - V-39333
 
 - name: "HIGH | V-40175 | AUDIT | The antivirus program signature files must be kept updated."
-  win_command: true
-  register: result
+  win_command: reg query \"HKLM\Software\Wow6432Node\Network Associates\ePolicy Orchestrator\Application Plugins\VIRUSCAN8800\" /v DatDate
+  register: dat_date_audit
   check_mode: no
   changed_when: no
-  ignore_errors: yes
+  failed_when: "reg_not_found not in dat_date_audit.stderr and dat_date_audit.stderr"
   tags:
       - cat1
       - high
       - audit
       - V-40175
 
-- name: "HIGH | V-40175 | PATCH | The antivirus program signature files must be kept updated."
-  win_command: true
-  tags:
-      - cat1
-      - high
-      - patch
-      - V-40175
-
+# - name: "HIGH | V-40175 | PATCH | The antivirus program signature files must be kept updated."
+#   win_command: true
+#   tags:
+#       - cat1
+#       - high
+#       - patch
+#       - V-40175
